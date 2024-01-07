@@ -1,6 +1,9 @@
 # Dependency directories
 node_modules/
 pods/
+# Gradle files
+android/.gradle/
+android/build/
 
 # Logs
 *.log
