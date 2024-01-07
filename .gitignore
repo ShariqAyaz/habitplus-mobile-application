@@ -2,6 +2,38 @@
 node_modules/
 pods/
 
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Node.js
+node_modules/
+
+# React Native
+android/
+ios/
+*.log
+
+# Dependency directories
+/node_modules
+/ios/Pods
+/ios/build
+
+# Gradle files
+*.iml
+.gradle/
+/build/
+
+# CocoaPods
+/Pods
+*.lock
+
+# Expo
+.expo/
+.expo-shared/
+
 # Logs
 *.log
 npm-debug.log*
