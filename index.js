@@ -1,7 +1,7 @@
-import {AppRegistry} from 'react-native';
+import { AppRegistry } from 'react-native';
 import SplashScreen from './src/screens/splash';
 import MainScreen from './src/screens/main';
-import {name as appName} from './app.json';
-import App from './App';
+import { name as appName } from './app.json';
 
-AppRegistry.registerComponent(appName,()=>SplashScreen);
+AppRegistry.registerComponent(appName, () => SplashScreen);
+AppRegistry.registerComponent('Main', () => MainScreen);

@@ -6,8 +6,8 @@ const Splash = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       console.log('Navigating to Main screen');
-      //navigation.replace('Main');//
-    }, 1000);
+      navigation.navigate('Main');
+    }, 6000);
 
     return () => clearTimeout(timer);
   }, [navigation]);
