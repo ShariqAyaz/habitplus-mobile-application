@@ -7,7 +7,7 @@ const Splash = ({ navigation }) => {
     const timer = setTimeout(() => {
       console.log('Navigating to Main screen');
       //navigation.replace('Main');
-    }, 6000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [navigation]);

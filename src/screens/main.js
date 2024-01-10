@@ -2,6 +2,7 @@ import React from 'react';
 import { View, ImageBackground, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 const Main = ({ navigation }) => {
+
   return (
     <ImageBackground source={require('../assets/img/background_splash.jpg')} style={styles.backgroundImage}>
       <View style={styles.container}>
@@ -13,7 +14,7 @@ const Main = ({ navigation }) => {
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate('Dashboard')}
             >
               <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
