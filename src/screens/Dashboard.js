@@ -1,96 +1,68 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, TouchableOpacity, Text, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import BackgroundImage from '../assets/img/background_splash.jpg';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import the icon library
 
 const Dashboard = () => {
+  const [buttons, setButtons] = useState([]);
+
+  useEffect(() => {
+    fetch('https://ao40g8brw2.execute-api.us-east-1.amazonaws.com/Production')
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.body && Array.isArray(data.body.apps)) {
+          const buttonNames = data.body.apps;
+          setButtons(buttonNames);
+        } else console.error('Invalid response format:', data);
+      })
+      .catch((error) => {
+        console.error('Error fetching button names:', error);
+      });
+  }, []);
+
   const screenWidth = Dimensions.get('window').width;
-  const buttonWidth = (screenWidth - 40) / 2;
+  const buttonWidth = (screenWidth - 40) / 1;
 
   return (
     <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Header */}
+        <View style={styles.mainContent}>
+          <Text style={styles.headerText}>Welcome to Habit++</Text>
+        </View>
+        {/* Main Content */}
+        <View style={styles.header}>
+          <Text style={styles.screenText}>Dashboard</Text>
+        </View>
+        {/* Navigation Buttons */}
+        <View style={styles.navigationContainer}>
+          {buttons.map((buttonName, index) => (
+            <View style={styles.row} key={index}>
+              <TouchableOpacity
+                key={index}
+                style={[styles.navigationButton, { width: buttonWidth }]}
+                onPress={() => {
+                  console.log(`pressed. Key is ${index} -> Button "${buttonName}"`);
+                }}
+              >
+                <View style={styles.buttonContent}>
+                  {/* Icons */}
+                  {/* <Icon name="industry" size={20} color="black" /> */}
+                  <Text style={styles.buttonText}>{buttonName}</Text>
 
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
-      <View style={styles.mainContent}>
-        <Text style={styles.headerText}>Welcome to Habit++</Text>
-      </View>
-
-      {/* Main Content */}
-      <View style={styles.header}>
-      <Text style={styles.screenText}>Dashboard</Text>
-      </View>
-
-      {/* Navigation Buttons */}
-      <View style={styles.navigationContainer}>
-        <View style={styles.row}>
-          <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Habit Plans</Text>
+                </View>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Daily Score</Text>
-            </View>
-          </TouchableOpacity>
+          ))}
         </View>
-        <View style={styles.row}>
-          <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Habit Tracker</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Smart Reminders</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.row}>
-          <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Learning Modules</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Community Challenges</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.row}>
-          <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Quotes and Success Stories</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Gamification Elements</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.row}>
-          <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Mood & Habit Analysis</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.settingsButton, { width: buttonWidth }]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Settings</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1, 
+    flexGrow: 1,
     backgroundColor: 'transparent',
     paddingVertical: 10,
     paddingHorizontal: 10,
@@ -129,17 +101,17 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   navigationContainer: {
-    marginTop: 0,
+    margin: 0,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 14,
+    marginBottom: 6,
   },
   navigationButton: {
     backgroundColor: '#FFFFFF',
-    width: '50%', 
-    aspectRatio: 1, 
+    width: '50%',
+    //aspectRatio: 1, 
     borderRadius: 0,
     borderWidth: 1,
     borderColor: 'black',
@@ -148,8 +120,8 @@ const styles = StyleSheet.create({
   },
   settingsButton: {
     backgroundColor: '#FFFFFF',
-    width: '50%', 
-    aspectRatio: 1, 
+    width: '50%',
+    aspectRatio: 1,
     borderRadius: 0,
     borderWidth: 1,
     borderColor: 'black',
