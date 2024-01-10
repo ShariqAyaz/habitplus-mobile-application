@@ -3,20 +3,30 @@ import { View, ImageBackground, TouchableOpacity, Text, StyleSheet } from 'react
 
 const Main = ({ navigation }) => {
   return (
-    <ImageBackground source={require('../assets/img/splash_logo.png')} style={styles.backgroundImage}>
+    <ImageBackground source={require('../assets/img/background_splash.jpg')} style={styles.backgroundImage}>
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Login')}
-        >
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Registration')}
-        >
-          <Text style={styles.buttonText}>Registration</Text>
-        </TouchableOpacity>
+        {/* Heading */}
+        <Text style={styles.heading}>Habit++</Text>
+
+        {/* Buttons */}
+        <View style={styles.buttonContainer}>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('Login')}
+            >
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('Registration')}
+            >
+              <Text style={styles.buttonText}>Registration</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {/* Add more button rows as needed */}
+        </View>
       </View>
     </ImageBackground>
   );
@@ -34,12 +44,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 50,
   },
+  heading: {
+    fontSize: 36,
+    fontStyle: 'italic',
+    color: 'white',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowColor: 'black',
+    textShadowOffset: { width: -3, height: 4 },
+    textShadowRadius: 5,
+    marginBottom: 70,
+    marginLeft: 80,
+    marginRight: 80,
+    paddingVertical: '50%',
+    borderRadius: 10,
+    width: '60%',
+    height: '60%',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
   button: {
     backgroundColor: '#4CAF50',
+    width: '48%',
     paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    marginVertical: 10,
+    borderRadius: 0,
+    borderWidth: 1,
+    borderColor: '#4CAF50',
   },
   buttonText: {
     color: '#FFFFFF',
