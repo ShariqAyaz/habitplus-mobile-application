@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, TouchableOpacity, Text, StyleSheet, Dimensions, ImageBackground } from 'react-native';
+
+
 import BackgroundImage from '../assets/img/background_splash.jpg';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Import the icon library
+
+import Icon from 'react-native-vector-icons/FontAwesome'; 
 
 const Dashboard = () => {
   const [buttons, setButtons] = useState([]);
@@ -21,20 +24,21 @@ const Dashboard = () => {
   }, []);
 
   const screenWidth = Dimensions.get('window').width;
+  
   const buttonWidth = (screenWidth - 40) / 1;
 
   return (
     <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Header */}
+        
         <View style={styles.mainContent}>
           <Text style={styles.headerText}>Welcome to Habit++</Text>
         </View>
-        {/* Main Content */}
+        
         <View style={styles.header}>
           <Text style={styles.screenText}>Dashboard</Text>
         </View>
-        {/* Navigation Buttons */}
+        
         <View style={styles.navigationContainer}>
           {buttons.map((buttonName, index) => (
             <View style={styles.row} key={index}>

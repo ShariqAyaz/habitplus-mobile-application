@@ -10,17 +10,15 @@ const Dashboard = () => {
     <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
 
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
+
       <View style={styles.mainContent}>
         <Text style={styles.headerText}>Welcome to Habit++</Text>
       </View>
 
-      {/* Main Content */}
       <View style={styles.header}>
       <Text style={styles.screenText}>Dashboard</Text>
       </View>
 
-      {/* Navigation Buttons */}
       <View style={styles.navigationContainer}>
         <View style={styles.row}>
           <TouchableOpacity style={[styles.navigationButton, { width: buttonWidth }]}>

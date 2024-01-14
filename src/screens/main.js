@@ -6,10 +6,9 @@ const Main = ({ navigation }) => {
   return (
     <ImageBackground source={require('../assets/img/background_splash.jpg')} style={styles.backgroundImage}>
       <View style={styles.container}>
-        {/* Heading */}
+
         <Text style={styles.heading}>Habit++</Text>
 
-        {/* Buttons */}
         <View style={styles.buttonContainer}>
           <View style={styles.buttonRow}>
             <TouchableOpacity
@@ -27,7 +26,6 @@ const Main = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           
-          {/* Add more button rows as needed */}
         </View>
       </View>
     </ImageBackground>

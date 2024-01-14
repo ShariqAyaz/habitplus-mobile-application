@@ -17,6 +17,9 @@ const App = () => {
     }, 5000);
   }, []);
 
+
+
+  
   return (
     <NavigationContainer>
       <Stack.Navigator>
