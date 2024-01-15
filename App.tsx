@@ -4,6 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Splash from './src/screens/Splash';
 import Main from './src/screens/Main';
 import Dashboard from './src/screens/Dashboard';
+import infloading from './src/screens/infloading';
+
 import DashboardOld from './src/screens/DashboardOld';
 
 const Stack = createStackNavigator();
@@ -30,6 +32,8 @@ const App = () => {
             <Stack.Screen name="Main" component={Main} options={{ headerShown: false }}/>
             <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }}/>
             <Stack.Screen name="DashboardOld" component={DashboardOld} options={{ headerShown: false }}/>
+            <Stack.Screen name="infloading" component={infloading} options={{ headerShown: false }}/>
+            {/* <Stack.Screen name="locationcheck" component={locationcheck} options={{ headerShown: false }}/> */}
           </>
         )}
       </Stack.Navigator>

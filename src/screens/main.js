@@ -20,7 +20,7 @@ const Main = ({ navigation }) => {
             <TouchableOpacity
               style={styles.button}
               
-              onPress={() => navigation.navigate('DashboardOld')}
+              onPress={() => navigation.navigate('infloading')}
             >
               <Text style={styles.buttonText}>Registration</Text>
             </TouchableOpacity>
