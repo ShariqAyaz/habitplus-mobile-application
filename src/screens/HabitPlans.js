@@ -40,13 +40,13 @@ const HabitPlans = () => {
           '2024-01-05': { selected: true }, 
         }}
         theme={{
-          calendarBackground: 'white', 
-          textSectionTitleColor: 'black', 
-          dayTextColor: 'black', 
+          calendarBackground: 'red', 
+          textSectionTitleColor: 'red', 
+          dayTextColor: 'red', 
           todayTextColor: 'red', 
           selectedDayTextColor: 'white', 
           selectedDayBackgroundColor: '#007BFF', 
-          textDisabledColor: 'gray', 
+          textDisabledColor: 'pink', 
         }}
         hideExtraDays 
       />

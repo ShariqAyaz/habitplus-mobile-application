@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Splash from './src/screens/Splash';
-import Main from './src/screens/Main';
-import Dashboard from './src/screens/Dashboard';
-import infloading from './src/screens/infloading';
 
-import DashboardOld from './src/screens/DashboardOld';
+// Screens
+import SplashScreen from './src/screens/SplashScreen';
+import Register from './src/screens/Register';
+import Login from './src/screens/Login';
+import Welcome from './src/screens/Welcome';
+
 
 const Stack = createStackNavigator();
 
@@ -19,21 +20,16 @@ const App = () => {
     }, 5000);
   }, []);
 
-
-
-  
   return (
     <NavigationContainer>
       <Stack.Navigator>
         {isSplash ? (
-          <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }}/>
+          <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }}/>
         ) : (
           <>
-            <Stack.Screen name="Main" component={Main} options={{ headerShown: false }}/>
-            <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }}/>
-            <Stack.Screen name="DashboardOld" component={DashboardOld} options={{ headerShown: false }}/>
-            <Stack.Screen name="infloading" component={infloading} options={{ headerShown: false }}/>
-            {/* <Stack.Screen name="locationcheck" component={locationcheck} options={{ headerShown: false }}/> */}
+          <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }}/>
+          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+          <Stack.Screen name="Register" component={Register} options={{ headerShown: false }}/>
           </>
         )}
       </Stack.Navigator>

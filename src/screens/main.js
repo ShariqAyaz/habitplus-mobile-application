@@ -12,17 +12,16 @@ const Main = ({ navigation }) => {
         <View style={styles.buttonContainer}>
           <View style={styles.buttonRow}>
             <TouchableOpacity
-              style={styles.button}
+              style={[styles.button, { borderRadius: 4 }]}
               onPress={() => navigation.navigate('Dashboard')}
             >
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={[styles.buttonText, { color: 'white' }]}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.button}
-              
-              onPress={() => navigation.navigate('infloading')}
+              style={[styles.button, { borderRadius: 4 }]}
+              onPress={() => navigation.navigate('HabitPlans')}
             >
-              <Text style={styles.buttonText}>Registration</Text>
+              <Text style={[styles.buttonText, { color: 'white' }]}>Registration</Text>
             </TouchableOpacity>
           </View>
           
@@ -52,7 +51,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.9)',
     textShadowColor: 'black',
     textShadowOffset: { width: -3, height: 4 },
-    textShadowRadius: 5,
+    textShadowRadius: 4,
     marginBottom: 70,
     marginLeft: 80,
     marginRight: 80,
@@ -75,14 +74,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
     width: '48%',
     paddingVertical: 15,
-    borderRadius: 0,
-    borderWidth: 1,
+    borderRadius: 20, // Rounded corners
+    borderWidth: 0,
     borderColor: '#4CAF50',
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: 'white', // White text
+    fontSize: 16,
+    fontWeight: 'bold', // Bold font weight
     textAlign: 'center',
   },
 });
