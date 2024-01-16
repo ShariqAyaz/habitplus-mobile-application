@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { View, Image, TextInput, Text, TouchableOpacity, StyleSheet, Linking, Alert , Platform} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import Sound from 'react-native-sound';
 
 const RegisterScreen = () => {
-    const [firstName, setFirstName] = useState('');
+
+    const navigation = useNavigation();
+    const [fullName, setfullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -10,10 +14,57 @@ const RegisterScreen = () => {
     const [isLicenseAgreed, setIsLicenseAgreed] = useState(false);
     const [isEmailValid, setIsEmailValid] = useState(false); // Add this line
 
+    const successSound = new Sound(require('../assets/sounds/success.mp3'), (error) => {
+        if (error) {
+            console.log('Failed to load the sound', error);
+        }
+    });
+
+    
+
     const handleRegister = () => {
         if (isLicenseAgreed) {
             if (isEmailValid) {
-                console.log("Checked, Register");
+                const userData = {
+                    fullName: fullName,
+                    email: email,
+                    password: password,
+                    age: age
+                };
+
+                fetch('http://192.168.1.187:3000/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Registration failed');
+                    }
+                })
+                .then(data => {
+                    successSound.play();
+                    Alert.alert(
+                        'Registration successful',
+                        JSON.stringify(data),
+                        [
+                            {
+                                //onPress: () => successSound.play(),
+                                text: 'OK',
+                                onPress: () => navigation.navigate('Welcome'),
+                            }
+                            
+                        ]
+                        
+                    );                     
+                })
+                .catch(error => {
+                    console.error('Registration failed:', error);
+                });
             } else {
                 console.log("Invalid email");
             }
@@ -21,7 +72,7 @@ const RegisterScreen = () => {
             console.log("Unchecked, Register");
         }
     };
-
+    
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         setIsEmailValid(emailRegex.test(email));
@@ -39,10 +90,10 @@ const RegisterScreen = () => {
             <View style={styles.formContainer}>
                 <TextInput
                     style={styles.input}
-                    placeholder="First Name"
+                    placeholder="Full Name"
                     placeholderTextColor="rgba(0, 0, 0, 0.5)"
-                    value={firstName}
-                    onChangeText={setFirstName}
+                    value={fullName}
+                    onChangeText={setfullName}
                     maxLength={100}
                 />
                 <TextInput
