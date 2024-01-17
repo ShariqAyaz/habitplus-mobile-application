@@ -1,14 +1,53 @@
 import React, { useState } from 'react';
 import { View, Image, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { useNavigation } from '@react-navigation/native';
+
 
 const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const navigation = useNavigation();
 
-    const handleLogin = () => {
-        // Handle login logic here
+    const handleLogin = async () => {
+        try {
+            // Trim the email and password before using them in the fetch call
+            const trimmedEmail = email.trim();
+            const trimmedPassword = password.trim();
+    
+            const response = await fetch('http://192.168.1.187:3000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: trimmedEmail, password: trimmedPassword }),
+            });
+    
+            if (response.status === 200) {
+                const data = await response.json();
+                console.log(data);
+                await AsyncStorage.setItem('userToken', data.accessToken); 
+                navigation.navigate('Main');
+            } else {
+                setErrorMessage('Invalid credentials. Please try again.');
+            }
+        } catch (error) {
+            console.error(error);
+            setErrorMessage('An error occurred. Please try again later.');
+        }
     };
-
+    
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('userToken');
+            navigation.navigate('Login');
+        } catch (error) {
+            console.error(error);
+            setErrorMessage('An error occurred. Please try again later.');
+        }
+    };
+    
     const handleForgotPassword = () => {
         // Handle forgot password logic here
     };
