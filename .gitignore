@@ -7,6 +7,9 @@ android/build/
 android/gradle.properties
 android/local.properties
 
+
+push.sh
+
 # macOS
 .DS_Store
 
