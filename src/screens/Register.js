@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, Text, TouchableOpacity, StyleSheet, Linking, Alert , Platform} from 'react-native';
+import { View, Image, TextInput, Text, TouchableOpacity, StyleSheet, Linking, Alert, Platform, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Sound from 'react-native-sound';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 const RegisterScreen = () => {
 
     const navigation = useNavigation();
-    const [fullName, setfullName] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,51 +22,81 @@ const RegisterScreen = () => {
         }
     });
 
-    
-
-    const handleRegister = () => {
+    const handleRegister = async () => {
         if (isLicenseAgreed) {
             if (isEmailValid) {
                 const userData = {
-                    fullName: fullName,
-                    email: email,
-                    password: password,
-                    age: age
+                    fullName: fullName.trim(),
+                    username: username.trim(),
+                    email: email.trim(),
+                    password: password.trim(),
+                    age: age.trim()
                 };
 
-                fetch('http://192.168.1.187:3000/register', {
+                const response = await fetch('http://172.20.10.3:3000/api/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(userData)
                 })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('Registration failed');
-                    }
-                })
-                .then(data => {
+
+                if (response.status === 201) {
+
+
+                    const data = await response.json();
+                    console.log(data);
+
+                   // await AsyncStorage.setItem('userToken', data.accessToken);
+
                     successSound.play();
-                    Alert.alert(
-                        'Registration successful',
-                        JSON.stringify(data),
-                        [
-                            {
-                                //onPress: () => successSound.play(),
-                                text: 'OK',
-                                onPress: () => navigation.navigate('Welcome'),
-                            }
-                            
-                        ]
-                        
-                    );                     
-                })
-                .catch(error => {
-                    console.error('Registration failed:', error);
-                });
+                        Alert.alert(
+                            'Registration successful',
+                            'Hello ' + userData.fullName + '! \nDo you want to login now?',
+                            [
+                                {
+                                    text: 'Yes',
+                                    onPress: async () => {
+
+                                        console.log(email, userData.password);
+
+                                        try {
+                                    
+                                            const response = await fetch('http://172.20.10.3:3000/api/login', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({ email: userData.email.toLowerCase(), password: userData.password }),
+                                            });
+                                    
+                                            if (response.status === 200) {
+                                                const data = await response.json();
+                                                console.log(data);
+                                                await AsyncStorage.setItem('userToken', data.accessToken); 
+                                                navigation.navigate('Main');
+                                            } else {
+                                                console.log('Invalid credentials. Please try again.');
+                                            }
+                                        } catch (error) {
+                                            console.error(error);
+                                            console.log('An error occurred. Please try again later.');
+                                        }
+
+                                    }
+                                },
+                                {
+                                    text: 'No',
+                                    onPress: () => navigation.navigate('Login')
+                                }
+                            ]
+                        );
+                    navigation.navigate('Main');
+                }
+                else {
+                    setErrorMessage('Invalid credentials. Please try again.');
+                }
+
             } else {
                 console.log("Invalid email");
             }
@@ -72,7 +104,7 @@ const RegisterScreen = () => {
             console.log("Unchecked, Register");
         }
     };
-    
+
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         setIsEmailValid(emailRegex.test(email));
@@ -80,80 +112,93 @@ const RegisterScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.logoContainer}>
-                <Image
-                    source={require('../assets/img/logo.png')}
-                    style={styles.logo}
-                />
-            </View>
-            <View style={styles.formContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Full Name"
-                    placeholderTextColor="rgba(0, 0, 0, 0.5)"
-                    value={fullName}
-                    onChangeText={setfullName}
-                    maxLength={100}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    placeholderTextColor="rgba(0, 0, 0, 0.5)"
-                    value={email}
-                    onChangeText={validateEmail}
-                    keyboardType="email-address" // This ensures the keyboard is optimized for email input
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    placeholderTextColor="rgba(0, 0, 0, 0.5)"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Confirm Password"
-                    placeholderTextColor="rgba(0, 0, 0, 0.5)"
-                    secureTextEntry
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Age"
-                    placeholderTextColor="rgba(0, 0, 0, 0.5)"
-                    value={age}
-                    onChangeText={setAge}
-                />
-                <TouchableOpacity
-                    style={styles.checkboxContainer}
-                    onPress={() => setIsLicenseAgreed(!isLicenseAgreed)}
-                >
-                    <View style={styles.checkbox}>
-                        {isLicenseAgreed ? <Text style={styles.checkboxText}>✓</Text> : null}
-                    </View>
-                    <Text style={styles.checkboxLabel}>
-                        I agree to the{' '}
-                        <Text 
-                            style={styles.linkText}
-                            onPress={() => Linking.openURL('https://abc.com/term')}
-                        >
-                            {"User "}Terms & Conditions
-                        </Text>
-                    </Text>
-                </TouchableOpacity>
-                <View>
-                    <TouchableOpacity
-                        style={styles.registerButton}
-                        onPress={handleRegister}
-                    >
-                        <Text style={styles.registerButtonText}>Register</Text>
-                    </TouchableOpacity>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.logoContainer}>
+                    <Image
+                        source={require('../assets/img/logo.png')}
+                        style={styles.logo}
+                    />
                 </View>
-            </View>
-        </View>
+                <View style={styles.formContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Full Name"
+                        placeholderTextColor="rgba(0, 0, 0, 0.5)"
+                        value={fullName}
+                        onChangeText={setFullName}
+                        maxLength={100}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Username"
+                        placeholderTextColor="rgba(0, 0, 0, 0.5)"
+                        value={username}
+                        onChangeText={setUsername}
+                        maxLength={100}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Email"
+                        placeholderTextColor="rgba(0, 0, 0, 0.5)"
+                        value={email}
+                        onChangeText={validateEmail}
+                        keyboardType="email-address" // This ensures the keyboard is optimized for email input
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        placeholderTextColor="rgba(0, 0, 0, 0.5)"
+                        secureTextEntry
+                        value={password}
+                        onChangeText={setPassword}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Confirm Password"
+                        placeholderTextColor="rgba(0, 0, 0, 0.5)"
+                        secureTextEntry
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Age"
+                        placeholderTextColor="rgba(0, 0, 0, 0.5)"
+                        value={age}
+                        onChangeText={setAge}
+                    />
+                    <TouchableOpacity
+                        style={styles.checkboxContainer}
+                        onPress={() => setIsLicenseAgreed(!isLicenseAgreed)}
+                    >
+                        <View style={styles.checkbox}>
+                            {isLicenseAgreed ? <Text style={styles.checkboxText}>✓</Text> : null}
+                        </View>
+                        <Text style={styles.checkboxLabel}>
+                            I agree to the{' '}
+                            <Text
+                                style={styles.linkText}
+                                onPress={() => Linking.openURL('https://abc.com/term')}
+                            >
+                                {"User "}Terms & Conditions
+                            </Text>
+                        </Text>
+                    </TouchableOpacity>
+                    <View>
+                        <TouchableOpacity
+                            style={styles.registerButton}
+                            onPress={handleRegister}
+                        >
+                            <Text style={styles.registerButtonText}>Register</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -162,6 +207,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
         padding: 20,
+    },
+    scrollContainer: {
+        flexGrow: 1,
     },
     logoContainer: {
         paddingTop: 50,
@@ -224,7 +272,7 @@ const styles = StyleSheet.create({
     },
     registerButtonText: {
         color: 'white',
-        fontSize: 16, 
+        fontSize: 16,
     },
 });
 
