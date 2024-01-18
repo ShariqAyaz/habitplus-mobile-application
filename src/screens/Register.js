@@ -3,6 +3,7 @@ import { View, Image, TextInput, Text, TouchableOpacity, StyleSheet, Linking, Al
 import { useNavigation } from '@react-navigation/native';
 import Sound from 'react-native-sound';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import {API_URL, PORT} from "@env"
 
 const RegisterScreen = () => {
 
@@ -23,6 +24,7 @@ const RegisterScreen = () => {
     });
 
     const handleRegister = async () => {
+        
         if (isLicenseAgreed) {
             if (isEmailValid) {
                 const userData = {
@@ -33,7 +35,7 @@ const RegisterScreen = () => {
                     age: age.trim()
                 };
 
-                const response = await fetch('http://172.20.10.3:3000/api/register', {
+                const response = await fetch(`${API_URL}:${PORT}/api/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -62,7 +64,7 @@ const RegisterScreen = () => {
 
                                         try {
                                     
-                                            const response = await fetch('http://172.20.10.3:3000/api/login', {
+                                            const response = await fetch(`${API_URL}:${PORT}/api/login`, {
                                                 method: 'POST',
                                                 headers: {
                                                     'Content-Type': 'application/json',
@@ -182,7 +184,7 @@ const RegisterScreen = () => {
                             I agree to the{' '}
                             <Text
                                 style={styles.linkText}
-                                onPress={() => Linking.openURL('https://abc.com/term')}
+                                onPress={() => Linking.openURL('http:///term')}
                             >
                                 {"User "}Terms & Conditions
                             </Text>

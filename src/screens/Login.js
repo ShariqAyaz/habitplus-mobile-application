@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Image, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { useNavigation } from '@react-navigation/native';
+import {API_URL, PORT} from "@env"
 
 
 const LoginScreen = () => {
@@ -9,14 +10,19 @@ const LoginScreen = () => {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigation = useNavigation();
+    const [isEmailValid, setIsEmailValid] = useState(false);
 
-    const handleLogin = async () => {
-        try {
-            // Trim the email and password before using them in the fetch call
-            const trimmedEmail = email.trim();
+    const handleLogin = async () => {;
+        
+        const trimmedEmail = email.trim().toLowerCase();
+        
             const trimmedPassword = password.trim();
-    
-            const response = await fetch('http://172.20.10.3:3000/api/login', {
+
+        if  (isEmailValid){
+
+        try {
+            
+            const response = await fetch(`${API_URL}:${PORT}/api/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -24,6 +30,8 @@ const LoginScreen = () => {
                 body: JSON.stringify({ email: trimmedEmail, password: trimmedPassword }),
             });
     
+            console.log(response.status);
+
             if (response.status === 200) {
                 const data = await response.json();
                 console.log(data);
@@ -36,6 +44,11 @@ const LoginScreen = () => {
             console.error(error);
             setErrorMessage('An error occurred. Please try again later.');
         }
+    }
+    else {
+        setErrorMessage('Invalid email. Please try again.');
+        console.log('Invalid email. Please try again.');
+    }
     };
     
     const handleLogout = async () => {
@@ -56,6 +69,14 @@ const LoginScreen = () => {
         // Handle register logic here
     };
 
+    
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        setIsEmailValid(emailRegex.test(email));
+        setEmail(email);
+    };
+
+
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
@@ -70,7 +91,7 @@ const LoginScreen = () => {
                     placeholder="Email/Username"
                     placeholderTextColor="rgba(0, 0, 0, 0.5)" // Change the placeholder color here
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={validateEmail}
                 />
                 <TextInput
                     style={styles.input}
@@ -118,7 +139,7 @@ const styles = StyleSheet.create({
         color: 'black',
         padding: 10,
         marginBottom: 10,
-        fontSize: 16, // Increase the font size here
+        fontSize: 16, 
     },
     forgotPasswordText: {
         paddingTop: 10,
