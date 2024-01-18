@@ -41,6 +41,6 @@ For inquiries or collaboration, feel free to contact the project owner:
 Supervised by:
 
 - **Sir David Gamez**
-  - Email: ...<HIDDEN>...
+  - Email: ...< HIDDEN >...
 
 **Note:** This README is subject to updates. Please check regularly for the latest information.
