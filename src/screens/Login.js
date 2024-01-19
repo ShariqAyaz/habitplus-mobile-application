@@ -61,18 +61,18 @@ const LoginScreen = () => {
     };
     
     const handleForgotPassword = () => {
-        // Handle forgot password logic here
+        
     };
 
     const handleRegister = () => {
-        // Handle register logic here
+        
     };
 
     
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         setIsEmailValid(emailRegex.test(email.trim()));
-        setEmail(email.replace(/\s/g, '')); // Remove spaces from the email
+        setEmail(email.replace(/\s/g, '')); 
     };
 
 
@@ -88,14 +88,14 @@ const LoginScreen = () => {
                 <TextInput
                     style={styles.input}
                     placeholder="Email/Username"
-                    placeholderTextColor="rgba(0, 0, 0, 0.5)" // Change the placeholder color here
+                    placeholderTextColor="rgba(0, 0, 0, 0.5)" 
                     value={email}
                     onChangeText={validateEmail}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
-                    placeholderTextColor="rgba(0, 0, 0, 0.5)" // Change the placeholder color here
+                    placeholderTextColor="rgba(0, 0, 0, 0.5)" 
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}

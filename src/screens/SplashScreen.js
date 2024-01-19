@@ -21,14 +21,14 @@ const SplashScreen = () => {
         const expandAnimation = Animated.timing(logoScale, {
             toValue: 2,
             duration: 1000,
-            delay: 2000, // Delay the start by 2000 milliseconds
+            delay: 2000, 
             useNativeDriver: true,
         });
 
         const fadeOutAnimation = Animated.timing(logoOpacity, {
             toValue: 0,
             duration: 1000,
-            delay: 2000, // Delay the start by 2000 milliseconds
+            delay: 2000, 
             useNativeDriver: true,
         });
 

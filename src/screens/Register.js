@@ -15,7 +15,7 @@ const RegisterScreen = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [age, setAge] = useState('');
     const [isLicenseAgreed, setIsLicenseAgreed] = useState(false);
-    const [isEmailValid, setIsEmailValid] = useState(false); // Add this line
+    const [isEmailValid, setIsEmailValid] = useState(false); 
 
     const successSound = new Sound(require('../assets/sounds/success.mp3'), (error) => {
         if (error) {
@@ -148,7 +148,7 @@ const RegisterScreen = () => {
                         placeholderTextColor="rgba(0, 0, 0, 0.5)"
                         value={email}
                         onChangeText={validateEmail}
-                        keyboardType="email-address" // This ensures the keyboard is optimized for email input
+                        keyboardType="email-address" 
                     />
                     <TextInput
                         style={styles.input}

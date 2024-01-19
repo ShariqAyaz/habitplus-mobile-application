@@ -4,7 +4,7 @@ import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
 
 
-// Hypothetical long array of data
+
 const hypotheticalData = Array.from({ length: 100 }, (_, index) => ({
   id: index,
   title: `Item ${index + 1}`
@@ -17,21 +17,21 @@ const InfiniteScrollScreen = () => {
   const [page, setPage] = useState(0);
   const itemsPerPage = 10;
 
-  // Function to simulate data fetching
+  
   const fetchData = () => {
-    if (loading) return; // Avoid multiple calls
+    if (loading) return; 
     setLoading(true);
 
-    // Simulate an API call
+    
     setTimeout(() => {
       const newData = hypotheticalData.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
-      setData(prevData => [...prevData, ...newData]); // Append new data
+      setData(prevData => [...prevData, ...newData]); 
       setPage(prevPage => prevPage + 1);
       setLoading(false);
     }, 1500);
   };
 
-  // Function to fetch current location
+  
   const fetchLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
@@ -67,13 +67,13 @@ const InfiniteScrollScreen = () => {
   }
 
   useEffect(() => {
-    fetchLocation(); // Fetch location when the component mounts
+    fetchLocation(); 
     requestLocationPermission();
-    fetchData(); // Fetch initial data
+    fetchData(); 
   }, []);
 
   const handleLogout = () => {
-    // Handle logout logic here
+    
     console.log('Logout pressed');
   };
 
