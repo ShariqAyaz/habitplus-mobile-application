@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ImageBackground, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Main = ({ navigation }) => {
@@ -30,73 +30,62 @@ const Main = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={require('../assets/img/background_splash.jpg')} style={styles.backgroundImage}>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <Text style={styles.heading}>Habit++</Text>
 
-        <Text style={styles.heading}>Habit++</Text>
-
-        <View style={styles.buttonContainer}>
+      <View style={[styles.buttonContainer, { flex: 1, justifyContent: 'flex-end' }]}>
+        {!isTokenSaved && (
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={[styles.button, { borderRadius: 4 }]}
-              onPress={() => navigation.navigate('Dashboard')}
+              onPress={() => navigation.navigate('Login')}
             >
-              <Text style={[styles.buttonText, { color: 'white' }]}>Login</Text>
+              <Text style={[styles.buttonText, { color: 'black' }]}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, { borderRadius: 4 }]}
-              onPress={() => navigation.navigate('HabitPlans')}
+              onPress={() => navigation.navigate('Register')}
             >
-              <Text style={[styles.buttonText, { color: 'white' }]}>Registration</Text>
+              <Text style={[styles.buttonText, { color: 'black' }]}>Registration</Text>
             </TouchableOpacity>
           </View>
+        )}
+        <View style={styles.buttonRow}>
           <TouchableOpacity
             style={[styles.button, { borderRadius: 4 }]}
             onPress={() => console.log('Token saved:', isTokenSaved)}
           >
-            <Text style={[styles.buttonText, { color: 'white' }]}>Check Token</Text>
+            <Text style={[styles.buttonText, { color: 'black' }]}>Check Token</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { borderRadius: 4 }]}
             onPress={deleteToken}
           >
-            <Text style={[styles.buttonText, { color: 'white' }]}>Delete Token</Text>
+            <Text style={[styles.buttonText, { color: 'black' }]}>Delete Token</Text>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          style={[styles.button, { borderRadius: 4 }]}
+          onPress={() => navigation.navigate('GettingStarted')}
+        >
+          <Text style={[styles.buttonText, { color: 'black' }]}>GettingSta</Text>
+        </TouchableOpacity>
       </View>
-    </ImageBackground>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
-  },
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 50,
   },
   heading: {
     fontSize: 36,
     fontStyle: 'italic',
-    color: 'white',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowColor: 'rgba(0, 0, 0, 0.9)',
-    textShadowColor: 'black',
-    textShadowOffset: { width: -3, height: 4 },
-    textShadowRadius: 4,
-    marginBottom: 70,
-    marginLeft: 80,
-    marginRight: 80,
-    paddingVertical: '50%',
-    borderRadius: 10,
-    width: '60%',
-    height: '60%',
-    textAlign: 'center',
+    color: 'black',
+    marginBottom: 20,
   },
   buttonContainer: {
     width: '100%',
@@ -111,14 +100,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
     width: '48%',
     paddingVertical: 15,
-    borderRadius: 20, // Rounded corners
+    borderRadius: 20,
     borderWidth: 0,
     borderColor: '#4CAF50',
   },
   buttonText: {
-    color: 'white', // White text
+    color: 'black',
     fontSize: 16,
-    fontWeight: 'bold', // Bold font weight
+    fontWeight: 'bold',
     textAlign: 'center',
   },
 });

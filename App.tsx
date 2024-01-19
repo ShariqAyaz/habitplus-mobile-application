@@ -6,11 +6,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import SplashScreen from './src/screens/SplashScreen';
 import Register from './src/screens/Register';
+import GettingStarted from './src/screens/GettingStarted';
 import Login from './src/screens/Login';
 import Welcome from './src/screens/Welcome';
 import Main from './src/screens/Main';
 
 const Stack = createStackNavigator();
+
 
 const App = () => {
   const [isSplash, setIsSplash] = useState(true); 
@@ -46,6 +48,7 @@ const App = () => {
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
         <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
+        <Stack.Screen name="GettingStarted" component={GettingStarted} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

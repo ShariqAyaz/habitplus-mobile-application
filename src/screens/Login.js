@@ -46,7 +46,6 @@ const LoginScreen = () => {
         }
     }
     else {
-        setErrorMessage('Invalid email. Please try again.');
         console.log('Invalid email. Please try again.');
     }
     };
@@ -72,8 +71,8 @@ const LoginScreen = () => {
     
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        setIsEmailValid(emailRegex.test(email));
-        setEmail(email);
+        setIsEmailValid(emailRegex.test(email.trim()));
+        setEmail(email.replace(/\s/g, '')); // Remove spaces from the email
     };
 
 
