@@ -13,6 +13,7 @@ const RegisterScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const [age, setAge] = useState('');
     const [isLicenseAgreed, setIsLicenseAgreed] = useState(false);
     const [isEmailValid, setIsEmailValid] = useState(false); 
@@ -35,16 +36,16 @@ const RegisterScreen = () => {
                     age: age.trim()
                 };
 
-                const response = await fetch(`${API_URL}:${PORT}/api/register`, {
+                const response = await fetch(`${API_URL}/Register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(userData)
+                    body: JSON.stringify({email:email, password:password, username:username})
                 })
 
-                if (response.status === 201) {
-
+                console.log(response);
+                if (response.status === 200) {
 
                     const data = await response.json();
                     console.log(data);
@@ -64,12 +65,12 @@ const RegisterScreen = () => {
 
                                         try {
                                     
-                                            const response = await fetch(`${API_URL}:${PORT}/api/login`, {
+                                            const response = await fetch(`${API_URL}/api/Register`, {
                                                 method: 'POST',
                                                 headers: {
                                                     'Content-Type': 'application/json',
                                                 },
-                                                body: JSON.stringify({ email: userData.email.toLowerCase(), password: userData.password }),
+                                                body: JSON.stringify({ email: userData.email.toLowerCase(), username: userData.user ,password: userData.password }),
                                             });
                                     
                                             if (response.status === 200) {
