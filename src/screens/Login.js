@@ -17,7 +17,8 @@ const LoginScreen = () => {
 
         if (isEmailValid) {
             try {
-                const response = await fetch(`${API_URL}/Login`, {
+                const url = `${API_URL}/Login`;
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

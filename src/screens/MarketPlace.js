@@ -5,7 +5,7 @@ const MarketPlace = () => {
     const items = [
         {
             id: 1,
-            img: require('../assets/item1.png'),
+            //img: require('../assets/item1.png'),
             title: 'Item 1',
             vendor: 'Vendor 1',
             stars: 4,
@@ -13,7 +13,7 @@ const MarketPlace = () => {
         },
         {
             id: 2,
-            img: require('../assets/item2.png'),
+            //img: require('../assets/item2.png'),
             title: 'Item 2',
             vendor: 'Vendor 2',
             stars: 3,
