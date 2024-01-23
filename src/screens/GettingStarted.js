@@ -41,7 +41,7 @@ const GettingStarted = () => {
                     <Icon name="viadeo" size={30} color="#FFFFFF" /> 
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={handleFirstButtonPress} style={[styles.button, { backgroundColor: '#36C5F0' }]}>
+                <TouchableOpacity onPress={handleFirstButtonPress} style={[styles.button, { backgroundColor: '#E01E5A' }]}>
                     <Icon name="quora" size={30} color="#FFFFFF" /> 
                 </TouchableOpacity>
 

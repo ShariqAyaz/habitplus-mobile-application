@@ -26,7 +26,7 @@ const App = () => {
         if (token) {
           setInitialRoute('Main'); 
         } else {
-          setInitialRoute('Wellcome'); 
+          setInitialRoute('MarketPlace'); 
         }
       } catch (error) {
         console.error(error);
