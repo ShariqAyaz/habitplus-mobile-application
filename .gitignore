@@ -21,7 +21,8 @@ Thumbs.db
 node_modules/
 
 # React Native
-android/
+android/*
+!android/app/src/main/assets/
 ios/
 *.log
 
