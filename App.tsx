@@ -10,6 +10,7 @@ import GettingStarted from './src/screens/GettingStarted';
 import Login from './src/screens/Login';
 import Welcome from './src/screens/Welcome';
 import Main from './src/screens/Main';
+import MarketPlace from './src/screens/MarketPlace';
 
 const Stack = createStackNavigator();
 
@@ -25,7 +26,7 @@ const App = () => {
         if (token) {
           setInitialRoute('Main'); 
         } else {
-          setInitialRoute('Welcome'); 
+          setInitialRoute('MarketPlace'); 
         }
       } catch (error) {
         console.error(error);
@@ -49,6 +50,7 @@ const App = () => {
         <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
         <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
         <Stack.Screen name="GettingStarted" component={GettingStarted} options={{ headerShown: false }} />
+        <Stack.Screen name="MarketPlace" component={MarketPlace} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
