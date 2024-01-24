@@ -15,7 +15,7 @@ const SplashScreen = () => {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            console.log('Navigating to Main screen');
+            console.log('Navigating to MainX screen');
         }, 3000);
 
         const expandAnimation = Animated.timing(logoScale, {

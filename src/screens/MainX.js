@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Main = ({ navigation }) => {
+const MainX = ({ navigation }) => {
   const [isTokenSaved, setIsTokenSaved] = useState(false);
 
   useEffect(() => {
@@ -64,12 +64,20 @@ const Main = ({ navigation }) => {
             <Text style={[styles.buttonText, { color: 'black' }]}>Delete Token</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[styles.button, { borderRadius: 4 }]}
           onPress={() => navigation.navigate('GettingStarted')}
         >
-          <Text style={[styles.buttonText, { color: 'black' }]}>GettingSta</Text>
+          <Text style={[styles.buttonText, { color: 'black' }]}>GettingStarted</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { borderRadius: 4 }]}
+          onPress={() => navigation.navigate('MainScreen')}
+        >
+          <Text style={[styles.buttonText, { color: 'black' }]}>MarketPlace</Text>
+        </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -112,4 +120,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Main;
+export default MainX;

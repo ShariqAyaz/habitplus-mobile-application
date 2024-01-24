@@ -5,8 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 const Splash = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log('Navigating to Main screen');
-      //navigation.replace('Main');
+      console.log('Navigating to MainX screen');
+      //navigation.replace('MainX');
     }, 3000);
 
     return () => clearTimeout(timer);

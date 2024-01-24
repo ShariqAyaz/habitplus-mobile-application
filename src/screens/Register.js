@@ -77,7 +77,7 @@ const RegisterScreen = () => {
                                                 const data = await response.json();
                                                 console.log(data);
                                                 await AsyncStorage.setItem('userToken', data.accessToken); 
-                                                navigation.navigate('Main');
+                                                navigation.navigate('MainX');
                                             } else {
                                                 console.log('Invalid credentials. Please try again.');
                                             }
@@ -94,7 +94,7 @@ const RegisterScreen = () => {
                                 }
                             ]
                         );
-                    navigation.navigate('Main');
+                    navigation.navigate('MainX');
                 }
                 else {
                     setErrorMessage('Invalid credentials. Please try again.');

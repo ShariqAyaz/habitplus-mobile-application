@@ -9,10 +9,13 @@ import Register from './src/screens/Register';
 import GettingStarted from './src/screens/GettingStarted';
 import Login from './src/screens/Login';
 import Welcome from './src/screens/Welcome';
-import Main from './src/screens/Main';
+import MainX from './src/screens/MainX';
+import MainScreen from './src/screens/MainScreen';
 import MarketPlace from './src/screens/MarketPlace';
+import Settings from './src/screens/Settings';
+import Profile from './src/screens/Profile';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator(); 
 
 
 const App = () => {
@@ -24,9 +27,9 @@ const App = () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
         if (token) {
-          setInitialRoute('Main'); 
+          setInitialRoute('MainX'); 
         } else {
-          setInitialRoute('MarketPlace'); 
+          setInitialRoute('Welcome'); 
         }
       } catch (error) {
         console.error(error);
@@ -48,8 +51,11 @@ const App = () => {
         <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-        <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
+        <Stack.Screen name="MainX" component={MainX} options={{ headerShown: false }} />
+        <Stack.Screen name="MainScreen" component={MainScreen} options={{ headerShown: false }} />
         <Stack.Screen name="GettingStarted" component={GettingStarted} options={{ headerShown: false }} />
+        <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+        <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
         <Stack.Screen name="MarketPlace" component={MarketPlace} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

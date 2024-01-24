@@ -2,10 +2,12 @@
 Disclaimer: the image appears are copied from various sites subject to fair use policy.
             NOIMAGE icon from: https://iconscout.com/icons/ban-team
             NICE icon from: https://www.nicepng.com/ourpic/u2q8i1o0q8o0a9a9_nice-png-nice-png/
+            https://thenounproject.com/browse/icons/term/market-place/
 */
 
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+
 
 const MarketPlace = () => {
     return (
@@ -20,8 +22,10 @@ const MarketPlace = () => {
                 borderColor: 'blue',
                 textShadowOffset: { width: 3, height: 2 },
                 borderBottomWidth: 0.7,
+                flexDirection: 'row', // Added to align icon and text horizontally
             }}>
-                <Text style={{ color: 'white', fontSize: 18, fontFamily: 'Roboto-Black' }}>
+                <Image source={require('../assets/img/mp.png')} style={{ width: 30, height: 28, marginRight: 8 }} />
+                <Text style={{ color: 'white', fontSize: 24, fontFamily: 'Roboto-Black' }}>
                     Market Place
                 </Text>
             </View>
@@ -85,7 +89,7 @@ const renderObjects = () => {
         },
         {
             title: 'Mindful Meditation',
-            author: 'Emma Lopez',
+            author: 'Claudiu',
             description: 'Explore the art of mindfulness and meditation to enhance focus and tranquility in your everyday life.',
             stars: 4,
             downloads: 75,
@@ -209,11 +213,11 @@ const renderObjects = () => {
             </View>
             <View style={{ marginLeft: 10, }}>
                 <TouchableOpacity style={{ margin: 1, fontWeight:'bold',fontSize: 8, padding: 2, backgroundColor: 'rgba(46, 182, 125, 0.5)', borderRadius: 10 }}>
-                    <Text style={{ fontSize: 14, textAlign: 'center', color: 'black' }}>Get</Text>
+                    <Text style={{fontFamily: 'Roboto-Medium', fontSize: 14, textAlign: 'center', color: 'black' }}>Get</Text>
                 </TouchableOpacity>
                 <View style={{ marginLeft: 1 }}>
-                    <Text style={{ fontSize: 10, fontWeight: 'light', color: 'black' }}>Downloads: {object.downloads}</Text>
-                    <Text style={{ fontSize: 10, fontWeight: 'light', color: 'black' }}>Stars: {object.stars}</Text>
+                    <Text style={{ fontSize: 10, fontWeight: 'light', color: 'black' }}>Users: {object.downloads}</Text>
+                    <Text style={{ fontSize: 10, fontWeight: 'light', color: 'black' }}>Rating: {object.stars}</Text>
                 </View>
             </View>
         </View>
