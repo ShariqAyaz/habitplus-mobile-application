@@ -14,6 +14,7 @@ import MainScreen from './src/screens/MainScreen';
 import MarketPlace from './src/screens/MarketPlace';
 import Settings from './src/screens/Settings';
 import Profile from './src/screens/Profile';
+import infloading from './src/screens/infloading';
 
 const Stack = createStackNavigator(); 
 
@@ -28,6 +29,7 @@ const App = () => {
         const token = await AsyncStorage.getItem('userToken');
         if (token) {
           setInitialRoute('MainX'); 
+          // setInitialRoute('infloading'); 
         } else {
           setInitialRoute('Welcome'); 
         }
@@ -57,6 +59,7 @@ const App = () => {
         <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
         <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
         <Stack.Screen name="MarketPlace" component={MarketPlace} options={{ headerShown: false }} />
+        <Stack.Screen name="infloading" component={infloading} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

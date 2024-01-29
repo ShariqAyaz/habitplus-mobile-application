@@ -91,9 +91,11 @@ const InfiniteScrollScreen = () => {
       <Button title="Logout" onPress={handleLogout} style={styles.logoutButton} />
       <View style={styles.locationContainer}>
         {location && (
-          <Text>
-            Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
-          </Text>
+          <View style={styles.locationContainer}>
+            <Text style={styles.locationText}>
+              Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
+            </Text>
+          </View>
         )}
       </View>
       <FlatList
