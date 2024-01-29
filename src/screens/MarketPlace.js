@@ -5,11 +5,29 @@ Disclaimer: the image appears are copied from various sites subject to fair use 
             https://thenounproject.com/browse/icons/term/market-place/
 */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { API_URL, PORT } from "@env";
+
 
 
 const MarketPlace = () => {
+
+    useEffect(() => {
+        fetch(`${API_URL}/MarketPlace`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data.mpApps);
+            if (data.body && Array.isArray(data.body.apps)) {
+              const buttonNames = data.body.apps;
+              setButtons(buttonNames);
+            } else console.error('Invalid response format:', data);
+          })
+          .catch((error) => {
+            console.error('Error fetching button names:', error);
+          });
+      }, []);
+
     return (
         <View style={{ flex: 1, width: '100%', height: '100%' }}>
             <View style={{
@@ -97,7 +115,7 @@ const renderObjects = () => {
         },
         {
             title: 'Healthy Cooking',
-            author: 'John Doe',
+            author: 'Lucas',
             description: 'Discover simple and delicious recipes for a healthier lifestyle. Ideal for busy individuals seeking nutritious meals.',
             stars: 4,
             downloads: 80,
@@ -213,7 +231,7 @@ const renderObjects = () => {
             </View>
             <View style={{ marginLeft: 10, }}>
                 <TouchableOpacity style={{ margin: 1, fontWeight:'bold',fontSize: 8, padding: 2, backgroundColor: 'rgba(46, 182, 125, 0.5)', borderRadius: 10 }}>
-                    <Text style={{fontFamily: 'Roboto-Medium', fontSize: 14, textAlign: 'center', color: 'black' }}>Get</Text>
+                    <Text style={{fontFamily: 'Roboto-Black', fontSize: 14, textAlign: 'center', color: 'black' }}>Get</Text>
                 </TouchableOpacity>
                 <View style={{ marginLeft: 1 }}>
                     <Text style={{ fontSize: 10, fontWeight: 'light', color: 'black' }}>Users: {object.downloads}</Text>
