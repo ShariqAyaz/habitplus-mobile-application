@@ -1,3 +1,8 @@
+/**
+ * Represents the AlarmScreen component.
+ * Allows the user to set an alarm and trigger an alarm when the time is up.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Vibration, Platform } from 'react-native';
 
