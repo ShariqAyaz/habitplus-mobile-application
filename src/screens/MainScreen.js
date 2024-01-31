@@ -28,13 +28,6 @@ const MainScreen = ({ navigation }) => {
 
     const bodyMarginTop = topBarHeight + 4;
 
-    const textElements = [];
-    for (let i = 0; i <= 35; i++) {
-        textElements.push(
-            <Text key={i} style={styles.bodyText}>Hi Shariq {i}</Text>
-        );
-    }
-
     const navScreens = {
         'Explore': 'MarketPlace',
         'Profile': 'Profile',
@@ -49,8 +42,7 @@ const MainScreen = ({ navigation }) => {
             navigation.navigate(route);
         }
     };
-
-
+    
     return (
         <View style={styles.container}>
             <View style={[styles.topBar, { height: topBarHeight }]}>
@@ -61,16 +53,20 @@ const MainScreen = ({ navigation }) => {
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
             >
-                <HabContainer style={{ backgroundColor: 'lightblue' }}>
-                    <DraggableComponent>
-                        <Text>Draggable Item 1</Text>
-                    </DraggableComponent>
-                    <DraggableComponent>
-                        <Text>Draggable Item 2</Text>
-                    </DraggableComponent>
+                <HabContainer style={{ backgroundColor: 'white' }}>
+                    <Text>Draggable Item 1</Text>
                 </HabContainer>
-                {textElements}
+                <HabContainer style={{ backgroundColor: 'white' }}>
+                    <Text>Draggable Item 1</Text>
+                </HabContainer>
+                <HabContainer style={{ backgroundColor: 'white' }}>
+                    <Text>Draggable Item 1</Text>
+                </HabContainer>
+                <HabContainer style={{ backgroundColor: 'white' }}>
+                    <Text>Draggable Item 1</Text>
+                </HabContainer>
             </ScrollView>
+
             <View style={styles.bottomBar}>
                 <TouchableOpacity style={styles.bottomBarButton} onPress={() => nav('Explore')}>
                     <View style={styles.iconContainer}>
