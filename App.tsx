@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 import SplashScreen from './src/screens/SplashScreen';
 import Register from './src/screens/Register';
 import GettingStarted from './src/screens/GettingStarted';
@@ -15,9 +14,9 @@ import MarketPlace from './src/screens/MarketPlace';
 import Settings from './src/screens/Settings';
 import Profile from './src/screens/Profile';
 import infloading from './src/screens/infloading';
+import MyScreen from './src/screens/MyScreen';
 
 const Stack = createStackNavigator(); 
-
 
 const App = () => {
   const [isSplash, setIsSplash] = useState(true); 
@@ -60,6 +59,7 @@ const App = () => {
         <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
         <Stack.Screen name="MarketPlace" component={MarketPlace} options={{ headerShown: false }} />
         <Stack.Screen name="infloading" component={infloading} options={{ headerShown: false }} />
+        <Stack.Screen name="MyScreen" component={MyScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

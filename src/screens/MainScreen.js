@@ -9,7 +9,11 @@ import React, { useState } from 'react';
 import { Image, View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import Draggable from 'react-native-draggable';
 
-const MainScreen = ({navigation}) => {
+import HabContainer from '../components/HabContainer';
+import DraggableComponent from '../components/DraggableComponent';
+
+
+const MainScreen = ({ navigation }) => {
     const [scrollOffset, setScrollOffset] = useState(0);
 
     const handleScroll = (event) => {
@@ -17,29 +21,35 @@ const MainScreen = ({navigation}) => {
         setScrollOffset(offsetY);
     };
 
-    
+
     const topBarHeight = Math.max(40, 80 - scrollOffset / 2);
     const topBarFontSize = Math.max(13, 26 - scrollOffset / 20);
 
-    
-    const bodyMarginTop = topBarHeight + 4; 
 
-const textElements = [];
-for (let i = 0; i <= 35; i++) {
-    textElements.push(
-        <Text key={i} style={styles.bodyText}>Hi Shariq {i}</Text>
-    );
-}
+    const bodyMarginTop = topBarHeight + 4;
+
+    const textElements = [];
+    for (let i = 0; i <= 35; i++) {
+        textElements.push(
+            <Text key={i} style={styles.bodyText}>Hi Shariq {i}</Text>
+        );
+    }
+
+    const navScreens = {
+        'Explore': 'MarketPlace',
+        'Profile': 'Profile',
+        'Settings': 'Settings'
+        // Add more mappings if needed
+    };
 
     const nav = (screen) => {
         console.log(screen);
-        if (screen == 'Explore') {
-            navigation.navigate('MarketPlace');
-        }else if (screen == 'Profile') {
-            navigation.navigate('Profile');
-        }else if (screen == 'Settings') {
-            navigation.navigate('Settings');}
+        const route = navScreens[screen];
+        if (route) {
+            navigation.navigate(route);
+        }
     };
+
 
     return (
         <View style={styles.container}>
@@ -51,10 +61,15 @@ for (let i = 0; i <= 35; i++) {
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
             >
-
+                <HabContainer style={{ backgroundColor: 'lightblue' }}>
+                    <DraggableComponent>
+                        <Text>Draggable Item 1</Text>
+                    </DraggableComponent>
+                    <DraggableComponent>
+                        <Text>Draggable Item 2</Text>
+                    </DraggableComponent>
+                </HabContainer>
                 {textElements}
-
-
             </ScrollView>
             <View style={styles.bottomBar}>
                 <TouchableOpacity style={styles.bottomBarButton} onPress={() => nav('Explore')}>
@@ -110,7 +125,7 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 1,
-        paddingLeft: 8,
+        padding: 8,
         paddingBottom: 60,
         marginBottom: 60,
     },
@@ -129,9 +144,9 @@ const styles = StyleSheet.create({
         color: '#000000',
     },
     bottomBarButton: {
-        flexDirection: 'column', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     bottomBarButtonText: {
         color: 'black',
@@ -140,7 +155,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     iconContainer: {
-        alignItems: 'center', 
+        alignItems: 'center',
     },
     icon: {
         width: 20,

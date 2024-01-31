@@ -78,6 +78,15 @@ const MainX = ({ navigation }) => {
           <Text style={[styles.buttonText, { color: 'black' }]}>MarketPlace</Text>
         </TouchableOpacity>
         </View>
+
+        <View style={styles.buttonRow}>
+        <TouchableOpacity
+          style={[styles.button, { borderRadius: 4 }]}
+          onPress={() => navigation.navigate('MyScreen')}
+        >
+          <Text style={[styles.buttonText, { color: 'black' }]}>GettingStarted</Text>
+        </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
