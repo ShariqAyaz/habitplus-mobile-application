@@ -1,0 +1,45 @@
+{
+    "place_id": 273601440,
+    "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+    "osm_type": "way",
+    "osm_id": 22633515,
+    "lat": "51.586080106275254",
+    "lon": "-0.2307099557971036",
+    "class": "highway",
+    "type": "trunk",
+    "place_rank": 26,
+    "importance": 0.10000999999999993,
+    "addresstype": "road",
+    "name": "Watford Way",
+    "display_name": "Watford Way, Hendon Central, London Borough of Barnet, London, Greater London, England, NW4 4AR, United Kingdom",
+    "address": {
+        "road": "Watford Way",
+        "suburb": "Hendon Central",
+        "city_district": "London Borough of Barnet",
+        "ISO3166-2-lvl8": "GB-BNE",
+        "city": "London",
+        "state_district": "Greater London",
+        "state": "England",
+        "ISO3166-2-lvl4": "GB-ENG",
+        "postcode": "NW4 4AR",
+        "country": "United Kingdom",
+        "country_code": "gb"
+    },
+    "extratags": {
+        "lit": "yes",
+        "lanes": "3",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "maxspeed": "40 mph",
+        "operator": "Transport for London",
+        "sidewalk": "no",
+        "dual_carriageway": "yes",
+        "operator:wikidata": "Q682520"
+    },
+    "boundingbox": [
+        "51.5858660",
+        "51.5860921",
+        "-0.2307339",
+        "-0.2303565"
+    ]
+}
