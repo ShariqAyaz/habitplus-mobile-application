@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 import SplashScreen from './src/screens/SplashScreen';
 import Register from './src/screens/Register';
 import GettingStarted from './src/screens/GettingStarted';
@@ -17,6 +18,7 @@ import infloading from './src/screens/infloading';
 import MyScreen from './src/screens/MyScreen';
 
 const Stack = createStackNavigator(); 
+
 
 const App = () => {
   const [isSplash, setIsSplash] = useState(true); 
