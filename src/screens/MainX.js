@@ -31,7 +31,7 @@ const MainX = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Habit++</Text>
+      <Text style={styles.heading}>MainX.js - Habit++</Text>
 
       <View style={[styles.buttonContainer, { flex: 1, justifyContent: 'flex-end' }]}>
         {!isTokenSaved && (
@@ -75,16 +75,22 @@ const MainX = ({ navigation }) => {
           style={[styles.button, { borderRadius: 4 }]}
           onPress={() => navigation.navigate('MainScreen')}
         >
-          <Text style={[styles.buttonText, { color: 'black' }]}>MarketPlace</Text>
+          <Text style={[styles.buttonText, { color: 'black' }]}>MainScreen</Text>
         </TouchableOpacity>
         </View>
 
         <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[styles.button, { borderRadius: 4 }]}
+          onPress={() => navigation.navigate('infloading')}
+        >
+          <Text style={[styles.buttonText, { color: 'black' }]}>infloading</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { borderRadius: 4 }]}
           onPress={() => navigation.navigate('MyScreen')}
         >
-          <Text style={[styles.buttonText, { color: 'black' }]}>GettingStarted</Text>
+          <Text style={[styles.buttonText, { color: 'black' }]}>MyScreen</Text>
         </TouchableOpacity>
         </View>
       </View>

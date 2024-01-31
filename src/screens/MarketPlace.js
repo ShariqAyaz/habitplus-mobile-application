@@ -9,8 +9,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { API_URL, PORT } from "@env";
 
-
-
 const MarketPlace = () => {
 
     useEffect(() => {
@@ -18,10 +16,6 @@ const MarketPlace = () => {
           .then((response) => response.json())
           .then((data) => {
             console.log(data.mpApps);
-            if (data.body && Array.isArray(data.body.apps)) {
-              const buttonNames = data.body.apps;
-              setButtons(buttonNames);
-            } else console.error('Invalid response format:', data);
           })
           .catch((error) => {
             console.error('Error fetching button names:', error);
@@ -40,7 +34,7 @@ const MarketPlace = () => {
                 borderColor: 'blue',
                 textShadowOffset: { width: 3, height: 2 },
                 borderBottomWidth: 0.7,
-                flexDirection: 'row', // Added to align icon and text horizontally
+                flexDirection: 'row', 
             }}>
                 <Image source={require('../assets/img/mp.png')} style={{ width: 30, height: 28, marginRight: 8 }} />
                 <Text style={{ color: 'white', fontSize: 24, fontFamily: 'Roboto-Black' }}>
@@ -100,7 +94,7 @@ const renderObjects = () => {
         {
             title: 'Proactive Student',
             author: 'Shariq Ayaz',
-            description: 'A Typical Routine of a Student and software engineer part-time. This routine is for those who want to be productive and proactive in their life.',
+            description: 'A Typical Routine of a Student and software engineer part-time. This routine is for those who want to be productive and proactive in their life.A Typical Routine of a Student and software engineer part-time. This routine is for those who want to be productive and proactive in their life.',
             stars: 5,
             downloads: 50,
             img: require('../assets/img/logo.png'),
