@@ -1,60 +1,38 @@
+/*
+Disclaimer: the image appears are copied from various sites subject to fair use policy.
+            NOIMAGE icon from: https://iconscout.com/icons/ban-team
+            NICE icon from: https://www.nicepng.com/ourpic/u2q8i1o0q8o0a9a9_nice-png-nice-png/
+            https://thenounproject.com/browse/icons/term/market-place/
+*/
+
 import React, { useState } from 'react';
-import { Image, View, TextInput, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { Image, View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import Draggable from 'react-native-draggable';
 
 import HabContainer from '../components/HabContainer';
 import DraggableComponent from '../components/DraggableComponent';
 
+
 const MainScreen = ({ navigation }) => {
     const [scrollOffset, setScrollOffset] = useState(0);
 
-    // App One
-    const runnerApp = {
-        layout: 'vertical',
-        components: [
-            { type: 'Text', props: { text: 'RUNNER', credit: 'By Shariq' } },
-            { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },
-            { type: 'TextInput', props: { placeholder: 'Add Something' } }
-        ],
+    const handleScroll = (event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        setScrollOffset(offsetY);
     };
 
-    // App Two
-    const readingApp = {
-        layout: 'vertical',
-        columns: [
-            { name: 'Task Number' },
-            { name: 'Task Name' }
-        ],
-        components: [
-            { type: 'Text', props: { text: 'READING', credit: 'By Claudiu' } },
-            { type: 'Button', props: { title: 'Add Reading Task', onPress: () => { console.log('Add Task'); } } },
-            {
-                type: 'FlatList',
-                props: {
-                    data: [
-                        { key: '1', text: 'Read Chapter 1 - Done' },
-                        { key: '2', text: 'Read Chapter 2 - Fail' },
-                        { key: '3', text: 'Read Chapter 3 - Due' },],
-                    renderItem: ({ item }) => <Text>{item.text}</Text>,
-                    keyExtractor: item => item.key,
-                }
-            },
-        ],
-    };
 
-    // App Three
-    const calendarApp = {
-        layout: 'vertical',
-        components: [
-            { type: 'Text', props: { text: 'CALENDAR', credit: 'By David' } },
-            { type: 'Calendar', props: {  } }
-        ],
-    };
+    const topBarHeight = Math.max(40, 80 - scrollOffset / 2);
+    const topBarFontSize = Math.max(13, 26 - scrollOffset / 20);
+
+
+    const bodyMarginTop = topBarHeight + 4;
 
     const navScreens = {
         'Explore': 'MarketPlace',
         'Profile': 'Profile',
         'Settings': 'Settings'
+        // Add more mappings if needed
     };
 
     const nav = (screen) => {
@@ -64,25 +42,30 @@ const MainScreen = ({ navigation }) => {
             navigation.navigate(route);
         }
     };
-
+    
     return (
         <View style={styles.container}>
-
-            <View style={[styles.topBar]}>
-                <Text style={[styles.greetingText]}>Hi Shariq</Text>
+            <View style={[styles.topBar, { height: topBarHeight }]}>
+                <Text style={[styles.greetingText, { fontSize: topBarFontSize }]}>Hi Shariq</Text>
             </View>
-
-            <View style={styles.bodyContainer}>
-                <ScrollView
-                    style={styles.body}
-                    scrollEventThrottle={6}
-                >
-                    <HabContainer subAppConfig={runnerApp} />
-                    <HabContainer subAppConfig={readingApp} />
-                    <HabContainer subAppConfig={calendarApp} />
-
-                </ScrollView>
-            </View>
+            <ScrollView
+                style={[styles.body, { marginTop: bodyMarginTop }]}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+            >
+                <HabContainer style={{ backgroundColor: 'white' }}>
+                    <Text>Draggable Item 1</Text>
+                </HabContainer>
+                <HabContainer style={{ backgroundColor: 'white' }}>
+                    <Text>Draggable Item 1</Text>
+                </HabContainer>
+                <HabContainer style={{ backgroundColor: 'white' }}>
+                    <Text>Draggable Item 1</Text>
+                </HabContainer>
+                <HabContainer style={{ backgroundColor: 'white' }}>
+                    <Text>Draggable Item 1</Text>
+                </HabContainer>
+            </ScrollView>
 
             <View style={styles.bottomBar}>
                 <TouchableOpacity style={styles.bottomBarButton} onPress={() => nav('Explore')}>
@@ -117,40 +100,30 @@ const MainScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        
     },
     topBar: {
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
-        height: 60,
-        backgroundColor: 'transparent',
+        backgroundColor: '#ffffff',
         justifyContent: 'center',
         paddingLeft: 16,
-        shadowColor: '#333333',
-        shadowOffset: {
-            width: -2,
-            height: 4,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 0,
-        elevation: 4,
     },
     greetingText: {
-        fontFamily: 'Roboto-Black',
-        color: '#2EB67D',
-        fontSize: 28,
+        fontFamily: 'Roboto-Bold',
+        color: '#000000',
     },
-    bodyContainer: {
-        flex: 1,
-        marginTop: 80,
-        height: '100%',
-        width: '100%',
-        marginBottom: 60,
+    bodyText: {
+        fontFamily: 'Roboto-Regular',
+        fontSize: 13,
+        color: 'black',
     },
     body: {
         flex: 1,
+        padding: 8,
+        paddingBottom: 60,
+        marginBottom: 60,
     },
     bottomBar: {
         position: 'absolute',
@@ -164,6 +137,7 @@ const styles = StyleSheet.create({
         padding: 4,
         paddingTop: 6,
         alignItems: 'center',
+        color: '#000000',
     },
     bottomBarButton: {
         flexDirection: 'column',
