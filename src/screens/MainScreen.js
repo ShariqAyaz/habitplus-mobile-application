@@ -14,7 +14,17 @@ const MainScreen = ({ navigation }) => {
         components: [
             { type: 'Text', props: { text: 'RUNNER', credit: 'By Shariq' } },
             { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },
-            { type: 'TextInput', props: { placeholder: 'Add Something' } }
+            {
+                type: 'FlatList',
+                props: {
+                    data: [],
+                    renderItem: ({ item }) => <Text>{item.text}</Text>,
+                    keyExtractor: item => item.key,
+                    ListEmptyComponent: () => <Text style={styles.emptyText}>Oops, no schedule ?{'\n'}Don't fret! Whenever you're ready 🏃‍♂️{'\n'}You've got this! 💪</Text>,
+                },
+            },
+            
+            // { type: 'TextInput', props: { placeholder: 'Add Something' } },
         ],
     };
 
@@ -32,11 +42,13 @@ const MainScreen = ({ navigation }) => {
                 type: 'FlatList',
                 props: {
                     data: [
-                        { key: '1', text: 'Read Chapter 1 - Done' },
-                        { key: '2', text: 'Read Chapter 2 - Fail' },
-                        { key: '3', text: 'Read Chapter 3 - Due' },],
+                        // { key: '1', text: 'Read Chapter 1 - Done' },
+                        // { key: '2', text: 'Read Chapter 2 - Fail' },
+                        // { key: '3', text: 'Read Chapter 3 - Due' },
+                    ],
                     renderItem: ({ item }) => <Text>{item.text}</Text>,
                     keyExtractor: item => item.key,
+                    ListEmptyComponent: () => <Text style={styles.emptyText}>Oops, no schedule ?{'\n'}Don't fret! Whenever you're ready 🏃‍♂️{'\n'}You've got this! 💪</Text>,
                 }
             },
         ],
@@ -47,7 +59,7 @@ const MainScreen = ({ navigation }) => {
         layout: 'vertical',
         components: [
             { type: 'Text', props: { text: 'CALENDAR', credit: 'By David' } },
-            { type: 'Calendar', props: {  } }
+            { type: 'Text', props: { text: 'No Tasks 😮' } },
         ],
     };
 
@@ -78,8 +90,8 @@ const MainScreen = ({ navigation }) => {
                     scrollEventThrottle={6}
                 >
                     <HabContainer subAppConfig={runnerApp} />
-                    <HabContainer subAppConfig={readingApp} />
                     <HabContainer subAppConfig={calendarApp} />
+                    <HabContainer subAppConfig={readingApp} />
 
                 </ScrollView>
             </View>
@@ -116,8 +128,18 @@ const MainScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        
+        flex: 1,  
+    },
+    emptyText: {
+        color: '#F14F21',
+        fontSize: 13,
+        marginTop: 4,
+        paddingLeft: 26,
+        lineHeight: 18, 
+        letterSpacing: 1,
+        textShadowColor: 'silver',
+        textShadowOffset: { width: 0.01, height: 0.05 },
+        textShadowRadius: 0.1,
     },
     topBar: {
         position: 'absolute',

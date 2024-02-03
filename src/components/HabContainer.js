@@ -1,7 +1,9 @@
 // HabContainer.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-import { View, TouchableOpacity,Text , Button, FlatList, CalendarText, TextInput, StyleSheet } from 'react-native';
+import { View, Modal, TouchableOpacity, Text, Dimensions, Button, FlatList, CalendarText, TextInput, StyleSheet } from 'react-native';
+
+const { height } = Dimensions.get('window');
 
 const ButtonStyle = StyleSheet.create({
   buttonStyle: {
@@ -12,7 +14,82 @@ const ButtonStyle = StyleSheet.create({
     marginTop: 8,
     color: 'white',
     backgroundColor: '#075E54'
-  }});
+  }
+});
+
+const contextMenuStyle = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+  },
+  menuItem: {
+    backgroundColor: '#333333',
+    padding: 10,
+    width: '80%',
+    alignItems: 'center',
+    marginVertical: 4,
+  },
+  contentContainer: {
+    alignItems: 'center',
+    marginTop: 20, // Adjusted for visual spacing from the title
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#ECB22E',
+    width: '90%',
+    marginVertical: 4,
+  },
+  closeButton: {
+    width: 120,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F14F21',
+    marginBottom: 20, // Adjusted for visual spacing from the bottom
+    borderRadius: 30,
+  },
+  closeButtonText: {
+    fontFamily: 'Roboto-Black',
+    color: 'white',
+    fontSize: 18,
+  },
+  title: {
+    fontSize: 24,
+    color: 'white',
+    fontFamily: 'Roboto-Bold',
+    marginTop: 20,
+  },
+});
+
+
+const ContextMenu = ({ isVisible, onClose, title }) => (
+  <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onClose}>
+    <View style={contextMenuStyle.modalContainer}>
+      <Text style={contextMenuStyle.title}>
+        {title}
+      </Text>
+      {/* <View style={contextMenuStyle.contentContainer}>
+        <View style={contextMenuStyle.menuItem}>
+          <Text>Option 1</Text>
+        </View>
+        <View style={contextMenuStyle.separator} />
+        <View style={contextMenuStyle.menuItem}>
+          <Text>Option 2</Text>
+        </View>
+        <View style={contextMenuStyle.separator} />
+      
+      </View> */}
+      {/* Close Button */}
+      <TouchableOpacity style={contextMenuStyle.closeButton} onPress={onClose}>
+        <Text style={contextMenuStyle.closeButtonText}>Close</Text>
+      </TouchableOpacity>
+    </View>
+  </Modal>
+);
+
+
 
 
 const renderGridType = (columns, components) => {
@@ -39,15 +116,15 @@ const importComponent = (componentType, props) => {
   switch (componentType) {
 
     case 'Button':
-      const TouchableOpacity  = require('react-native').TouchableOpacity;
+      const TouchableOpacity = require('react-native').TouchableOpacity;
       const TextX = require('react-native').Text;
       return (
         <View style={ButtonStyle.buttonStyle}>
-            <TouchableOpacity onPress={props.onPress}>
-              <TextX style={{ color: 'white', fontSize: 14, fontWeight: 'bold', alignSelf: 'center' }}>
-                {props.title}
-              </TextX>
-            </TouchableOpacity>
+          <TouchableOpacity onPress={props.onPress}>
+            <TextX style={{ color: 'white', fontSize: 14, fontWeight: 'bold', alignSelf: 'center' }}>
+              {props.title}
+            </TextX>
+          </TouchableOpacity>
         </View>
       );
     case 'Calendar':
@@ -89,7 +166,7 @@ const importComponent = (componentType, props) => {
       };
 
       const itemText = {
-        color: 'white', 
+        color: 'white',
         fontSize: 16,
       };
 
@@ -169,6 +246,17 @@ const importComponent = (componentType, props) => {
 
 const HabContainer = ({ subAppConfig }) => {
   const [components, setComponents] = useState([]);
+  const [isMenuVisible, setMenuVisible] = useState(false);
+
+<ContextMenu
+  isVisible={isMenuVisible}
+  onClose={() => setMenuVisible(false)}
+  title={subAppConfig.title} // Dynamic title based on subAppConfig or a default
+/>
+
+
+  const menuToggleRef = useRef(null);
+
 
   useEffect(() => {
     const loadedComponents = subAppConfig.components.map((comp, index) => {
@@ -183,6 +271,14 @@ const HabContainer = ({ subAppConfig }) => {
 
     setComponents(loadedComponents);
   }, [subAppConfig]);
+
+  const iconStyle = {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 10, // Make it easier to touch
+    zIndex: 10, // Ensure it's above other content
+  };
 
   const containerStyle = StyleSheet.create({
     container: {
@@ -199,17 +295,31 @@ const HabContainer = ({ subAppConfig }) => {
       flexShrink: 1,
       shadowColor: 'black',
       shadowOffset: {
-        width: -6,
-        height: 4,
+        width: -10,
+        height: 10,
       },
       shadowOpacity: 0.54,
-      shadowRadius: 8,
-      elevation: 12,
+      shadowRadius: 4,
+      elevation: 5,
     },
   });
 
+  return (
+    <View style={containerStyle.container}>
+      {/* This TouchableOpacity acts as a touchless button for toggling the context menu */}
+      <TouchableOpacity ref={menuToggleRef} style={iconStyle} onPress={() => setMenuVisible(!isMenuVisible)}>
+        <Text style={{ fontWeight: 'bold', fontSize: 12, color: 'white' }}> . . . </Text>
+      </TouchableOpacity>
 
-  return <View style={containerStyle.container}>{components}</View>;
+      {components}
+
+      <ContextMenu
+        isVisible={isMenuVisible}
+        onClose={() => setMenuVisible(false)}
+        title={subAppConfig.title || "APP SETTINGS"} // Dynamic title
+      />
+    </View>
+  );
 };
 
 export default HabContainer;
