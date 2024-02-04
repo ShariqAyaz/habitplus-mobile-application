@@ -11,6 +11,13 @@ const MainScreen = ({ navigation }) => {
     // App One
     const runnerApp = {
         layout: 'vertical',
+        title: "App Settings",
+        description: "Configure your app settings here.",
+        selected_theme: 1,
+        columns: [
+            { name: 'Task Number' },
+            { name: 'Task Name' }
+        ],
         components: [
             { type: 'Text', props: { text: 'RUNNER', credit: 'By Shariq' } },
             { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },
@@ -31,6 +38,9 @@ const MainScreen = ({ navigation }) => {
     // App Two
     const readingApp = {
         layout: 'vertical',
+        title: "App Settings",
+        description: "Configure your app settings here.",
+        selected_theme: 1,
         columns: [
             { name: 'Task Number' },
             { name: 'Task Name' }
@@ -54,14 +64,21 @@ const MainScreen = ({ navigation }) => {
         ],
     };
 
-    // App Three
     const calendarApp = {
         layout: 'vertical',
-        components: [
-            { type: 'Text', props: { text: 'CALENDAR', credit: 'By David' } },
-            { type: 'Text', props: { text: 'No Tasks 😮' } },
+        title: "App Settings",
+        description: "Configure your app settings here.",
+        selected_theme: 1,
+        columns: [
+            { name: 'Task Number' },
+            { name: 'Task Name' }
         ],
-    };
+        components: [
+          { type: 'Text', props: { text: 'SMART CALENDAR', credit: 'By David' } },
+          { type: 'Text', props: { text: 'No Tasks 😮' } }, 
+        ],
+      };
+      
 
     const navScreens = {
         'Explore': 'MarketPlace',
@@ -89,8 +106,8 @@ const MainScreen = ({ navigation }) => {
                     style={styles.body}
                     scrollEventThrottle={6}
                 >
-                    <HabContainer subAppConfig={runnerApp} />
                     <HabContainer subAppConfig={calendarApp} />
+                    <HabContainer subAppConfig={runnerApp} />
                     <HabContainer subAppConfig={readingApp} />
 
                 </ScrollView>
