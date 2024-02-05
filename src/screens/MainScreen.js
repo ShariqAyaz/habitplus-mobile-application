@@ -14,10 +14,7 @@ const MainScreen = ({ navigation }) => {
         title: "RUNNER",
         description: "Configure your app settings here.\n",
         selected_theme: 1,
-        columns: [
-            { name: 'Task Number' },
-            { name: 'Task Name' }
-        ],
+        columns: [],
         components: [
             { type: 'Text', props: { text: 'RUNNER', credit: 'By Shariq' } },
             { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },
@@ -31,7 +28,6 @@ const MainScreen = ({ navigation }) => {
                 },
             },
             
-            // { type: 'TextInput', props: { placeholder: 'Add Something' } },
         ],
     };
 
@@ -96,11 +92,9 @@ const MainScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-
             <View style={[styles.topBar]}>
                 <Text style={[styles.greetingText]}>Hi Shariq</Text>
             </View>
-
             <View style={styles.bodyContainer}>
                 <ScrollView
                     style={styles.body}
@@ -108,11 +102,9 @@ const MainScreen = ({ navigation }) => {
                 >
                     <HabContainer subAppConfig={runnerApp} />
                     <HabContainer subAppConfig={calendarApp} />
-                    <HabContainer subAppConfig={readingApp} />
-
+                    
                 </ScrollView>
             </View>
-
             <View style={styles.bottomBar}>
                 <TouchableOpacity style={styles.bottomBarButton} onPress={() => nav('Explore')}>
                     <View style={styles.iconContainer}>

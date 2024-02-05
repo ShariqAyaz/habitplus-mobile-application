@@ -10,6 +10,9 @@ module.exports = {
       "safe": false,
       "allowUndefined": true,
       "verbose": false
-    }]
+    }],
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
   ]
+
 };
