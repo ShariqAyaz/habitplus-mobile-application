@@ -11,8 +11,8 @@ const MainScreen = ({ navigation }) => {
     // App One
     const runnerApp = {
         layout: 'vertical',
-        title: "App Settings",
-        description: "Configure your app settings here.",
+        title: "RUNNER",
+        description: "Configure your app settings here.\n",
         selected_theme: 1,
         columns: [
             { name: 'Task Number' },
@@ -106,8 +106,8 @@ const MainScreen = ({ navigation }) => {
                     style={styles.body}
                     scrollEventThrottle={6}
                 >
-                    <HabContainer subAppConfig={calendarApp} />
                     <HabContainer subAppConfig={runnerApp} />
+                    <HabContainer subAppConfig={calendarApp} />
                     <HabContainer subAppConfig={readingApp} />
 
                 </ScrollView>
