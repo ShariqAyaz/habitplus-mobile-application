@@ -9,7 +9,6 @@ const ContextMenu = ({ isVisible, onClose, title }) => (
     <View style={styles.modalContainer}>
       <Text style={styles.title}>
         {title}
-        {title}
       </Text>
       <View style={styles.contentContainer}>
         <View style={styles.menuItem}>
@@ -70,7 +69,7 @@ const importComponent = (componentType, props) => {
       </View>
     case 'Text':
       const Text = require('react-native').Text;
-      const { text, credit, textStyle = {}, creditStyle = {} } = props;
+      const { id, text, credit, textStyle = {}, creditStyle = {} } = props;
 
       return (
         <View style={[styles.HabContainerStyle]}>

@@ -39,46 +39,59 @@ const MainScreen = ({ navigation }) => {
     }
 
     console.log(JSON.stringify(apps, null, 2));
-    
 
-    const runnerApp = {
-        layout: 'vertical',
-        title: "RUNNER",
-        description: "Runner is officially app under 'Habit++' ecosystem. It scheduling your runs and it use GPS to track your runs and provide you with the stats.",
-        selected_theme: 1,
-        columns: [],
+    const transformedApps = apps.map(app => ({
+        layout: 'vertical', // Assuming all use a vertical layout
+        title: app.title,
+        description: app.description,
+        selected_theme: 1, // Assuming a default theme, adjust as necessary
+        columns: [], // Adjust based on your actual data needs
         components: [
-            { type: 'Text', props: { text: 'RUNNER', credit: 'By Shariq' } },
-            { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },
+            { type: 'Text', props: { text: app.title, credit: 'By ' + app.author , id: app.id} },
+            // Add any other components you need to render based on the app data
+            { type: 'Button', props: { title: 'Make Schedule', onPress: () => console.log('Add Task') } },
         ],
-    };
+    }));
 
 
-    const readingApp = {
-        layout: 'vertical',
-        title: "READING",
-        description: "Introducing Claudiu's revolutionary scheduling app: A user-friendly solution to manage your time effectively. With intelligent scheduling, task tracking, and analytics, this app simplifies your daily routines. Say goodbye to missed appointments and stress. Download today for a more organized and fulfilling life.",
-        selected_theme: 1,
-        components: [
-            { type: 'Text', props: { text: 'READING', credit: 'By Claudiu' } },
-            { type: 'Button', props: { title: 'Add Reading Task', onPress: () => { console.log('Add Task'); } } },
-        ],
-    };
+    // const runnerApp = {
+    //     layout: 'vertical',
+    //     title: "RUNNER",
+    //     description: "Runner is officially app under 'Habit++' ecosystem. It scheduling your runs and it use GPS to track your runs and provide you with the stats.",
+    //     selected_theme: 1,
+    //     columns: [],
+    //     components: [
+    //         { type: 'Text', props: { text: 'RUNNER', credit: 'By Shariq' } },
+    //         { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },
+    //     ],
+    // };
 
-    const calendarApp = {
-        layout: 'vertical',
-        title: "App Settings",
-        description: "Configure your app settings here.",
-        selected_theme: 1,
-        columns: [
-            { name: 'Task Number' },
-            { name: 'Task Name' }
-        ],
-        components: [
-            { type: 'Text', props: { text: 'SMART CALENDAR', credit: 'By David' } },
-            { type: 'Text', props: { text: 'No Tasks 😮' } },
-        ],
-    };
+
+    // const readingApp = {
+    //     layout: 'vertical',
+    //     title: "READING",
+    //     description: "Introducing Claudiu's revolutionary scheduling app: A user-friendly solution to manage your time effectively. With intelligent scheduling, task tracking, and analytics, this app simplifies your daily routines. Say goodbye to missed appointments and stress. Download today for a more organized and fulfilling life.",
+    //     selected_theme: 1,
+    //     components: [
+    //         { type: 'Text', props: { text: 'READING', credit: 'By Claudiu' } },
+    //         { type: 'Button', props: { title: 'Add Reading Task', onPress: () => { console.log('Add Task'); } } },
+    //     ],
+    // };
+
+    // const calendarApp = {
+    //     layout: 'vertical',
+    //     title: "App Settings",
+    //     description: "Configure your app settings here.",
+    //     selected_theme: 1,
+    //     columns: [
+    //         { name: 'Task Number' },
+    //         { name: 'Task Name' }
+    //     ],
+    //     components: [
+    //         { type: 'Text', props: { text: 'SMART CALENDAR', credit: 'By David' } },
+    //         { type: 'Text', props: { text: 'No Tasks 😮' } },
+    //     ],
+    // };
 
 
     const navScreens = {
@@ -101,14 +114,10 @@ const MainScreen = ({ navigation }) => {
                 <Text style={[styles.greetingText]}>Hi Shariq</Text>
             </View>
             <View style={styles.bodyContainer}>
-                <ScrollView
-                    style={styles.body}
-                    scrollEventThrottle={6}
-                >
-                    <HabContainer subAppConfig={readingApp} />
-                    <HabContainer subAppConfig={calendarApp} />
-                    <HabContainer subAppConfig={runnerApp} />
-
+                <ScrollView style={styles.body} scrollEventThrottle={6}>
+                    {transformedApps.map((appConfig, index) => (
+                        <HabContainer key={index} subAppConfig={appConfig} />
+                    ))}
                 </ScrollView>
             </View>
             <View style={styles.bottomBar}>

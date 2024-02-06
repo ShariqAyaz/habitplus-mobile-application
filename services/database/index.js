@@ -8,6 +8,7 @@ import AppComponent from './models/apps_comps';
 import AppUI from './models/apps_ui';
 import AppActivity from './models/apps_activity';
 import AppActivityData from './models/apps_activity_data';
+import Users from './models/users';
 
 const adapter = new SQLiteAdapter({
   dbName: 'habdatabase',
@@ -17,6 +18,7 @@ const adapter = new SQLiteAdapter({
 export const database = new Database({
   adapter,
   modelClasses: [
+    Users,
     Component,
     App,
     AppComponent,

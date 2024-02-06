@@ -51,6 +51,14 @@ export const HabSchema = appSchema({
         { name: 'dataobj', type: 'string' },
       ],
     }),
+    tableSchema({
+      name: 'users',
+      columns: [
+        { name: 'fullname', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps_activity', foreignColumn: '_id' },
+        { name: 'email', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps_activity', foreignColumn: '_id' },
+        { name: 'password', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps_activity', foreignColumn: '_id' },
+      ],
+    }),
   ],
 });
 

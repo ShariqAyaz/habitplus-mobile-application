@@ -8,9 +8,18 @@ async function seedDatabase() {
   console.log(appsdata, 'apps seedDatabase');
   console.log(apps_uidata, 'apps_ui seedDatabase');
 
-    if (appsdata === 0 || apps_uidata === 0) {
+    if (appsdata === 0 || apps_uidata === 0 ) {
 
       console.log('Seeding new data...');
+// const apps = [
+//   {
+//     _id : '1',
+//     title : 'Keeper',
+//     description : "Keep is the best for keeping your notes, lists, photos, and audio organized. You can add, edit, or delete notes, lists, photos, and audio. You can also add reminders to your notes.",
+//     created_at : Date.now(),
+//     updated_at : Date.now(),
+//     author : 'Ali'
+//   },]
 
       const apps = [
         {

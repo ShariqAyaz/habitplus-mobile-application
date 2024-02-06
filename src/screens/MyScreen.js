@@ -8,25 +8,29 @@ import DraggableComponent from '../components/DraggableComponent';
 const MyScreen = () => {
 
   return (
-    
-    <HabContainer style={{ backgroundColor: 'lightblue' }}>
-      <DraggableComponent>
-        <Text>Draggable Item 1</Text>
-      </DraggableComponent>
-      <DraggableComponent>
-        <Text>Draggable Item 2</Text>
-      </DraggableComponent>
-      <DraggableComponent>
-        <Text>Draggable Item 3</Text>
-      </DraggableComponent>
-      <DraggableComponent>
-        <Text>Draggable Item 4</Text>
-      </DraggableComponent>
-      <DraggableComponent>
-        <Text>Draggable Item 5</Text>
-      </DraggableComponent>
-      {/* Other components */}
-    </HabContainer>
+    <View>  
+      <Text>
+        My Screen
+      </Text>
+    </View>
+    // <HabContainer style={{ backgroundColor: 'lightblue' }}>
+    //   <DraggableComponent>
+    //     <Text>Draggable Item 1</Text>
+    //   </DraggableComponent>
+    //   <DraggableComponent>
+    //     <Text>Draggable Item 2</Text>
+    //   </DraggableComponent>
+    //   <DraggableComponent>
+    //     <Text>Draggable Item 3</Text>
+    //   </DraggableComponent>
+    //   <DraggableComponent>
+    //     <Text>Draggable Item 4</Text>
+    //   </DraggableComponent>
+    //   <DraggableComponent>
+    //     <Text>Draggable Item 5</Text>
+    //   </DraggableComponent>
+    //   {/* Other components */}
+    // </HabContainer>
   );
 };
 
