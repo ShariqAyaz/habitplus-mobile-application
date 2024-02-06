@@ -1,62 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { Image, View, TextInput, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import Draggable from 'react-native-draggable';
 
 import HabContainer from '../components/HabContainer';
-import DraggableComponent from '../components/DraggableComponent';
+
+import { database } from '../../services/database/index';
+import { Q } from '@nozbe/watermelondb';
+import { json } from '@nozbe/watermelondb/decorators';
+
 
 const MainScreen = ({ navigation }) => {
+
+    const [apps, setApps] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
     const [scrollOffset, setScrollOffset] = useState(0);
 
-    // App One
+    useEffect(() => {
+        const fetchAppsData = async () => {
+            setIsLoading(true);
+            const appsData = await database.collections.get('apps').query().fetch();
+            setApps(appsData.map(app => ({
+                ...app._raw,
+               
+            })));
+            setIsLoading(false);
+        };
+
+        fetchAppsData();
+    }, []);
+
+    if (isLoading) {
+        return <Text>Loading...</Text>; // Adjust as needed
+    }
+
+    console.log(JSON.stringify(apps, null, 2));
+   
     const runnerApp = {
         layout: 'vertical',
         title: "RUNNER",
-        description: "Configure your app settings here.\n",
+        description: "Runner is officially app under 'Habit++' ecosystem. It scheduling your runs and it use GPS to track your runs and provide you with the stats.",
         selected_theme: 1,
         columns: [],
         components: [
             { type: 'Text', props: { text: 'RUNNER', credit: 'By Shariq' } },
-            { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },
-            {
-                type: 'FlatList',
-                props: {
-                    data: [],
-                    renderItem: ({ item }) => <Text>{item.text}</Text>,
-                    keyExtractor: item => item.key,
-                    ListEmptyComponent: () => <Text style={styles.emptyText}>Oops, no schedule ?{'\n'}Don't fret! Whenever you're ready 🏃‍♂️{'\n'}You've got this! 💪</Text>,
-                },
-            },
-            
+            { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },            
         ],
     };
 
-    // App Two
+   
     const readingApp = {
         layout: 'vertical',
-        title: "App Settings",
-        description: "Configure your app settings here.",
+        title: "READING",
+        description: "Introducing Claudiu's revolutionary scheduling app: A user-friendly solution to manage your time effectively. With intelligent scheduling, task tracking, and analytics, this app simplifies your daily routines. Say goodbye to missed appointments and stress. Download today for a more organized and fulfilling life.",
         selected_theme: 1,
-        columns: [
-            { name: 'Task Number' },
-            { name: 'Task Name' }
-        ],
         components: [
             { type: 'Text', props: { text: 'READING', credit: 'By Claudiu' } },
             { type: 'Button', props: { title: 'Add Reading Task', onPress: () => { console.log('Add Task'); } } },
-            {
-                type: 'FlatList',
-                props: {
-                    data: [
-                        // { key: '1', text: 'Read Chapter 1 - Done' },
-                        // { key: '2', text: 'Read Chapter 2 - Fail' },
-                        // { key: '3', text: 'Read Chapter 3 - Due' },
-                    ],
-                    renderItem: ({ item }) => <Text>{item.text}</Text>,
-                    keyExtractor: item => item.key,
-                    ListEmptyComponent: () => <Text style={styles.emptyText}>Oops, no schedule ?{'\n'}Don't fret! Whenever you're ready 🏃‍♂️{'\n'}You've got this! 💪</Text>,
-                }
-            },
         ],
     };
 
@@ -100,8 +100,9 @@ const MainScreen = ({ navigation }) => {
                     style={styles.body}
                     scrollEventThrottle={6}
                 >
-                    <HabContainer subAppConfig={runnerApp} />
+                    <HabContainer subAppConfig={readingApp} />
                     <HabContainer subAppConfig={calendarApp} />
+                    <HabContainer subAppConfig={runnerApp} />
                     
                 </ScrollView>
             </View>

@@ -1,23 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { database } from '../../services/database/index';
+import { Q } from '@nozbe/watermelondb';
 
 const MainX = ({ navigation }) => {
   const [isTokenSaved, setIsTokenSaved] = useState(false);
+  const [appsCount, setAppsCount] = useState(0);
+  const [appsData, setAppsData] = useState([]);
 
   useEffect(() => {
+
+    const fetchAppsData = async () => {
+      const apps = await database.collections.get('apps').query().fetch();
+
+      const appsuui = await database.collections.get('apps_ui').query().fetch();
+    
+      const appsWithData = await Promise.all(apps.map(async (app) => {
+        const appUI = await database.collections.get('apps_ui')
+          .query() 
+          .fetch();
+    
+        return {
+          ...app._raw, 
+        };
+      }));
+    
+      setAppsData(appsWithData);
+    };
+
+    const checkToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        setIsTokenSaved(token !== null);
+      } catch (error) {
+        console.error('Error checking token:', error);
+      }
+    };
+
     checkToken();
+    fetchAppsData();
   }, []);
-
-  const checkToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem('userToken');
-
-      setIsTokenSaved(token !== null);
-    } catch (error) {
-      console.log('Error checking token:', error);
-    }
-  };
 
   const deleteToken = async () => {
     try {
@@ -25,12 +48,26 @@ const MainX = ({ navigation }) => {
       setIsTokenSaved(false);
       console.log('Token deleted');
     } catch (error) {
-      console.log('Error deleting token:', error);
+      console.error('Error deleting token:', error);
     }
   };
 
+//  console.log(JSON.stringify(appsData, null, 2));
+
   return (
     <View style={styles.container}>
+      <Text>Apps Count: {appsCount}</Text>
+      {appsData.map((app, index) => (
+        <View key={index} style={styles.appContainer}>
+          <Text style={styles.appTitle}>{app.title}</Text>
+          <Text>{app.description}</Text>
+          {app.apps_ui && app.apps_ui.map((ui, uiIndex) => (
+            <Text key={uiIndex}>Theme ID: {ui.theme_id}</Text>
+          ))}
+
+        </View>
+      ))}
+
       <Text style={styles.heading}>MainX.js - Habit++</Text>
 
       <View style={[styles.buttonContainer, { flex: 1, justifyContent: 'flex-end' }]}>
@@ -65,33 +102,33 @@ const MainX = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={[styles.button, { borderRadius: 4 }]}
-          onPress={() => navigation.navigate('GettingStarted')}
-        >
-          <Text style={[styles.buttonText, { color: 'black' }]}>GettingStarted</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { borderRadius: 4 }]}
-          onPress={() => navigation.navigate('MainScreen')}
-        >
-          <Text style={[styles.buttonText, { color: 'black' }]}>MainScreen</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('GettingStarted')}
+          >
+            <Text style={[styles.buttonText, { color: 'black' }]}>GettingStarted</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('MainScreen')}
+          >
+            <Text style={[styles.buttonText, { color: 'black' }]}>MainScreen</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={[styles.button, { borderRadius: 4 }]}
-          onPress={() => navigation.navigate('infloading')}
-        >
-          <Text style={[styles.buttonText, { color: 'black' }]}>infloading</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { borderRadius: 4 }]}
-          onPress={() => navigation.navigate('MyScreen')}
-        >
-          <Text style={[styles.buttonText, { color: 'black' }]}>MyScreen</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('infloading')}
+          >
+            <Text style={[styles.buttonText, { color: 'black' }]}>infloading</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('MyScreen')}
+          >
+            <Text style={[styles.buttonText, { color: 'black' }]}>MyScreen</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

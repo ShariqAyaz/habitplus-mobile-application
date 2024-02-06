@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Modal, TouchableOpacity, Text, Dimensions, Button, FlatList, CalendarText, TextInput, StyleSheet } from 'react-native';
+import { View, Modal, TouchableOpacity, Text, Dimensions, Button, CalendarText, TextInput, StyleSheet } from 'react-native';
 import { styles } from './styles/HabContainerStyles';
 
 const { height } = Dimensions.get('window');
@@ -20,7 +20,7 @@ const ContextMenu = ({ isVisible, onClose, title }) => (
           <Text>Option 2</Text>
         </View>
         <View style={styles.separator} />
-      
+
       </View>
       {/* Close Button */}
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
@@ -88,51 +88,7 @@ const importComponent = (componentType, props) => {
     case 'FlatList':
 
 
-      const itemText = {
-        color: 'white',
-        fontSize: 16,
-      };
-
-      const renderItem = ({ item }) => (
-        <View style={[styles.itemContainer]}>
-          <Text style={[itemText]}>{item.text}</Text>
-        </View>
-      );
-
-      const renderMergedItem = ({ item, index, separators }) => {
-        // Check if there's a custom renderItem prop
-        if (props.renderItem) {
-          // Call the custom renderItem function to get the element to render
-          const element = props.renderItem({ item, index, separators });
-
-          // Wrap the rendered element in a View with your custom styles
-          return (
-            <View style={[styles.itemContainer]}>
-              {/* Clone the element to inject additional styles if necessary */}
-              {React.cloneElement(element, {
-                style: [element.props.style, itemText] // Merge existing styles with itemText, if applicable
-              })}
-            </View>
-          );
-        } else {
-          // Your default renderItem logic
-          return (
-            <View style={[styles.itemContainer]}>
-              <Text style={[itemText]}>{item.text}</Text>
-            </View>
-          );
-        }
-      };
-
-
-      return (
-        <FlatList
-          {...props}
-          renderItem={renderMergedItem} // Merges custom styles with potential custom renderItem from props
-          style={[styles.flatlistStyle]}
-          scrollEnabled={false}
-        />
-      );
+      return (<View><Text>Text</Text></View>);
 
 
     case 'TextInput':
@@ -157,38 +113,50 @@ const HabContainer = ({ subAppConfig }) => {
   const [components, setComponents] = useState([]);
   const [isMenuVisible, setMenuVisible] = useState(false);
 
-
   const menuToggleRef = useRef(null);
 
   const renderModalContent = () => {
     return (
       <>
-        {/* Ensure the title is rendered within a Text component */}
-        <Text style={{ color: 'white', fontSize: 20, marginBottom: 10 }}>
-          {subAppConfig.title}
-        </Text>
-        {/* Description */}
-        {subAppConfig.description && (
-          <Text style={{ color: 'white', fontSize: 16, marginBottom: 5 }}>
+        <View style={{ margin: 0, padding: 0 }}>
+          <Text style={{ textAlign: 'center', marginTop: 8, paddingTop: 6, fontFamily: 'Roboto-Black', color: 'white', fontSize: 24 }}>
+            {subAppConfig.title} SETTINGS
+          </Text>
+          {subAppConfig.components.map((comp, index) => (
+            <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Black', color: '#ECB22E', fontSize: 18 }} key={`${comp.type}-${index}`}>
+              {comp.props.credit}
+            </Text>
+          ))}
+          <Text style={{ padding: 5, marginTop: -18,marginBottom: 10, color: 'white', fontSize: 16, textAlign: 'justify', paddingLeft: 18, paddingRight: 18 }}>
             {subAppConfig.description}
           </Text>
-        )}
+          <View style={[styles.separator]} />
+          <Text style={{ alignSelf:'center' ,textAlign: 'center', marginTop:10, marginBottom:0 ,fontFamily: 'Roboto-Black', color: '#ECB22E', fontSize: 18 }}>
+              Theme Color
+            </Text>
+          <View style={{ flexDirection: 'row', alignSelf: 'center', marginBottom:12 }}>
+            <TouchableOpacity style={[styles.circle, { backgroundColor: '#5865F2' }]} />
+            <TouchableOpacity style={[styles.circle, { backgroundColor: '#ECB22E' }]} />
+            <TouchableOpacity style={[styles.circle, { backgroundColor: '#2EB67D' }]} />
+            <TouchableOpacity style={[styles.circle, { backgroundColor: '#36C5F0' }]} />
+            <TouchableOpacity style={[styles.circle, { backgroundColor: '#E01E5A' }]} />
+          </View>
+          <View style={[styles.separator]} />
+        </View>
+
         {/* Components */}
-        {subAppConfig.components.map((comp, index) => {
-          // Ensure the dynamic rendering of components correctly handles text
-          return (
-            <View key={`comp-${index}`} style={{ marginVertical: 4 }}>
-              {/* This function needs to ensure text is wrapped in <Text> */}
-              {importComponent(comp.type, comp.props)}
-            </View>
-          );
-        })}
+        {/* {subAppConfig.components.map((comp, index) => { */}
+        {/* return ( */}
+        {/* <View key={`comp-${index}`} style={{ marginVertical: 4 }}> */}
+        {/* This function needs to ensure text is wrapped in <Text> */}
+        {/* {importComponent(comp.type, comp.props)} */}
+        {/* </View> */}
+        {/* ); */}
+        {/* })} */}
+
       </>
     );
   };
-
-
-
 
   useEffect(() => {
     const loadedComponents = subAppConfig.components.map((comp, index) => {
@@ -215,7 +183,7 @@ const HabContainer = ({ subAppConfig }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={{ ...iconStyle, zIndex: 20 }} // Ensure icon is clickable
+        style={{ ...iconStyle, zIndex: 20 }}
         onPress={() => setMenuVisible(true)}
       >
         <Text style={{ fontWeight: 'bold', fontSize: 12, color: 'white' }}> . . . </Text>
@@ -233,12 +201,11 @@ const HabContainer = ({ subAppConfig }) => {
         animationType="slide"
         onRequestClose={() => setMenuVisible(false)}
       >
-        <View style={{ backgroundColor: 'rgba(255, 255, 255, 1)', flex: 1 }}>
+        <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99 }}>
           {renderModalContent()}
           <TouchableOpacity
             style={styles.closeButton}
-            onPress={() => setMenuVisible(false)}
-          >
+            onPress={() => setMenuVisible(false)}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
         </View>

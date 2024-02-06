@@ -17,6 +17,20 @@ export const styles = StyleSheet.create({
   greenButtonText: {
     color: 'white', fontSize: 14, fontWeight: 'bold', alignSelf: 'center' 
   },
+  circle:{
+    width: 25,
+    height: 25,
+    borderRadius: 100/2,
+    padding:6,
+    margin:16,
+    borderWidth: 0,
+    backgroundColor: '#333',
+    alignSelf: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    marginTop: 20,
+  },
   description: {
     color: 'white',
     fontSize: 16,
@@ -60,10 +74,11 @@ export const styles = StyleSheet.create({
     backgroundColor: '#ECB22E',
     width: '90%',
     marginVertical: 4,
+    alignSelf: 'center',  
   },
   closeButton: {
     width: 120,
-    height: 60,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F14F21',

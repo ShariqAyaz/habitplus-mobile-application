@@ -13,7 +13,6 @@ export const HabSchema = appSchema({
     tableSchema({
       name: 'apps',
       columns: [
-        { name: '_id', type: 'string', isIndexed: true, isOptional: false, isPrimaryKey: true },
         { name: 'title', type: 'string' },
         { name: 'description', type: 'string' },
         { name: 'created_at', type: 'number' },
@@ -22,19 +21,18 @@ export const HabSchema = appSchema({
       ],
     }),
     tableSchema({
+      name: 'apps_ui',
+      columns: [
+        { name: 'app_id', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'id' },
+        { name: 'theme_id', type: 'number' },
+      ],
+    }),
+    tableSchema({
       name: 'apps_comps',
       columns: [
         { name: '_id', type: 'string', isIndexed: true, isOptional: false, isPrimaryKey: true },
         { name: 'app_id', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: '_id' },
         { name: 'comp_id', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'components', foreignColumn: '_id' },
-      ],
-    }),
-    tableSchema({
-      name: 'apps_ui',
-      columns: [
-        { name: '_id', type: 'string', isIndexed: true, isOptional: false, isPrimaryKey: true },
-        { name: 'app_id', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: '_id' },
-        { name: 'theme_id', type: 'number' },
       ],
     }),
     tableSchema({
