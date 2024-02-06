@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Image, View, TextInput, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import Draggable from 'react-native-draggable';
 
@@ -22,7 +22,7 @@ const MainScreen = ({ navigation }) => {
             const appsData = await database.collections.get('apps').query().fetch();
             setApps(appsData.map(app => ({
                 ...app._raw,
-               
+
             })));
             setIsLoading(false);
         };
@@ -31,11 +31,16 @@ const MainScreen = ({ navigation }) => {
     }, []);
 
     if (isLoading) {
-        return <Text>Loading...</Text>; // Adjust as needed
+        setTimeout(() => {
+            return <Text style={[styles.greetingText]}>
+                Loading...
+            </Text>;
+        }, 3000);
     }
 
     console.log(JSON.stringify(apps, null, 2));
-   
+    
+
     const runnerApp = {
         layout: 'vertical',
         title: "RUNNER",
@@ -44,11 +49,11 @@ const MainScreen = ({ navigation }) => {
         columns: [],
         components: [
             { type: 'Text', props: { text: 'RUNNER', credit: 'By Shariq' } },
-            { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },            
+            { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },
         ],
     };
 
-   
+
     const readingApp = {
         layout: 'vertical',
         title: "READING",
@@ -70,11 +75,11 @@ const MainScreen = ({ navigation }) => {
             { name: 'Task Name' }
         ],
         components: [
-          { type: 'Text', props: { text: 'SMART CALENDAR', credit: 'By David' } },
-          { type: 'Text', props: { text: 'No Tasks 😮' } }, 
+            { type: 'Text', props: { text: 'SMART CALENDAR', credit: 'By David' } },
+            { type: 'Text', props: { text: 'No Tasks 😮' } },
         ],
-      };
-      
+    };
+
 
     const navScreens = {
         'Explore': 'MarketPlace',
@@ -103,7 +108,7 @@ const MainScreen = ({ navigation }) => {
                     <HabContainer subAppConfig={readingApp} />
                     <HabContainer subAppConfig={calendarApp} />
                     <HabContainer subAppConfig={runnerApp} />
-                    
+
                 </ScrollView>
             </View>
             <View style={styles.bottomBar}>
@@ -138,14 +143,14 @@ const MainScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,  
+        flex: 1,
     },
     emptyText: {
         color: '#F14F21',
         fontSize: 13,
         marginTop: 4,
         paddingLeft: 26,
-        lineHeight: 18, 
+        lineHeight: 18,
         letterSpacing: 1,
         textShadowColor: 'silver',
         textShadowOffset: { width: 0.01, height: 0.05 },
