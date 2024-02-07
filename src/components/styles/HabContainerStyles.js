@@ -86,6 +86,17 @@ export const styles = StyleSheet.create({
     borderRadius: 30,
     alignSelf: 'center', position: 'absolute', bottom: 0, marginBottom: 20
   },
+  deleteButton: {
+    width: 130,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    marginBottom:100,
+    borderRadius: 30,
+    alignSelf: 'center', position: 'absolute', 
+    bottom: 0, 
+  },
   closeButtonText: {
     fontFamily: 'Roboto-Black',
     color: 'white',

@@ -1,36 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Modal, TouchableOpacity, Text, Dimensions, Button, CalendarText, TextInput, StyleSheet } from 'react-native';
 import { styles } from './styles/HabContainerStyles';
-
+import { database } from '../../services/database/index';
 const { height } = Dimensions.get('window');
+import { Q } from '@nozbe/watermelondb';
+import { json } from '@nozbe/watermelondb/decorators';
 
-const ContextMenu = ({ isVisible, onClose, title }) => (
-  <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onClose}>
-    <View style={styles.modalContainer}>
-      <Text style={styles.title}>
-        {title}
-      </Text>
-      <View style={styles.contentContainer}>
-        <View style={styles.menuItem}>
-          <Text>Option 1</Text>
-        </View>
-        <View style={styles.separator} />
-        <View style={styles.menuItem}>
-          <Text>Option 2</Text>
-        </View>
-        <View style={styles.separator} />
-
-      </View>
-      {/* Close Button */}
-      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-        <Text style={styles.closeButtonText}>Close</Text>
-      </TouchableOpacity>
-    </View>
-  </Modal>
-);
 
 const renderGridType = (columns, components) => {
-  // Assuming a simple grid where we just render column names for now
   const header = (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
       {columns.map((column, index) => (
@@ -108,11 +85,25 @@ const importComponent = (componentType, props) => {
 };
 
 
-const HabContainer = ({ subAppConfig }) => {
+const HabContainer = ({ subAppConfig,onDelete }) => {
   const [components, setComponents] = useState([]);
   const [isMenuVisible, setMenuVisible] = useState(false);
 
   const menuToggleRef = useRef(null);
+
+  async function deleteApp(title) {
+    const appsCollection = database.collections.get('apps');
+    const appsToDelete = await appsCollection.query(Q.where('title', title)).fetch();
+
+    await database.write(async () => {
+      await Promise.all(appsToDelete.map(app => app.destroyPermanently()));
+    });
+
+    onDelete(title);
+    // Close the menu
+    setMenuVisible(false);
+
+  }
 
   const renderModalContent = () => {
     return (
@@ -126,14 +117,14 @@ const HabContainer = ({ subAppConfig }) => {
               {comp.props.credit}
             </Text>
           ))}
-          <Text style={{ padding: 5, marginTop: -18,marginBottom: 10, color: 'white', fontSize: 16, textAlign: 'justify', paddingLeft: 18, paddingRight: 18 }}>
+          <Text style={{ padding: 5, marginTop: -18, marginBottom: 10, color: 'white', fontSize: 16, textAlign: 'justify', paddingLeft: 18, paddingRight: 18 }}>
             {subAppConfig.description}
           </Text>
           <View style={[styles.separator]} />
-          <Text style={{ alignSelf:'center' ,textAlign: 'center', marginTop:10, marginBottom:0 ,fontFamily: 'Roboto-Black', color: '#ECB22E', fontSize: 18 }}>
-              Theme Color
-            </Text>
-          <View style={{ flexDirection: 'row', alignSelf: 'center', marginBottom:12 }}>
+          <Text style={{ alignSelf: 'center', textAlign: 'center', marginTop: 10, marginBottom: 0, fontFamily: 'Roboto-Black', color: '#ECB22E', fontSize: 18 }}>
+            Theme Color
+          </Text>
+          <View style={{ flexDirection: 'row', alignSelf: 'center', marginBottom: 12 }}>
             <TouchableOpacity style={[styles.circle, { backgroundColor: '#5865F2' }]} />
             <TouchableOpacity style={[styles.circle, { backgroundColor: '#ECB22E' }]} />
             <TouchableOpacity style={[styles.circle, { backgroundColor: '#2EB67D' }]} />
@@ -167,6 +158,7 @@ const HabContainer = ({ subAppConfig }) => {
         </View>
       );
     });
+    
 
     setComponents(loadedComponents);
   }, [subAppConfig]);
@@ -200,13 +192,22 @@ const HabContainer = ({ subAppConfig }) => {
         animationType="slide"
         onRequestClose={() => setMenuVisible(false)}
       >
+        
         <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99 }}>
           {renderModalContent()}
           <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => deleteApp(subAppConfig.title)}>
+            <Text style={styles.closeButtonText}>Delete</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+
             style={styles.closeButton}
             onPress={() => setMenuVisible(false)}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
+          
         </View>
       </Modal>
     </View>

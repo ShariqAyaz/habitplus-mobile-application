@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Image, View, TextInput, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
 import Draggable from 'react-native-draggable';
+import Geolocation from 'react-native-geolocation-service';
+import { PermissionsAndroid } from 'react-native';
 
 import HabContainer from '../components/HabContainer';
 
@@ -10,11 +12,47 @@ import { json } from '@nozbe/watermelondb/decorators';
 
 
 const MainScreen = ({ navigation }) => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [location, setLocation] = useState('');
+    const [Clocation, setCLocation] = useState(null);
+
 
     const [apps, setApps] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const [scrollOffset, setScrollOffset] = useState(0);
+    const [isStart, setIsStart] = useState(false);
+    const [startLocation, setStartLocation] = useState(null);
+    const [stopLocation, setStopLocation] = useState(null);
+
+
+    const toggleStartStop = () => {
+        setIsStart(!isStart);
+    };
+
+
+    const deleteContainer = (title) => {
+        setApps(prevApps => prevApps.filter(app => app.title !== title));
+    };
+
+    async function requestLocationPermission() {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    'title': 'Location Access Required',
+                    'message': 'This App needs to Access your location'
+                }
+            )
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log("Location Permission Granted.");
+            } else {
+                console.log("Location Permission Denied.");
+            }
+        } catch (err) {
+            console.warn(err)
+        }
+    }
 
     useEffect(() => {
         const fetchAppsData = async () => {
@@ -28,6 +66,8 @@ const MainScreen = ({ navigation }) => {
         };
 
         fetchAppsData();
+        fetchLocation();
+        requestLocationPermission();
     }, []);
 
     if (isLoading) {
@@ -40,6 +80,23 @@ const MainScreen = ({ navigation }) => {
 
     console.log(JSON.stringify(apps, null, 2));
 
+    const ActivityRun = async (id) => {
+        console.log('From ActivityRun Function √\n');
+        const activity = await database.collections.get('apps').query(Q.where('id', id)).fetch(1);
+        console.log(activity[0].id);
+
+        if (activity[0].title === 'RUNNER') {
+
+            setModalVisible(true);
+
+        }
+        else {
+            Alert.alert('Not Implemented', 'The activity is not implemented yet.\nPlease try another activity. ');
+        }
+
+        // navigation.navigate('ActivityRun', { activity });
+    };
+
     const transformedApps = apps.map(app => ({
         layout: 'vertical', // Assuming all use a vertical layout
         title: app.title,
@@ -47,9 +104,9 @@ const MainScreen = ({ navigation }) => {
         selected_theme: 1, // Assuming a default theme, adjust as necessary
         columns: [], // Adjust based on your actual data needs
         components: [
-            { type: 'Text', props: { text: app.title, credit: 'By ' + app.author , id: app.id} },
+            { type: 'Text', props: { text: app.title, credit: 'By ' + app.author, id: app.id } },
             // Add any other components you need to render based on the app data
-            { type: 'Button', props: { title: 'Make Schedule', onPress: () => console.log('Add Task') } },
+            { type: 'Button', props: { title: 'Make A New Habit', onPress: () => ActivityRun(app.id) } },
         ],
     }));
 
@@ -93,6 +150,19 @@ const MainScreen = ({ navigation }) => {
     //     ],
     // };
 
+    const fetchLocation = () => {
+        Geolocation.getCurrentPosition(
+            (position) => {
+                setCLocation(position);
+                console.log(position);
+                console.log(`Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
+            },
+            (error) => {
+                console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+    };
 
     const navScreens = {
         'Explore': 'MarketPlace',
@@ -108,15 +178,102 @@ const MainScreen = ({ navigation }) => {
         }
     };
 
+    const getCurrentLocation = (action) => {
+        console.log('Getting Current Location');
+        Geolocation.getCurrentPosition(
+            (position) => {
+                setCLocation({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                });
+                // Assuming Clocation is immediately updated (in practice, you might need to handle this asynchronously)
+                const url = `https://t6hlbd54wg.execute-api.us-east-1.amazonaws.com/api/Location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        if (action === 'start') {
+                            setStartLocation(data); // Set fetched data for start location
+                        } else if (action === 'end') {
+                            setStopLocation(data); // Set fetched data for stop location
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            },
+            (error) => {
+                console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+    };
+
+
     return (
         <View style={styles.container}>
+            <Modal
+                animationType="slide"
+                visible={modalVisible}
+                backgroundColor={'#333333'}
+                transparent={false}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99 }}>
+                    <View style={{ margin: 0, padding: 0 }}>
+                        <Text style={{ textAlign: 'center', marginTop: 8, paddingTop: 6, fontFamily: 'Roboto-Black', color: 'white', fontSize: 24 }}>
+                            MAKE YOUR RUN SCHEDULE
+                        </Text>
+                        <View style={[styles.separator]} />
+                        <TouchableOpacity
+                            style={[styles.startButton]}
+                            onPress={() => {
+                                if (!isStart) {
+                                    getCurrentLocation('start'); // This will set the start location
+                                } else {
+                                    getCurrentLocation('end'); // This will set the stop location
+                                }
+                                setIsStart(!isStart); // Toggle the tracking state
+                            }}
+                        >
+                            <Text style={styles.closeButtonText}>{isStart ? 'Stop' : 'Start'}</Text>
+                        </TouchableOpacity>
+                        {startLocation && (
+                            <>
+                                <Text style={styles.closeButtonText}>Start Name: {startLocation.name}</Text>
+                                <Text style={styles.closeButtonText}>Start Latitude: {startLocation.lat}</Text>
+                                <Text style={styles.closeButtonText}>Start Longitude: {startLocation.lon}</Text>
+                            </>
+                        )}
+
+                        {stopLocation && (
+                            <>
+                                <Text style={styles.closeButtonText}>Stop Name: {stopLocation.name}</Text>
+                                <Text style={styles.closeButtonText}>Stop Latitude: {stopLocation.lat}</Text>
+                                <Text style={styles.closeButtonText}>Stop Longitude: {stopLocation.lon}</Text>
+                            </>
+                        )}
+
+                    </View>
+
+
+                    <TouchableOpacity
+                        style={styles.closeButton}
+                        onPress={() => setModalVisible(false)}>
+                        <Text style={styles.closeButtonText}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
             <View style={[styles.topBar]}>
                 <Text style={[styles.greetingText]}>Hi Shariq</Text>
             </View>
             <View style={styles.bodyContainer}>
                 <ScrollView style={styles.body} scrollEventThrottle={6}>
                     {transformedApps.map((appConfig, index) => (
-                        <HabContainer key={index} subAppConfig={appConfig} />
+                        <HabContainer key={index} subAppConfig={appConfig}
+                            onDelete={deleteContainer} // Pass the deleteContainer function
+                        />
+
                     ))}
                 </ScrollView>
             </View>
@@ -153,6 +310,32 @@ const MainScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    closeButton: {
+        width: 120,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F14F21',
+        marginBottom: 20,
+        borderRadius: 30,
+        alignSelf: 'center', position: 'absolute', bottom: 0, marginBottom: 20
+    },
+    startButton: {
+        width: 200,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#eb8634',
+        borderRadius: 10,
+        marginTop: 20,
+        alignSelf: 'center',
+    },
+    closeButtonText: {
+        fontFamily: 'Roboto-Bold',
+        fontWeight: 'bold',
+        color: 'white',
+        fontSize: 16,
     },
     emptyText: {
         color: '#F14F21',
@@ -210,6 +393,14 @@ const styles = StyleSheet.create({
         padding: 4,
         paddingTop: 6,
         alignItems: 'center',
+    },
+
+    separator: {
+        height: 1,
+        backgroundColor: '#ECB22E',
+        width: '90%',
+        marginVertical: 4,
+        alignSelf: 'center',
     },
     bottomBarButton: {
         flexDirection: 'column',

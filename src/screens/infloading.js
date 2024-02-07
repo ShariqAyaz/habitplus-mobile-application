@@ -98,14 +98,14 @@ const InfiniteScrollScreen = ({ navigation }) => {
           </View>
         )}
       </View>
-      <FlatList
+      {/* <FlatList
         data={data}
         keyExtractor={(item) => item.id.toString()}
         onEndReached={fetchData}
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
         renderItem={({ item }) => <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>}
-      />
+      /> */}
     </View>
   );
 };
