@@ -10,12 +10,14 @@ const LoginScreen = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const navigation = useNavigation();
     const [isEmailValid, setIsEmailValid] = useState(false);
+    const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
 
     const handleLogin = async () => {
         const trimmedEmail = email.trim().toLowerCase();
         const trimmedPassword = password.trim();
 
         if (isEmailValid) {
+            setIsLoginButtonDisabled(true);
             try {
                 const url = `${API_URL}/Login`;
                 const response = await fetch(url, {
@@ -52,6 +54,7 @@ const LoginScreen = () => {
                     const errorData = await response.json(); // Optionally extract more detailed error info
                     console.log('Error response:', errorData);
                     setErrorMessage('Invalid credentials. Please try again.');
+                    setIsLoginButtonDisabled(false);
                 }
                 
             } catch (error) {
@@ -111,7 +114,7 @@ const LoginScreen = () => {
                     value={password}
                     onChangeText={setPassword}
                 />
-                <Button title="Login" onPress={handleLogin} />
+                <Button title="Login" onPress={handleLogin} disabled={isLoginButtonDisabled}/>
                 <TouchableOpacity onPress={handleForgotPassword}>
                     <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                 </TouchableOpacity>
