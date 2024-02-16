@@ -59,6 +59,16 @@ export const HabSchema = appSchema({
         { name: 'password', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps_activity', foreignColumn: '_id' },
       ],
     }),
+    tableSchema({
+      name: 'locations',
+      columns: [
+          { name: 'latitude', type: 'number', isOptional: false }, 
+          { name: 'longitude', type: 'number', isOptional: false },
+          { name: 'timestamp', type: 'number', isOptional: false }, 
+          { name: 'app_id', type: 'string', isOptional:true, isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: '_id' },
+      ]
+  })
+  
   ],
 });
 

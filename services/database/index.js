@@ -9,6 +9,7 @@ import AppUI from './models/apps_ui';
 import AppActivity from './models/apps_activity';
 import AppActivityData from './models/apps_activity_data';
 import Users from './models/users';
+import Locations from './models/locations';
 
 const adapter = new SQLiteAdapter({
   dbName: 'habdatabase',
@@ -25,6 +26,7 @@ export const database = new Database({
     AppUI,
     AppActivity,
     AppActivityData,
+    Locations,
   ],
   actionsEnabled: true,
 });

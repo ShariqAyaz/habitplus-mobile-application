@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Image, Alert, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { useNavigation } from '@react-navigation/native';
 import { API_URL, PORT } from "@env";
 
 const LoginScreen = () => {
+    const navigation = useNavigation();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const navigation = useNavigation();
     const [isEmailValid, setIsEmailValid] = useState(false);
     const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
 
@@ -51,10 +52,14 @@ const LoginScreen = () => {
                         setErrorMessage('Access token is undefined. Please try again.');
                     }
                 } else {
-                    const errorData = await response.json(); // Optionally extract more detailed error info
+                    const errorData = await response.json(); 
+                
                     console.log('Error response:', errorData);
                     setErrorMessage('Invalid credentials. Please try again.');
                     setIsLoginButtonDisabled(false);
+                
+                    // Show an alert box with the error message
+                    Alert.alert('Login Failed', 'Invalid credentials. Please try again.');
                 }
                 
             } catch (error) {
@@ -89,7 +94,7 @@ const LoginScreen = () => {
         setIsEmailValid(emailRegex.test(email.trim()));
         setEmail(email.replace(/\s/g, ''));
     };
-
+    
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>

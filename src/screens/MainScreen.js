@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+
 import Draggable from 'react-native-draggable';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
@@ -24,6 +26,8 @@ const MainScreen = ({ navigation }) => {
     const [isStart, setIsStart] = useState(false);
     const [startLocation, setStartLocation] = useState(null);
     const [stopLocation, setStopLocation] = useState(null);
+    const [obtainedLocation, setObtainedLocation] = useState(false);
+    const [userCoordinates, setUserCoordinates] = useState(null);
 
 
     const toggleStartStop = () => {
@@ -55,6 +59,43 @@ const MainScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (obtainedLocation === true) {
+                console.log('Fetching and Saving Location');
+                fetchAndSaveLocation();
+            }
+        }, 10000);
+        return () => clearInterval(intervalId);
+
+    }, []);
+
+    useEffect(() => {
+        if (Clocation) {
+            setUserCoordinates([Clocation.latitude, Clocation.longitude]);
+        }
+    }, [Clocation]);
+
+    const renderMap = () => {
+        if (userCoordinates) {
+            const position = userCoordinates;
+
+            return (
+                <MapContainer center={position} zoom={15} style={{ height: 300, width: "100%" }}> {/* Adjust height as needed */}
+                    <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    <Marker position={position}>
+                        <Popup>You are here!</Popup>
+                    </Marker>
+                </MapContainer>
+            );
+        } else {
+            return <Text style={{ textAlign: 'center' }}>Fetching location...</Text>;
+        }
+    };
+
+    useEffect(() => {
         const fetchAppsData = async () => {
             setIsLoading(true);
             const appsData = await database.collections.get('apps').query().fetch();
@@ -78,11 +119,12 @@ const MainScreen = ({ navigation }) => {
         }, 3000);
     }
 
-    console.log(JSON.stringify(apps, null, 2));
+    // console.log(JSON.stringify(apps, null, 2));
 
     const ActivityRun = async (id) => {
         console.log('From ActivityRun Function √\n');
         const activity = await database.collections.get('apps').query(Q.where('id', id)).fetch(1);
+
         console.log(activity[0].id);
 
         if (activity[0].title === 'RUNNER') {
@@ -94,67 +136,26 @@ const MainScreen = ({ navigation }) => {
             Alert.alert('Not Implemented', 'The activity is not implemented yet.\nPlease try another activity. ');
         }
 
-        // navigation.navigate('ActivityRun', { activity });
+
     };
 
     const transformedApps = apps.map(app => ({
-        layout: 'vertical', // Assuming all use a vertical layout
+        layout: 'vertical',
         title: app.title,
         description: app.description,
-        selected_theme: 1, // Assuming a default theme, adjust as necessary
-        columns: [], // Adjust based on your actual data needs
+        selected_theme: 1,
+        columns: [],
         components: [
             { type: 'Text', props: { text: app.title, credit: 'By ' + app.author, id: app.id } },
-            // Add any other components you need to render based on the app data
+
             { type: 'Button', props: { title: 'Make A New Habit', onPress: () => ActivityRun(app.id) } },
         ],
     }));
-
-
-    // const runnerApp = {
-    //     layout: 'vertical',
-    //     title: "RUNNER",
-    //     description: "Runner is officially app under 'Habit++' ecosystem. It scheduling your runs and it use GPS to track your runs and provide you with the stats.",
-    //     selected_theme: 1,
-    //     columns: [],
-    //     components: [
-    //         { type: 'Text', props: { text: 'RUNNER', credit: 'By Shariq' } },
-    //         { type: 'Button', props: { title: 'Make Schedule', onPress: () => { console.log('Add Task'); } } },
-    //     ],
-    // };
-
-
-    // const readingApp = {
-    //     layout: 'vertical',
-    //     title: "READING",
-    //     description: "Introducing Claudiu's revolutionary scheduling app: A user-friendly solution to manage your time effectively. With intelligent scheduling, task tracking, and analytics, this app simplifies your daily routines. Say goodbye to missed appointments and stress. Download today for a more organized and fulfilling life.",
-    //     selected_theme: 1,
-    //     components: [
-    //         { type: 'Text', props: { text: 'READING', credit: 'By Claudiu' } },
-    //         { type: 'Button', props: { title: 'Add Reading Task', onPress: () => { console.log('Add Task'); } } },
-    //     ],
-    // };
-
-    // const calendarApp = {
-    //     layout: 'vertical',
-    //     title: "App Settings",
-    //     description: "Configure your app settings here.",
-    //     selected_theme: 1,
-    //     columns: [
-    //         { name: 'Task Number' },
-    //         { name: 'Task Name' }
-    //     ],
-    //     components: [
-    //         { type: 'Text', props: { text: 'SMART CALENDAR', credit: 'By David' } },
-    //         { type: 'Text', props: { text: 'No Tasks 😮' } },
-    //     ],
-    // };
 
     const fetchLocation = () => {
         Geolocation.getCurrentPosition(
             (position) => {
                 setCLocation(position);
-                console.log(position);
                 console.log(`Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
             },
             (error) => {
@@ -163,6 +164,28 @@ const MainScreen = ({ navigation }) => {
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
     };
+
+    async function fetchAndSaveLocation() {
+        getCurrentLocation();
+        if (Clocation) {
+            try {
+
+                // Start a write transaction
+                await database.write(async () => {
+                    const newloc = await database.collections.get('locations').create((locations) => {
+                        locations.latitude = Clocation.latitude;
+                        locations.longitude = Clocation.longitude;
+                        locations.timestamp = new Date();
+                    });
+                    console.log('Location Saved:', newloc.id);
+                });
+
+
+            } catch (error) {
+                console.error('Error saving location:' + Clocation.latitude, error);
+            }
+        }
+    }
 
     const navScreens = {
         'Explore': 'MarketPlace',
@@ -178,6 +201,27 @@ const MainScreen = ({ navigation }) => {
         }
     };
 
+    async function fetchAndProcessLocations() {
+        try {
+            const locations = await database.collections.get('locations').query().fetch();
+
+            if (locations.length > 0) {
+                // Loop over each location record
+                for (const location of locations) {
+                    // Access individual fields of the location record
+                    const { id, latitude, longitude, timestamp } = location._raw;
+
+                    // Perform your processing or logging here
+                    console.log(`Location ID: ${id}, Latitude: ${latitude}, Longitude: ${longitude}, Timestamp: ${timestamp}`);
+                }
+            } else {
+                console.log('No records found in the "locations" collection.');
+            }
+        } catch (error) {
+            console.error('Error fetching and processing locations:', error);
+        }
+    }
+
     const getCurrentLocation = (action) => {
         console.log('Getting Current Location');
         Geolocation.getCurrentPosition(
@@ -186,16 +230,19 @@ const MainScreen = ({ navigation }) => {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                 });
-                // Assuming Clocation is immediately updated (in practice, you might need to handle this asynchronously)
+
                 const url = `https://t6hlbd54wg.execute-api.us-east-1.amazonaws.com/api/Location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data);
+                        //                        console.log(data);
                         if (action === 'start') {
-                            setStartLocation(data); // Set fetched data for start location
+                            setStartLocation(data);
+                            setObtainedLocation(true);
                         } else if (action === 'end') {
-                            setStopLocation(data); // Set fetched data for stop location
+                            setStopLocation(data);
+                            setObtainedLocation(false);
+                            fetchAndProcessLocations();
                         }
                     })
                     .catch(error => {
@@ -229,11 +276,11 @@ const MainScreen = ({ navigation }) => {
                             style={[styles.startButton]}
                             onPress={() => {
                                 if (!isStart) {
-                                    getCurrentLocation('start'); // This will set the start location
+                                    getCurrentLocation('start');
                                 } else {
-                                    getCurrentLocation('end'); // This will set the stop location
+                                    getCurrentLocation('end');
                                 }
-                                setIsStart(!isStart); // Toggle the tracking state
+                                setIsStart(!isStart);
                             }}
                         >
                             <Text style={styles.closeButtonText}>{isStart ? 'Stop' : 'Start'}</Text>
@@ -255,6 +302,9 @@ const MainScreen = ({ navigation }) => {
                         )}
 
                     </View>
+                    <View>  
+                    {renderMap()} 
+                    </View>
 
 
                     <TouchableOpacity
@@ -271,7 +321,7 @@ const MainScreen = ({ navigation }) => {
                 <ScrollView style={styles.body} scrollEventThrottle={6}>
                     {transformedApps.map((appConfig, index) => (
                         <HabContainer key={index} subAppConfig={appConfig}
-                            onDelete={deleteContainer} // Pass the deleteContainer function
+                            onDelete={deleteContainer}
                         />
 
                     ))}
