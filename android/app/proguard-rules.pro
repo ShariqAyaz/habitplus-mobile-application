@@ -8,3 +8,17 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+-keep class * extends com.google.android.gms.common.api.Api$ApiOptions {
+    *;
+}
+-keep class * extends com.google.android.gms.common.api.Api$ApiOptions$HasGoogleSignInAccountOptions {
+    *;
+}
+-keep class * extends com.google.android.gms.common.api.Api$ApiOptions$NotRequiredOptions {
+    *;
+}
+-keep class * extends com.google.android.gms.common.api.Api$ApiOptions$HasOptions {
+    *;
+}
+-dontwarn com.google.android.gms.**

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-
-import Draggable from 'react-native-draggable';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
+//import MapView, { UrlTile, Marker } from 'react-native-maps';
+
+import Draggable from 'react-native-draggable';
 
 import HabContainer from '../components/HabContainer';
 
@@ -75,25 +75,36 @@ const MainScreen = ({ navigation }) => {
         }
     }, [Clocation]);
 
-    const renderMap = () => {
-        if (userCoordinates) {
-            const position = userCoordinates;
-
-            return (
-                <MapContainer center={position} zoom={15} style={{ height: 300, width: "100%" }}> {/* Adjust height as needed */}
-                    <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    />
-                    <Marker position={position}>
-                        <Popup>You are here!</Popup>
-                    </Marker>
-                </MapContainer>
-            );
-        } else {
-            return <Text style={{ textAlign: 'center' }}>Fetching location...</Text>;
-        }
-    };
+    // const renderMap = () => {
+    //     //if (userCoordinates) {
+    //         const position = {
+    //             latitude: 0.55,//userCoordinates.latitude,
+    //             longitude: -0.050,//userCoordinates.longitude,
+    //             latitudeDelta: 0.0922, // Adjust as needed
+    //             longitudeDelta: 0.0421, // Adjust as needed
+    //         };
+    
+    //         return (
+    //             <MapView
+    //                 style={{ height: 200, width: '100%' }} // Adjust size as needed
+    //                 initialRegion={position}
+    //             >
+    //                 <UrlTile
+    //                     /**
+    //                      * This URL is a template for OpenStreetMap tiles, which will be used to display the map.
+    //                      * You can replace it with any other tile server URL if you have specific preferences or requirements.
+    //                      */
+    //                     urlTemplate="http://tile.openstreetmap.org/{z}/{x}/{y}.png"
+    //                     maximumZ={19}
+    //                 />
+    //                 <Marker coordinate={position} /> {/* Displays a pin at the user's location */}
+    //             </MapView>
+    //         );
+    //     // } else {
+    //     //     return <Text style={{ textAlign: 'center' }}>Fetching location...</Text>;
+    //     // }
+    // };
+    
 
     useEffect(() => {
         const fetchAppsData = async () => {
@@ -119,7 +130,7 @@ const MainScreen = ({ navigation }) => {
         }, 3000);
     }
 
-    // console.log(JSON.stringify(apps, null, 2));
+
 
     const ActivityRun = async (id) => {
         console.log('From ActivityRun Function √\n');
@@ -135,8 +146,6 @@ const MainScreen = ({ navigation }) => {
         else {
             Alert.alert('Not Implemented', 'The activity is not implemented yet.\nPlease try another activity. ');
         }
-
-
     };
 
     const transformedApps = apps.map(app => ({
@@ -153,6 +162,7 @@ const MainScreen = ({ navigation }) => {
     }));
 
     const fetchLocation = () => {
+
         Geolocation.getCurrentPosition(
             (position) => {
                 setCLocation(position);
@@ -170,7 +180,6 @@ const MainScreen = ({ navigation }) => {
         if (Clocation) {
             try {
 
-                // Start a write transaction
                 await database.write(async () => {
                     const newloc = await database.collections.get('locations').create((locations) => {
                         locations.latitude = Clocation.latitude;
@@ -206,12 +215,12 @@ const MainScreen = ({ navigation }) => {
             const locations = await database.collections.get('locations').query().fetch();
 
             if (locations.length > 0) {
-                // Loop over each location record
+
                 for (const location of locations) {
-                    // Access individual fields of the location record
+
                     const { id, latitude, longitude, timestamp } = location._raw;
 
-                    // Perform your processing or logging here
+
                     console.log(`Location ID: ${id}, Latitude: ${latitude}, Longitude: ${longitude}, Timestamp: ${timestamp}`);
                 }
             } else {
@@ -235,7 +244,7 @@ const MainScreen = ({ navigation }) => {
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
-                        //                        console.log(data);
+
                         if (action === 'start') {
                             setStartLocation(data);
                             setObtainedLocation(true);
@@ -302,9 +311,7 @@ const MainScreen = ({ navigation }) => {
                         )}
 
                     </View>
-                    <View>  
-                    {renderMap()} 
-                    </View>
+                    
 
 
                     <TouchableOpacity
