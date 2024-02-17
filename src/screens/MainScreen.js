@@ -164,7 +164,6 @@ const MainScreen = ({ navigation }) => {
         ],
     }));
 
-    let i = 0.0001;
     const fetchLocation = () => {
 
         Geolocation.getCurrentPosition(
@@ -191,7 +190,6 @@ const MainScreen = ({ navigation }) => {
                 enableHighAccuracy: true, timeout: 15000, maximumAge: 10000
             }
         );
-        i = i + 0.0001;
     };
 
     async function fetchAndSaveLocation() {
@@ -213,21 +211,7 @@ const MainScreen = ({ navigation }) => {
             }
         }
     }
-
-    const navScreens = {
-        'Explore': 'MarketPlace',
-        'Profile': 'Profile',
-        'Settings': 'Settings'
-    };
-
-    const nav = (screen) => {
-        console.log(screen);
-        const route = navScreens[screen];
-        if (route) {
-            navigation.navigate(route);
-        }
-    };
-
+    
     async function fetchAndProcessLocations() {
         try {
             const locations = await database.collections.get('locations').query().fetch();
@@ -284,6 +268,21 @@ const MainScreen = ({ navigation }) => {
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
     };
+
+    const navScreens = {
+        'Explore': 'MarketPlace',
+        'Profile': 'Profile',
+        'Settings': 'Settings'
+    };
+
+    const nav = (screen) => {
+        console.log(screen);
+        const route = navScreens[screen];
+        if (route) {
+            navigation.navigate(route);
+        }
+    };
+
 
     return (
         <View style={styles.container}>
