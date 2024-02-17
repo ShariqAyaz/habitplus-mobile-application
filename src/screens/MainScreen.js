@@ -10,6 +10,13 @@ import { database } from '../../services/database/index';
 import { Q } from '@nozbe/watermelondb';
 import { json } from '@nozbe/watermelondb/decorators';
 
+import MapboxGL from "@rnmapbox/maps";
+
+import { MAPBPOX_API } from "@env";
+
+MapboxGL.setAccessToken(MAPBPOX_API);
+
+
 
 const MainScreen = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -27,6 +34,9 @@ const MainScreen = ({ navigation }) => {
     const [obtainedLocation, setObtainedLocation] = useState(false);
     const [userCoordinates, setUserCoordinates] = useState(null);
 
+    useEffect(() => {
+        MapboxGL.setTelemetryEnabled(false);
+    }, []);
 
     const toggleStartStop = () => {
         setIsStart(!isStart);
@@ -73,7 +83,7 @@ const MainScreen = ({ navigation }) => {
         }
     }, [Clocation]);
 
-    const renderMap = () => {
+    //const renderMap = () => {
     //     if (userCoordinates) {
     //         const position = {
     //             latitude: userCoordinates.latitude,
@@ -310,9 +320,9 @@ const MainScreen = ({ navigation }) => {
                         )}
 
                     </View>
-                    
+
                     <View>
-                        {renderMap()}
+                        <MapboxGL.MapView style={styles.map} />
                     </View>
 
                     <TouchableOpacity
@@ -369,6 +379,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    map: {
+        flex: 1
+      },
     closeButton: {
         width: 120,
         height: 50,
