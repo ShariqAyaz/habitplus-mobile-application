@@ -3,20 +3,15 @@ import { Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Moda
 import { PermissionsAndroid } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Draggable from 'react-native-draggable';
-
 import HabContainer from '../components/HabContainer';
-
 import { database } from '../../services/database/index';
 import { Q } from '@nozbe/watermelondb';
 import { date, json } from '@nozbe/watermelondb/decorators';
-
 import MapboxGL from "@rnmapbox/maps";
-
 import { MAPBPOX_API } from "@env";
 import { isNumber } from '@rnmapbox/maps/lib/typescript/src/utils';
 
 MapboxGL.setAccessToken(MAPBPOX_API);
-
 
 const MainScreen = ({ navigation }) => {
 
@@ -34,6 +29,48 @@ const MainScreen = ({ navigation }) => {
 
     useEffect(() => {
         MapboxGL.setTelemetryEnabled(false);
+    }, []);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (obtainedLocation === true) {
+                console.log('Fetching and Saving Location');
+                fetchAndSaveLocation();
+            }
+        }, 10000);
+        return () => clearInterval(intervalId);
+
+    }, []);
+
+    useEffect(() => {
+        if (location) {
+            if (!isNaN(location.latitude) && !isNaN(location.longitude)) {
+                setUserCoordinates([location.latitude, location.longitude]);
+            }
+        }
+    }, [location]);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            fetchLocation();
+        }, 10000);
+        return () => clearInterval(intervalId);
+
+    }, []);
+
+    useEffect(() => {
+        const fetchAppsData = async () => {
+            setIsLoading(true);
+            const appsData = await database.collections.get('apps').query().fetch();
+            setApps(appsData.map(app => ({
+                ...app._raw,
+
+            })));
+            setIsLoading(false);
+        };
+
+        fetchAppsData();
+        requestLocationPermission();
     }, []);
 
     const toggleStartStop = () => {
@@ -64,28 +101,8 @@ const MainScreen = ({ navigation }) => {
         }
     }
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            if (obtainedLocation === true) {
-                console.log('Fetching and Saving Location');
-                fetchAndSaveLocation();
-            }
-        }, 10000);
-        return () => clearInterval(intervalId);
-
-    }, []);
-
-    useEffect(() => {
-        if (location) {
-            if (!isNaN(location.latitude) && !isNaN(location.longitude)) {
-                setUserCoordinates([location.latitude, location.longitude]);
-            }
-        }
-    }, [location]);
-
-
     const MapComponent = React.memo(({ location }) => {
-        if (mapVisible===true){
+        if (mapVisible === true) {
             if (location && !isNaN(location.latitude) && !isNaN(location.longitude)) {
                 return (
                     <MapboxGL.MapView style={styles.map}>
@@ -106,30 +123,6 @@ const MainScreen = ({ navigation }) => {
     });
 
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            fetchLocation();
-        }, 10000);
-        return () => clearInterval(intervalId);
-
-    }, []);
-
-
-    useEffect(() => {
-        const fetchAppsData = async () => {
-            setIsLoading(true);
-            const appsData = await database.collections.get('apps').query().fetch();
-            setApps(appsData.map(app => ({
-                ...app._raw,
-
-            })));
-            setIsLoading(false);
-        };
-
-        fetchAppsData();
-        requestLocationPermission();
-    }, []);
-
     if (isLoading) {
         setTimeout(() => {
             return <Text style={[styles.greetingText]}>
@@ -137,8 +130,6 @@ const MainScreen = ({ navigation }) => {
             </Text>;
         }, 3000);
     }
-
-
 
     const ActivityRun = async (id) => {
         //console.log('From ActivityRun Function √\n');
@@ -185,9 +176,9 @@ const MainScreen = ({ navigation }) => {
                     setLocation(newLocation);
                 }
                 const currentTime = new Date();
-                console.log('Current Location:', position.coords.latitude, position.coords.longitude,currentTime);
+                console.log('Current Location:', position.coords.latitude, position.coords.longitude, currentTime);
                 setUserCoordinates([position.coords.latitude, position.coords.longitude]);
-                
+
             },
             (error) => {
                 console.log(error.code, error.message);
@@ -289,7 +280,6 @@ const MainScreen = ({ navigation }) => {
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
     };
-
 
     return (
         <View style={styles.container}>
