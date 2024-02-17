@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { styles } from './styles/MainScreenStyle';
 import { Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
-import { PermissionsAndroid } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
 import Draggable from 'react-native-draggable';
+
 import HabContainer from '../components/HabContainer';
+
 import { database } from '../../services/database/index';
 import { Q } from '@nozbe/watermelondb';
 import { date, json } from '@nozbe/watermelondb/decorators';
+
+import { PermissionsAndroid } from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
 import MapboxGL from "@rnmapbox/maps";
+
 import { MAPBPOX_API } from "@env";
-import { isNumber } from '@rnmapbox/maps/lib/typescript/src/utils';
 
 MapboxGL.setAccessToken(MAPBPOX_API);
 
@@ -380,125 +384,5 @@ const MainScreen = ({ navigation }) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    map: {
-        flex: 1,
-        width: '90%',
-        height: '100%',
-    },
-    closeButton: {
-        width: 120,
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F14F21',
-        marginBottom: 20,
-        borderRadius: 30,
-        alignSelf: 'center', position: 'absolute', bottom: 0, marginBottom: 20
-    },
-    startButton: {
-        width: 200,
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#eb8634',
-        borderRadius: 10,
-        marginTop: 20,
-        alignSelf: 'center',
-    },
-    closeButtonText: {
-        fontFamily: 'Roboto-Bold',
-        fontWeight: 'bold',
-        color: 'white',
-        fontSize: 16,
-    },
-    emptyText: {
-        color: '#F14F21',
-        fontSize: 13,
-        marginTop: 4,
-        paddingLeft: 26,
-        lineHeight: 18,
-        letterSpacing: 1,
-        textShadowColor: 'silver',
-        textShadowOffset: { width: 0.01, height: 0.05 },
-        textShadowRadius: 0.1,
-    },
-    topBar: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: 60,
-        backgroundColor: 'transparent',
-        justifyContent: 'center',
-        paddingLeft: 16,
-        shadowColor: '#333333',
-        shadowOffset: {
-            width: -2,
-            height: 4,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 0,
-        elevation: 4,
-    },
-    greetingText: {
-        fontFamily: 'Roboto-Black',
-        color: '#2EB67D',
-        fontSize: 28,
-    },
-    bodyContainer: {
-        flex: 1,
-        marginTop: 80,
-        height: '100%',
-        width: '100%',
-        marginBottom: 60,
-    },
-    body: {
-        flex: 1,
-    },
-    bottomBar: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 60,
-        backgroundColor: 'silver',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        padding: 4,
-        paddingTop: 6,
-        alignItems: 'center',
-    },
-
-    separator: {
-        height: 1,
-        backgroundColor: '#ECB22E',
-        width: '90%',
-        marginVertical: 4,
-        alignSelf: 'center',
-    },
-    bottomBarButton: {
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    bottomBarButtonText: {
-        color: 'black',
-        fontFamily: 'Roboto-Medium',
-        fontSize: 11,
-        textAlign: 'center',
-    },
-    iconContainer: {
-        alignItems: 'center',
-    },
-    icon: {
-        width: 20,
-        height: 20,
-    },
-});
 
 export default MainScreen;
