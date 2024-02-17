@@ -9,16 +9,27 @@
 
 # Add any project specific keep options here:
 
--keep class * extends com.google.android.gms.common.api.Api$ApiOptions {
-    *;
-}
--keep class * extends com.google.android.gms.common.api.Api$ApiOptions$HasGoogleSignInAccountOptions {
-    *;
-}
--keep class * extends com.google.android.gms.common.api.Api$ApiOptions$NotRequiredOptions {
-    *;
-}
--keep class * extends com.google.android.gms.common.api.Api$ApiOptions$HasOptions {
-    *;
-}
--dontwarn com.google.android.gms.**
+/**
+ * ProGuard configuration file for Android app.
+ * 
+ * This file specifies the rules for keeping certain classes and their members during the ProGuard obfuscation process.
+ * The rules in this file are specific to the Google Play Services APIs.
+ * 
+ * -keep class * extends com.google.android.gms.common.api.Api$ApiOptions {
+ *     *;
+ * }
+ * 
+ * -keep class * extends com.google.android.gms.common.api.Api$ApiOptions$HasGoogleSignInAccountOptions {
+ *     *;
+ * }
+ * 
+ * -keep class * extends com.google.android.gms.common.api.Api$ApiOptions$NotRequiredOptions {
+ *     *;
+ * }
+ * 
+ * -keep class * extends com.google.android.gms.common.api.Api$ApiOptions$HasOptions {
+ *     *;
+ * }
+ * 
+ * -dontwarn com.google.android.gms.**
+ */
