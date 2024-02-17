@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
-import MapView, { UrlTile, Marker } from 'react-native-maps';
 import { PermissionsAndroid } from 'react-native';
-
+import Geolocation from 'react-native-geolocation-service';
 import Draggable from 'react-native-draggable';
 
 import HabContainer from '../components/HabContainer';
@@ -76,34 +74,34 @@ const MainScreen = ({ navigation }) => {
     }, [Clocation]);
 
     const renderMap = () => {
-        if (userCoordinates) {
-            const position = {
-                latitude: userCoordinates.latitude,
-                longitude: userCoordinates.longitude,
-                latitudeDelta: 0.0922, // Adjust as needed
-                longitudeDelta: 0.0421, // Adjust as needed
-            };
+    //     if (userCoordinates) {
+    //         const position = {
+    //             latitude: userCoordinates.latitude,
+    //             longitude: userCoordinates.longitude,
+    //             latitudeDelta: 0.0922, // Adjust as needed
+    //             longitudeDelta: 0.0421, // Adjust as needed
+    //         };
 
-            return (
-                <MapView
-                    style={{ height: 200, width: '100%' }} // Adjust size as needed
-                    initialRegion={position}
-                >
-                    <UrlTile
-                        /**
-                         * This URL is a template for OpenStreetMap tiles, which will be used to display the map.
-                         * You can replace it with any other tile server URL if you have specific preferences or requirements.
-                         */
-                        urlTemplate="http://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        maximumZ={19}
-                    />
-                    <Marker coordinate={position} /> {/* Displays a pin at the user's location */}
-                </MapView>
-            );
-        } else {
-            return <Text style={{ textAlign: 'center' }}>Fetching location...</Text>;
-        }
-    };
+    //         return (
+    //             <MapView
+    //                 style={{ height: 200, width: '100%' }} // Adjust size as needed
+    //                 initialRegion={position}
+    //             >
+    //                 <UrlTile
+    //                     /**
+    //                      * This URL is a template for OpenStreetMap tiles, which will be used to display the map.
+    //                      * You can replace it with any other tile server URL if you have specific preferences or requirements.
+    //                      */
+    //                     urlTemplate="http://tile.openstreetmap.org/{z}/{x}/{y}.png"
+    //                     maximumZ={19}
+    //                 />
+    //                 <Marker coordinate={position} /> {/* Displays a pin at the user's location */}
+    //             </MapView>
+    //         );
+    //     } else {
+    //         return <Text style={{ textAlign: 'center' }}>Fetching location...</Text>;
+    //     }
+    // };
 
 
 
