@@ -8,31 +8,29 @@ import HabContainer from '../components/HabContainer';
 
 import { database } from '../../services/database/index';
 import { Q } from '@nozbe/watermelondb';
-import { json } from '@nozbe/watermelondb/decorators';
+import { date, json } from '@nozbe/watermelondb/decorators';
 
 import MapboxGL from "@rnmapbox/maps";
 
 import { MAPBPOX_API } from "@env";
+import { isNumber } from '@rnmapbox/maps/lib/typescript/src/utils';
 
 MapboxGL.setAccessToken(MAPBPOX_API);
 
 
-
 const MainScreen = ({ navigation }) => {
+
+    const [mapVisible, setMapVisible] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [location, setLocation] = useState('');
-    const [Clocation, setCLocation] = useState(null);
-
-
     const [apps, setApps] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isStart, setIsStart] = useState(false);
     const [startLocation, setStartLocation] = useState(null);
     const [stopLocation, setStopLocation] = useState(null);
     const [obtainedLocation, setObtainedLocation] = useState(false);
-    const [userCoordinates, setUserCoordinates] = useState(null);
+    const [userCoordinates, setUserCoordinates] = useState([0.00, -0.01]);
 
     useEffect(() => {
         MapboxGL.setTelemetryEnabled(false);
@@ -78,41 +76,43 @@ const MainScreen = ({ navigation }) => {
     }, []);
 
     useEffect(() => {
-        if (Clocation) {
-            setUserCoordinates([Clocation.latitude, Clocation.longitude]);
+        if (location) {
+            if (!isNaN(location.latitude) && !isNaN(location.longitude)) {
+                setUserCoordinates([location.latitude, location.longitude]);
+            }
         }
-    }, [Clocation]);
+    }, [location]);
 
-    //const renderMap = () => {
-    //     if (userCoordinates) {
-    //         const position = {
-    //             latitude: userCoordinates.latitude,
-    //             longitude: userCoordinates.longitude,
-    //             latitudeDelta: 0.0922, // Adjust as needed
-    //             longitudeDelta: 0.0421, // Adjust as needed
-    //         };
 
-    //         return (
-    //             <MapView
-    //                 style={{ height: 200, width: '100%' }} // Adjust size as needed
-    //                 initialRegion={position}
-    //             >
-    //                 <UrlTile
-    //                     /**
-    //                      * This URL is a template for OpenStreetMap tiles, which will be used to display the map.
-    //                      * You can replace it with any other tile server URL if you have specific preferences or requirements.
-    //                      */
-    //                     urlTemplate="http://tile.openstreetmap.org/{z}/{x}/{y}.png"
-    //                     maximumZ={19}
-    //                 />
-    //                 <Marker coordinate={position} /> {/* Displays a pin at the user's location */}
-    //             </MapView>
-    //         );
-    //     } else {
-    //         return <Text style={{ textAlign: 'center' }}>Fetching location...</Text>;
-    //     }
-    // };
+    const MapComponent = React.memo(({ location }) => {
+        if (mapVisible===true){
+            if (location && !isNaN(location.latitude) && !isNaN(location.longitude)) {
+                return (
+                    <MapboxGL.MapView style={styles.map}>
+                        <MapboxGL.Camera
+                            zoomLevel={16}
+                            centerCoordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
+                        />
+                        <MapboxGL.PointAnnotation
+                            coordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
+                            id="my-location"
+                        />
+                    </MapboxGL.MapView>
+                );
+            } else {
+                return (<Text>NO LOCATION</Text>);
+            }
+        }
+    });
 
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            fetchLocation();
+        }, 10000);
+        return () => clearInterval(intervalId);
+
+    }, []);
 
 
     useEffect(() => {
@@ -127,7 +127,6 @@ const MainScreen = ({ navigation }) => {
         };
 
         fetchAppsData();
-        fetchLocation();
         requestLocationPermission();
     }, []);
 
@@ -142,10 +141,10 @@ const MainScreen = ({ navigation }) => {
 
 
     const ActivityRun = async (id) => {
-        console.log('From ActivityRun Function √\n');
+        //console.log('From ActivityRun Function √\n');
         const activity = await database.collections.get('apps').query(Q.where('id', id)).fetch(1);
 
-        console.log(activity[0].id);
+        //console.log(activity[0].id);
 
         if (activity[0].title === 'RUNNER') {
 
@@ -170,37 +169,52 @@ const MainScreen = ({ navigation }) => {
         ],
     }));
 
+    let i = 0.0001;
     const fetchLocation = () => {
 
         Geolocation.getCurrentPosition(
+
             (position) => {
-                setCLocation(position);
-                console.log(`Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
+                const newLocation = {
+
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                };
+
+                if (!location || location.latitude !== newLocation.latitude || location.longitude !== newLocation.longitude) {
+                    setLocation(newLocation);
+                }
+                const currentTime = new Date();
+                console.log('Current Location:', position.coords.latitude, position.coords.longitude,currentTime);
+                setUserCoordinates([position.coords.latitude, position.coords.longitude]);
+                
             },
             (error) => {
                 console.log(error.code, error.message);
             },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+            {
+                enableHighAccuracy: true, timeout: 15000, maximumAge: 10000
+            }
         );
+        i = i + 0.0001;
     };
 
     async function fetchAndSaveLocation() {
         getCurrentLocation();
-        if (Clocation) {
+        if (location) {
             try {
 
                 await database.write(async () => {
                     const newloc = await database.collections.get('locations').create((locations) => {
-                        locations.latitude = Clocation.latitude;
-                        locations.longitude = Clocation.longitude;
+                        locations.latitude = location.latitude;
+                        locations.longitude = location.longitude + i;
                         locations.timestamp = new Date();
                     });
                     console.log('Location Saved:', newloc.id);
                 });
 
-
             } catch (error) {
-                console.error('Error saving location:' + Clocation.latitude, error);
+                console.error('Error saving location:' + location.latitude, error);
             }
         }
     }
@@ -244,10 +258,12 @@ const MainScreen = ({ navigation }) => {
         console.log('Getting Current Location');
         Geolocation.getCurrentPosition(
             (position) => {
-                setCLocation({
+                setLocation({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                 });
+
+                setObtainedLocation([position.coords.latitude, position.coords.longitude]);
 
                 const url = `https://t6hlbd54wg.execute-api.us-east-1.amazonaws.com/api/Location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
                 fetch(url)
@@ -321,8 +337,8 @@ const MainScreen = ({ navigation }) => {
 
                     </View>
 
-                    <View>
-                        <MapboxGL.MapView style={styles.map} />
+                    <View style={[styles.container, { alignItems: 'center', paddingTop: 20, paddingBottom: 95 }]}>
+                        <MapComponent location={location} />
                     </View>
 
                     <TouchableOpacity
@@ -380,8 +396,10 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     map: {
-        flex: 1
-      },
+        flex: 1,
+        width: '90%',
+        height: '100%',
+    },
     closeButton: {
         width: 120,
         height: 50,

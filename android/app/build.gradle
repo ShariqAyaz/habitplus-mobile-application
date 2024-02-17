@@ -20,6 +20,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        missingDimensionStrategy 'react-native-camera', 'general'
     }
     signingConfigs {
         debug {
@@ -56,7 +57,7 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     
-    implementation project(':@react-native-voice_voice')    
+    // implementation project(':@react-native-voice_voice') 
 
 }
 
@@ -65,6 +66,5 @@ project.ext.vectoricons = [
 ]
 
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
-
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
