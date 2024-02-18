@@ -24,7 +24,6 @@ const MainScreen = ({ navigation }) => {
     const [location, setLocation] = useState('');
     const [apps, setApps] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [scrollOffset, setScrollOffset] = useState(0);
     const [isStart, setIsStart] = useState(false);
     const [startLocation, setStartLocation] = useState(null);
     const [stopLocation, setStopLocation] = useState(null);
@@ -36,18 +35,32 @@ const MainScreen = ({ navigation }) => {
     }, []);
 
     useEffect(() => {
+        const fetchAndProcessLocation = async () => {
+            const newLocation = await getCurrentLocation();
+            setLocation(newLocation);
+        };
+        fetchAndProcessLocation();
         const intervalId = setInterval(() => {
-            if (obtainedLocation === true) {
-                console.log('Fetching and Saving Location');
-                fetchAndSaveLocation();
-            }
+            fetchAndProcessLocation();
         }, 10000);
-        return () => clearInterval(intervalId);
 
+        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {
+
+        if (isStart) {
+            const intervalId = setInterval(() => {
+                getCurrentLocation('start');
+            }, 10000);
+
+            return () => clearInterval(intervalId);
+        }
+    }, [isStart]);
+
+    useEffect(() => {
         if (location) {
+            console.log('useEffect->location-> \t Location:', location.latitude, location.longitude);
             if (!isNaN(location.latitude) && !isNaN(location.longitude)) {
                 setUserCoordinates([location.latitude, location.longitude]);
             }
@@ -55,15 +68,8 @@ const MainScreen = ({ navigation }) => {
     }, [location]);
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
-            fetchLocation();
-        }, 10000);
-        return () => clearInterval(intervalId);
-
-    }, []);
-
-    useEffect(() => {
         const fetchAppsData = async () => {
+            console.log('fetchAppsData() \t Fetching Apps Data');
             setIsLoading(true);
             const appsData = await database.collections.get('apps').query().fetch();
             setApps(appsData.map(app => ({
@@ -96,36 +102,33 @@ const MainScreen = ({ navigation }) => {
                 }
             )
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                console.log("Location Permission Granted.");
+                console.log("requestLocationPermission() \t Location Permission Granted.");
             } else {
-                console.log("Location Permission Denied.");
+                console.log("requestLocationPermission() \t Location Permission Denied.");
             }
         } catch (err) {
             console.warn(err)
         }
     }
 
-    const MapComponent = React.memo(({ location }) => {
-        if (mapVisible === true) {
-            if (location && !isNaN(location.latitude) && !isNaN(location.longitude)) {
-                return (
-                    <MapboxGL.MapView style={styles.map}>
-                        <MapboxGL.Camera
-                            zoomLevel={16}
-                            centerCoordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
-                        />
-                        <MapboxGL.PointAnnotation
-                            coordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
-                            id="my-location"
-                        />
-                    </MapboxGL.MapView>
-                );
-            } else {
-                return (<Text>NO LOCATION</Text>);
-            }
+    const MapComponent = ({ location }) => {
+        if (!mapVisible || !location || isNaN(location.latitude) || isNaN(location.longitude)) {
+            return <Text>NO LOCATION</Text>;
         }
-    });
 
+        return (
+            <MapboxGL.MapView style={styles.map}>
+                <MapboxGL.Camera
+                    zoomLevel={16}
+                    centerCoordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
+                />
+                <MapboxGL.PointAnnotation
+                    coordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
+                    id="my-location"
+                />
+            </MapboxGL.MapView>
+        );
+    };
 
     if (isLoading) {
         setTimeout(() => {
@@ -136,10 +139,9 @@ const MainScreen = ({ navigation }) => {
     }
 
     const ActivityRun = async (id) => {
-        //console.log('From ActivityRun Function √\n');
+
         const activity = await database.collections.get('apps').query(Q.where('id', id)).fetch(1);
 
-        //console.log(activity[0].id);
 
         if (activity[0].title === 'RUNNER') {
 
@@ -164,110 +166,70 @@ const MainScreen = ({ navigation }) => {
         ],
     }));
 
-    const fetchLocation = () => {
-
-        Geolocation.getCurrentPosition(
-
-            (position) => {
-                const newLocation = {
-
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                };
-
-                if (!location || location.latitude !== newLocation.latitude || location.longitude !== newLocation.longitude) {
-                    setLocation(newLocation);
-                }
-                const currentTime = new Date();
-                console.log('Current Location:', position.coords.latitude, position.coords.longitude, currentTime);
-                setUserCoordinates([position.coords.latitude, position.coords.longitude]);
-
-            },
-            (error) => {
-                console.log(error.code, error.message);
-            },
-            {
-                enableHighAccuracy: true, timeout: 15000, maximumAge: 10000
-            }
-        );
-    };
-
-    async function fetchAndSaveLocation() {
-        getCurrentLocation();
-        if (location) {
-            try {
-
-                await database.write(async () => {
-                    const newloc = await database.collections.get('locations').create((locations) => {
-                        locations.latitude = location.latitude;
-                        locations.longitude = location.longitude + i;
-                        locations.timestamp = new Date();
-                    });
-                    console.log('Location Saved:', newloc.id);
-                });
-
-            } catch (error) {
-                console.error('Error saving location:' + location.latitude, error);
-            }
-        }
-    }
-    
     async function fetchAndProcessLocations() {
         try {
             const locations = await database.collections.get('locations').query().fetch();
-
             if (locations.length > 0) {
-
                 for (const location of locations) {
-
                     const { id, latitude, longitude, timestamp } = location._raw;
-
-
-                    console.log(`Location ID: ${id}, Latitude: ${latitude}, Longitude: ${longitude}, Timestamp: ${timestamp}`);
+                    const dateTime = new Date(timestamp).toLocaleString(undefined, { hour: 'numeric', minute: 'numeric' });
+                    console.log(`fetchAndProcessLocations() -> \t Location ID: ${id}, Latitude: ${latitude}, Longitude: ${longitude}, Timestamp: ${dateTime}`);
                 }
             } else {
-                console.log('No records found in the "locations" collection.');
+                console.log('fetchAndProcessLocations() -> \t No records found in the "locations" collection.');
             }
         } catch (error) {
-            console.error('Error fetching and processing locations:', error);
+            console.error('fetchAndProcessLocations() -> \t Error fetching and processing locations:', error);
         }
     }
 
     const getCurrentLocation = (action) => {
-        console.log('Getting Current Location');
+        console.log('getCurrentLocation() \t Getting Current Location');
         Geolocation.getCurrentPosition(
             (position) => {
-                setLocation({
+                const newLocation = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
-                });
+                };            
+                if (!isNaN(newLocation.latitude) && !isNaN(newLocation.longitude)) {
+                    setLocation(newLocation); 
+                    setObtainedLocation(true); 
+                    if (action === 'start') {
+                        console.log("getCurrentLocation()->Start Location: textual data");
+                        //setMapVisible(true);
+                    } else if (action === 'end') {
+                        console.log("getCurrentLocation()->Stop Location: textual data");
+                        setMapVisible(false);
+                        fetchAndProcessLocations(); 
+                    }
 
-                setObtainedLocation([position.coords.latitude, position.coords.longitude]);
-
-                const url = `https://t6hlbd54wg.execute-api.us-east-1.amazonaws.com/api/Location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-
-                        if (action === 'start') {
-                            setStartLocation(data);
-                            setObtainedLocation(true);
-                        } else if (action === 'end') {
-                            setStopLocation(data);
-                            setObtainedLocation(false);
-                            fetchAndProcessLocations();
-                        }
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
+                    const url = `https://t6hlbd54wg.execute-api.us-east-1.amazonaws.com/api/Location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            
+                            if (action === 'start') {
+                                setStartLocation(data); 
+                            } else if (action === 'end') {
+                                setStopLocation(data); 
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching additional location data:', error);
+                        });
+                } else {
+                    console.log('Invalid location data received:', newLocation);
+                    setMapVisible(false); 
+                }
             },
             (error) => {
-                console.log(error.code, error.message);
+                console.log('Error getting current location:', error.code, error.message);
+                setMapVisible(false); 
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
     };
+    
 
     const navScreens = {
         'Explore': 'MarketPlace',
@@ -282,7 +244,6 @@ const MainScreen = ({ navigation }) => {
             navigation.navigate(route);
         }
     };
-
 
     return (
         <View style={styles.container}>

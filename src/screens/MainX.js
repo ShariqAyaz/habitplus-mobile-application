@@ -104,6 +104,20 @@ const MainX = ({ navigation }) => {
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('MapScreen')}
+          >
+            <Text style={[styles.buttonText, { color: 'black',borderWidth:2 }]}>CHeckMap</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={deleteToken}
+          >
+            <Text style={[styles.buttonText, { color: 'black' }]}>Delete Token</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
             onPress={() => navigation.navigate('GettingStarted')}
           >
             <Text style={[styles.buttonText, { color: 'black' }]}>GettingStarted</Text>

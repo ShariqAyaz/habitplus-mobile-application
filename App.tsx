@@ -16,6 +16,7 @@ import Settings from './src/screens/Settings';
 import Profile from './src/screens/Profile';
 import infloading from './src/screens/infloading';
 import MyScreen from './src/screens/MyScreen';
+import MapScreen from './src/screens/MapScreen';
 
 const Stack = createStackNavigator(); 
 
@@ -62,6 +63,7 @@ const App = () => {
         <Stack.Screen name="MarketPlace" component={MarketPlace} options={{ headerShown: false }} />
         <Stack.Screen name="infloading" component={infloading} options={{ headerShown: false }} />
         <Stack.Screen name="MyScreen" component={MyScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
