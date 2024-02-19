@@ -14,7 +14,6 @@ import Geolocation from 'react-native-geolocation-service';
 
 const MainScreen = ({ navigation }) => {
 
-    const [mapVisible, setMapVisible] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [location, setLocation] = useState('');
     const [apps, setApps] = useState([]);
@@ -22,12 +21,8 @@ const MainScreen = ({ navigation }) => {
     const [isStart, setIsStart] = useState(false);
     const [startLocation, setStartLocation] = useState(null);
     const [stopLocation, setStopLocation] = useState(null);
-    const [obtainedLocation, setObtainedLocation] = useState(false);
     const [userCoordinates, setUserCoordinates] = useState([0.00, -0.01]);
 
-    useEffect(() => {
-        MapboxGL.setTelemetryEnabled(false);
-    }, []);
 
     useEffect(() => {
         const fetchAndProcessLocation = async () => {
@@ -106,24 +101,25 @@ const MainScreen = ({ navigation }) => {
         }
     }
 
-    const MapComponent = ({ location }) => {
-        if (!mapVisible || !location || isNaN(location.latitude) || isNaN(location.longitude)) {
-            return <Text>NO LOCATION</Text>;
-        }
+    // Map Function depreciated
+    // const MapComponent = ({ location }) => {
+    //     if (!mapVisible || !location || isNaN(location.latitude) || isNaN(location.longitude)) {
+    //         return <Text>NO LOCATION</Text>;
+    //     }
 
-        return (
-            <MapboxGL.MapView style={styles.map}>
-                <MapboxGL.Camera
-                    zoomLevel={16}
-                    centerCoordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
-                />
-                <MapboxGL.PointAnnotation
-                    coordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
-                    id="my-location"
-                />
-            </MapboxGL.MapView>
-        );
-    };
+    //     return (
+    //         <MapboxGL.MapView style={styles.map}>
+    //             <MapboxGL.Camera
+    //                 zoomLevel={16}
+    //                 centerCoordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
+    //             />
+    //             <MapboxGL.PointAnnotation
+    //                 coordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
+    //                 id="my-location"
+    //             />
+    //         </MapboxGL.MapView>
+    //     );
+    // };
 
     if (isLoading) {
         setTimeout(() => {
@@ -178,6 +174,8 @@ const MainScreen = ({ navigation }) => {
         }
     }
 
+
+    // need to fix
     const getCurrentLocation = (action) => {
         console.log('getCurrentLocation() \t Getting Current Location');
         Geolocation.getCurrentPosition(
@@ -185,28 +183,25 @@ const MainScreen = ({ navigation }) => {
                 const newLocation = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
-                };            
+                };
                 if (!isNaN(newLocation.latitude) && !isNaN(newLocation.longitude)) {
-                    setLocation(newLocation); 
-                    setObtainedLocation(true); 
+                    setLocation(newLocation);
                     if (action === 'start') {
                         console.log("getCurrentLocation()->Start Location: textual data");
-                        //setMapVisible(true);
                     } else if (action === 'end') {
                         console.log("getCurrentLocation()->Stop Location: textual data");
-                        setMapVisible(false);
-                        fetchAndProcessLocations(); 
+                        fetchAndProcessLocations();
                     }
 
                     const url = `https://t6hlbd54wg.execute-api.us-east-1.amazonaws.com/api/Location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {
-                            
+
                             if (action === 'start') {
-                                setStartLocation(data); 
+                                setStartLocation(data);
                             } else if (action === 'end') {
-                                setStopLocation(data); 
+                                setStopLocation(data);
                             }
                         })
                         .catch(error => {
@@ -214,17 +209,15 @@ const MainScreen = ({ navigation }) => {
                         });
                 } else {
                     console.log('Invalid location data received:', newLocation);
-                    setMapVisible(false); 
                 }
             },
             (error) => {
                 console.log('Error getting current location:', error.code, error.message);
-                setMapVisible(false); 
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
     };
-    
+
 
     const navScreens = {
         'Explore': 'MarketPlace',
@@ -286,9 +279,13 @@ const MainScreen = ({ navigation }) => {
 
                     </View>
 
-                    <View style={[styles.container, { alignItems: 'center', paddingTop: 20, paddingBottom: 95 }]}>
+                    {/*
+                    map function depreciated
+                    */}
+                    {/* 
+                        <View style={[styles.container, { alignItems: 'center', paddingTop: 20, paddingBottom: 95 }]}>
                         <MapComponent location={location} />
-                    </View>
+                    </View> */}
 
                     <TouchableOpacity
                         style={styles.closeButton}
