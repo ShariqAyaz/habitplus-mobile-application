@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, View, ScrollView, Text } from 'react-native';
 import { database } from '../../services/database/index';
+import { isObj } from '@nozbe/watermelondb/utils/fp';
 
 const DevConsole = ({ navigation }) => {
     const [locationData, setLocationData] = useState([]);
@@ -27,9 +28,13 @@ const DevConsole = ({ navigation }) => {
     };
 
     const deleteRecord = async (tableName, id) => {
-        const table = database.collections.get(tableName);
-        await table.find(id).destroy();
-        console.log('record deleted');
+        if (typeof id  === 'object'){
+            console.log('deleting multiple records');
+        }else if (typeof id === 'string') {
+            const table = database.collections.get(tableName);
+            await table.find(id).destroy();
+            console.log('record deleted');
+        }        
     }
 
     return (
@@ -57,6 +62,7 @@ const DevConsole = ({ navigation }) => {
                                     <Text style={{ color: 'white' }}>Latitude: {location.latitude}</Text>
                                     <Text style={{ color: 'white' }}>Longitude: {location.longitude}</Text>
                                     <Text style={{ color: 'white' }}>Timestamp: {new Date(location.timestamp).toLocaleString()}</Text>
+                                    <Button onPress={() => deleteRecord('apps', location)} title={`Delete ${app.appid}`} />
                                 </View>
                             ))}
                         </ScrollView>
