@@ -14,6 +14,7 @@ export const HabSchema = appSchema({
       name: 'apps',
       columns: [
         { name: 'title', type: 'string' },
+        { name: 'appid', type: 'string' , isIndexed: true, isOptional: false },
         { name: 'description', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
@@ -62,12 +63,12 @@ export const HabSchema = appSchema({
     tableSchema({
       name: 'locations',
       columns: [
-          { name: 'latitude', type: 'number', isOptional: false }, 
-          { name: 'longitude', type: 'number', isOptional: false },
-          { name: 'timestamp', type: 'number', isOptional: false }, 
-          { name: 'app_id', type: 'string', isOptional:true, isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: '_id' },
+        { name: 'latitude', type: 'number', isOptional: false },
+        { name: 'longitude', type: 'number', isOptional: false },
+        { name: 'timestamp', type: 'number', isOptional: false },
+        { name: 'app_id', type: 'string', isOptional: true, isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: '_id' },
       ]
-  })
-  
+    })
+
   ],
 });

@@ -25,6 +25,7 @@ async function seedDatabase() {
         {
           _id: '1',
           title: 'RUNNER',
+          appid: '101',
           description: "Runner is officially app under 'Habit++' ecosystem. It schedules your runs and it uses GPS to track your runs and provide you with the stats.",
           created_at: Date.now(),
           updated_at: Date.now(),
@@ -36,6 +37,7 @@ async function seedDatabase() {
         {
           _id: '2',
           title: 'READING',
+          appid: '102',
           description: "Introducing Claudiu's revolutionary scheduling app: A user-friendly solution to manage your time effectively. With intelligent scheduling, task tracking, and analytics, this app simplifies your daily routines. Say goodbye to missed appointments and stress. Download today for a more organized and fulfilling life.",
           created_at: Date.now(),
           updated_at: Date.now(),
@@ -47,6 +49,7 @@ async function seedDatabase() {
         {
           _id: '3',
           title: 'SMART CALENDAR',
+          appid: '103',
           description: "Configure your app settings here.",
           created_at: Date.now(),
           updated_at: Date.now(),
