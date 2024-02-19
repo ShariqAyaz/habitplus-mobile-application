@@ -8,7 +8,6 @@ const DevConsole = ({ navigation }) => {
     const [isDataVisible, setDataVisible] = useState(false);
 
     useEffect(() => {
-
         const fetchLocationData = async () => {
             const locations = await database.collections.get('locations').query().fetch();
             setLocationData(locations.map(loc => loc._raw));
@@ -47,6 +46,7 @@ const DevConsole = ({ navigation }) => {
                                     <Text style={{ color: 'white' }}>Name: {app.title}</Text>
                                     <Text style={{ fontSize:10, color: 'white' }}>Description: {app.description}</Text>
                                     <Text style={{ color: 'white' }}>Author: {app.author}</Text>
+                                    <Button onPress={() => deleteRecord('apps', app.appid)} title={`Delete ${app.appid}`} />
                                 </View>
                             ))}
                         </ScrollView>
