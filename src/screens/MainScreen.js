@@ -11,11 +11,6 @@ import { date, json } from '@nozbe/watermelondb/decorators';
 
 import { PermissionsAndroid } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import MapboxGL from "@rnmapbox/maps";
-
-import { MAPBPOX_API } from "@env";
-
-MapboxGL.setAccessToken(MAPBPOX_API);
 
 const MainScreen = ({ navigation }) => {
 
