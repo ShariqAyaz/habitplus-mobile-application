@@ -1,3 +1,5 @@
+venv/
+venv/*
 # Dependency directories
 node_modules/
 pods/

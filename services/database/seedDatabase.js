@@ -65,6 +65,7 @@ async function seedDatabase() {
           
           const newApp = await database.collections.get('apps').create((appRecord) => {
             appRecord.title = app.title;
+            appRecord.appid = app.appid;
             appRecord.description = app.description;
             appRecord.created_at = app.created_at;
             appRecord.updated_at = app.updated_at;

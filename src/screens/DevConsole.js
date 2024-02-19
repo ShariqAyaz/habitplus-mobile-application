@@ -48,6 +48,7 @@ const DevConsole = ({ navigation }) => {
                         <ScrollView>
                             {appData.map((app, index) => (
                                 <View key={index} style={{ backgroundColor: 'blue', padding: 10, marginVertical: 2 }}>
+                                    <Text style={{ color: 'white' }}>Name: {app.appid}</Text>
                                     <Text style={{ color: 'white' }}>Name: {app.title}</Text>
                                     <Text style={{ fontSize:10, color: 'white' }}>Description: {app.description}</Text>
                                     <Text style={{ color: 'white' }}>Author: {app.author}</Text>
@@ -62,7 +63,7 @@ const DevConsole = ({ navigation }) => {
                                     <Text style={{ color: 'white' }}>Latitude: {location.latitude}</Text>
                                     <Text style={{ color: 'white' }}>Longitude: {location.longitude}</Text>
                                     <Text style={{ color: 'white' }}>Timestamp: {new Date(location.timestamp).toLocaleString()}</Text>
-                                    <Button onPress={() => deleteRecord('apps', location)} title={`Delete ${app.appid}`} />
+                                    <Button onPress={() => deleteRecord('location', location)} title={`Delete ${location.appid}`} />
                                 </View>
                             ))}
                         </ScrollView>

@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { View, Image, Alert, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { API_URL, PORT } from "@env";
+
+
+import { database } from '../../services/database/index';
+import { Q } from '@nozbe/watermelondb';
+import { date, json } from '@nozbe/watermelondb/decorators';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
@@ -28,40 +33,55 @@ const LoginScreen = () => {
                     },
                     body: JSON.stringify({ email: trimmedEmail, password: trimmedPassword }),
                 });
-                
+
                 let accessToken;
-                
+
                 if (response.status === 200) {
                     const data = await response.json();
-                    // Assuming that the API directly returns a JSON object
-                    // and 'data.body' is a JSON string containing the token information
-                
-                   // let body = JSON.parse(data.body); // Make sure that 'data.body' is a stringified JSON
-                
+
                     console.log(data);
-                    
+
                     if (data && data.accessToken) {
                         accessToken = data.accessToken;
                     }
-                
+
                     if (accessToken) {
+
                         await AsyncStorage.setItem('userToken', accessToken);
                         navigation.navigate('MainX');
+
+                        // Here adding the login user to the local database because it is offline first approach but still need internet access to login for the first time
+                        const usersCollection = database.collections.get('users');
+                        await database.action(async () => {
+                            const user = await usersCollection.query(Q.where('email', trimmedEmail)).fetch();
+                            if (user.length > 0) {
+                                await user[0].update((record) => {
+                                    record.email = trimmedEmail;
+                                    record.accessToken = accessToken;
+                                });
+                            } else {
+                                await usersCollection.create((record) => {
+                                    record.email = trimmedEmail;
+                                    record.accessToken = accessToken;
+                                });
+                            }
+                        });
+
                     } else {
                         console.log("Access token is undefined");
                         setErrorMessage('Access token is undefined. Please try again.');
                     }
                 } else {
-                    const errorData = await response.json(); 
-                
+                    const errorData = await response.json();
+
                     console.log('Error response:', errorData);
                     setErrorMessage('Invalid credentials. Please try again.');
                     setIsLoginButtonDisabled(false);
-                
+
                     // Show an alert box with the error message
                     Alert.alert('Login Failed', 'Invalid credentials. Please try again.');
                 }
-                
+
             } catch (error) {
                 console.log(error);
                 setErrorMessage('An error occurred. Please try again later.');
@@ -94,7 +114,7 @@ const LoginScreen = () => {
         setIsEmailValid(emailRegex.test(email.trim()));
         setEmail(email.replace(/\s/g, ''));
     };
-    
+
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
@@ -119,7 +139,7 @@ const LoginScreen = () => {
                     value={password}
                     onChangeText={setPassword}
                 />
-                <Button title="Login" onPress={handleLogin} disabled={isLoginButtonDisabled}/>
+                <Button title="Login" onPress={handleLogin} disabled={isLoginButtonDisabled} />
                 <TouchableOpacity onPress={handleForgotPassword}>
                     <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                 </TouchableOpacity>
