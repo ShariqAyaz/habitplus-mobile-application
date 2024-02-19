@@ -200,6 +200,15 @@ const MainScreen = ({ navigation }) => {
 
                             if (action === 'start') {
                                 setStartLocation(data);
+                                
+                                database.write(async () => {
+                                    await database.collections.get('locations').create(location => {
+                                        location.latitude = position.coords.latitude;
+                                        location.longitude = position.coords.longitude;
+                                        location.timestamp = new Date();
+                                    });
+                                });
+
                             } else if (action === 'end') {
                                 setStopLocation(data);
                             }

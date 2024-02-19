@@ -15,17 +15,17 @@ const MainX = ({ navigation }) => {
       const apps = await database.collections.get('apps').query().fetch();
 
       const appsuui = await database.collections.get('apps_ui').query().fetch();
-    
+
       const appsWithData = await Promise.all(apps.map(async (app) => {
         const appUI = await database.collections.get('apps_ui')
-          .query() 
+          .query()
           .fetch();
-    
+
         return {
-          ...app._raw, 
+          ...app._raw,
         };
       }));
-    
+
       setAppsData(appsWithData);
     };
 
@@ -52,7 +52,7 @@ const MainX = ({ navigation }) => {
     }
   };
 
-//  console.log(JSON.stringify(appsData, null, 2));
+  //  console.log(JSON.stringify(appsData, null, 2));
 
   return (
     <View style={styles.container}>
@@ -90,6 +90,14 @@ const MainX = ({ navigation }) => {
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('DevConsole') }
+          >
+            <Text style={[styles.buttonText, { color: 'black' }]}>Developer Console</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
             onPress={() => console.log('Token saved:', isTokenSaved)}
           >
             <Text style={[styles.buttonText, { color: 'black' }]}>Check Token</Text>
@@ -106,7 +114,7 @@ const MainX = ({ navigation }) => {
             style={[styles.button, { borderRadius: 4 }]}
             onPress={() => navigation.navigate('MapScreen')}
           >
-            <Text style={[styles.buttonText, { color: 'black',borderWidth:2 }]}>CHeckMap</Text>
+            <Text style={[styles.buttonText, { color: 'black', borderWidth: 2 }]}>CHeckMap</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { borderRadius: 4 }]}
