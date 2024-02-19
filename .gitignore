@@ -5,6 +5,7 @@ pods/
 android/.gradle/
 android/build/
 android/local.properties
+android/gradle.properties
 
 .env
 
