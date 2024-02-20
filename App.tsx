@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import './services/database/index';
 
 
 import SplashScreen from './src/screens/SplashScreen';
@@ -27,6 +28,7 @@ const App = () => {
   const [initialRoute, setInitialRoute] = useState('Welcome'); 
 
   useEffect(() => {
+    
     const checkLoginStatus = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');

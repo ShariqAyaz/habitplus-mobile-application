@@ -16,11 +16,16 @@ const MainX = ({ navigation }) => {
 
       const appsuui = await database.collections.get('apps_ui').query().fetch();
 
+      const app_activity_data = await database.collections.get('app_activity_data').query().fetch();
+
+      const xx = app_activity_data.map((app_activity_data => app_activity_data));
+
+      console.log('app_activity_data:', xx );
+      
       const appsWithData = await Promise.all(apps.map(async (app) => {
         const appUI = await database.collections.get('apps_ui')
           .query()
           .fetch();
-
         return {
           ...app._raw,
         };
@@ -51,8 +56,6 @@ const MainX = ({ navigation }) => {
       console.error('Error deleting token:', error);
     }
   };
-
-  //  console.log(JSON.stringify(appsData, null, 2));
 
   return (
     <View style={styles.container}>
@@ -93,6 +96,12 @@ const MainX = ({ navigation }) => {
             onPress={() => navigation.navigate('DevConsole') }
           >
             <Text style={[styles.buttonText, { color: 'black' }]}>Developer Console</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('TestScreen') }
+          >
+            <Text style={[styles.buttonText, { color: 'black' }]}>TestScreen</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.buttonRow}>

@@ -23,7 +23,6 @@ const MainScreen = ({ navigation }) => {
     const [stopLocation, setStopLocation] = useState(null);
     const [userCoordinates, setUserCoordinates] = useState([0.00, -0.01]);
 
-
     useEffect(() => {
         const fetchAndProcessLocation = async () => {
             const newLocation = await getCurrentLocation();
@@ -71,12 +70,12 @@ const MainScreen = ({ navigation }) => {
 
         fetchAppsData();
         requestLocationPermission();
+
     }, []);
 
     const toggleStartStop = () => {
         setIsStart(!isStart);
     };
-
 
     const deleteContainer = (title) => {
         setApps(prevApps => prevApps.filter(app => app.title !== title));
@@ -174,7 +173,6 @@ const MainScreen = ({ navigation }) => {
         }
     }
 
-
     // need to fix
     const getCurrentLocation = (action) => {
         console.log('getCurrentLocation() \t Getting Current Location');
@@ -226,7 +224,6 @@ const MainScreen = ({ navigation }) => {
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
     };
-
 
     const navScreens = {
         'Explore': 'MarketPlace',

@@ -4,8 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { API_URL, PORT } from "@env";
 
-
 import { database } from '../../services/database/index';
+import { seedDatabase } from '../../services/database/seedDatabase';
 import { Q } from '@nozbe/watermelondb';
 import { date, json } from '@nozbe/watermelondb/decorators';
 
@@ -47,25 +47,42 @@ const LoginScreen = () => {
 
                     if (accessToken) {
 
-                        await AsyncStorage.setItem('userToken', accessToken);
-                        navigation.navigate('MainX');
-
                         // Here adding the login user to the local database because it is offline first approach but still need internet access to login for the first time
                         const usersCollection = database.collections.get('users');
-                        await database.action(async () => {
-                            const user = await usersCollection.query(Q.where('email', trimmedEmail)).fetch();
-                            if (user.length > 0) {
-                                await user[0].update((record) => {
+
+                        const user = await usersCollection.query(Q.where('email', trimmedEmail)).fetch();
+
+                        if (user.length > 0) {
+                            console.log("User found");
+
+                            // if user found must chk if apps exits or not
+                            await database.write(async () => {
+                                user[0].update((record) => {
                                     record.email = trimmedEmail;
                                     record.accessToken = accessToken;
+                                    record.updated_at = Date.now();
+                                    record.userid = data.userid;
                                 });
-                            } else {
-                                await usersCollection.create((record) => {
+                            });
+                        } else {
+                            await database.write(async () => {
+                                usersCollection.create((record) => {
                                     record.email = trimmedEmail;
                                     record.accessToken = accessToken;
+                                    record.fullname = "",
+                                        record.created_at = Date.now();
+                                    record.updated_at = Date.now();
+                                    record.userid = data.userid;
                                 });
-                            }
-                        });
+                            });
+
+                            // seems first time for that user or first time 
+                            seedDatabase();
+                        }
+
+
+                        await AsyncStorage.setItem('userToken', accessToken);
+                        navigation.navigate('MainX');
 
                     } else {
                         console.log("Access token is undefined");

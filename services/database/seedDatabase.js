@@ -3,102 +3,148 @@ import { database } from './index';
 async function seedDatabase() {
 
   const appsdata = await database.collections.get('apps').query().fetchCount();
-  const apps_uidata = await database.collections.get('apps_ui').query().fetchCount();
 
   console.log(appsdata, 'apps seedDatabase');
-  console.log(apps_uidata, 'apps_ui seedDatabase');
 
-    if (appsdata === 0 || apps_uidata === 0 ) {
+  if (appsdata === 0) {
 
-      console.log('Seeding new data...');
-// const apps = [
-//   {
-//     _id : '1',
-//     title : 'Keeper',
-//     description : "Keep is the best for keeping your notes, lists, photos, and audio organized. You can add, edit, or delete notes, lists, photos, and audio. You can also add reminders to your notes.",
-//     created_at : Date.now(),
-//     updated_at : Date.now(),
-//     author : 'Ali'
-//   },]
+    console.log('Seeding new data...');
 
-      const apps = [
-        {
-          _id: '1',
-          title: 'RUNNER',
-          appid: '101',
-          description: "Runner is officially app under 'Habit++' ecosystem. It schedules your runs and it uses GPS to track your runs and provide you with the stats.",
-          created_at: Date.now(),
-          updated_at: Date.now(),
-          author: 'Shariq',
-          apps_ui: {
-            theme_id: 3
-          }
-        },
-        {
-          _id: '2',
-          title: 'READING',
-          appid: '102',
-          description: "Introducing Claudiu's revolutionary scheduling app: A user-friendly solution to manage your time effectively. With intelligent scheduling, task tracking, and analytics, this app simplifies your daily routines. Say goodbye to missed appointments and stress. Download today for a more organized and fulfilling life.",
-          created_at: Date.now(),
-          updated_at: Date.now(),
-          author: 'Claudiu',
-          apps_ui: {
-            theme_id: 2
-          }
-        },
-        {
-          _id: '3',
-          title: 'SMART CALENDAR',
-          appid: '103',
-          description: "Configure your app settings here.",
-          created_at: Date.now(),
-          updated_at: Date.now(),
-          author: 'David',
-          apps_ui: {
-            theme_id: 1
-          }
+    const apps = [
+      {
+        title: 'RUNNER',
+        appid: '101',
+        description: "Runner is officially app under 'Habit++' ecosystem. It schedules your runs and it uses GPS to track your runs and provide you with the stats.",
+        created_at: Date.now(),
+        updated_at: Date.now(),
+        author: 'Shariq',
+        image_url: '/assets/images/noimg.png',
+        profile_url: '/assets/images/noimg.png',
+        apps_ui: {
+          theme_id: 3
         }
-      ];
-
-      await database.write(async () => {
-        for (const app of apps) {
-          
-          const newApp = await database.collections.get('apps').create((appRecord) => {
-            appRecord.title = app.title;
-            appRecord.appid = app.appid;
-            appRecord.description = app.description;
-            appRecord.created_at = app.created_at;
-            appRecord.updated_at = app.updated_at;
-            appRecord.author = app.author;
-          });
-
-          console.log( newApp.id, 'newApp.id');
-      
-          const newApp_ui = await database.collections.get('apps_ui').create((appsUI) => {
-            appsUI.app_id = newApp.id; 
-            appsUI.theme_id = 1;
-          });
+      },
+      {
+        title: 'READING',
+        appid: '102',
+        description: "Introducing Claudiu's revolutionary scheduling app: A user-friendly solution to manage your time effectively. With intelligent scheduling, task tracking, and analytics, this app simplifies your daily routines. Say goodbye to missed appointments and stress. Download today for a more organized and fulfilling life.",
+        created_at: Date.now(),
+        updated_at: Date.now(),
+        author: 'Claudiu',
+        apps_ui: {
+          theme_id: 2
         }
+      },
+      {
+        title: 'SMART CALENDAR',
+        appid: '103',
+        description: "Configure your app settings here.",
+        created_at: Date.now(),
+        updated_at: Date.now(),
+        author: 'David',
+        apps_ui: {
+          theme_id: 1
+        }
+      },
+      {
+        title: 'MINDFULNESS',
+        appid: '104',
+        description: "Mindfulness is the best for keeping your notes, lists, photos, and audio organized. You can add, edit, or delete notes, lists, photos, and audio. You can also add reminders to your notes.",
+        created_at: Date.now(),
+        updated_at: Date.now(),
+        author: 'Shariq',
+        apps_ui: {
+          theme_id: 1
+        }
+      }
+    ];
+
+    await database.write(async () => {
+
+      for (const app of apps) {
+        const newApp = await database.collections.get('apps').create((appRecord) => {
+          appRecord.title = app.title;
+          appRecord.appid = app.appid;
+          appRecord.description = app.description;
+          appRecord.created_at = app.created_at;
+          appRecord.updated_at = app.updated_at;
+          appRecord.author = app.author;
+        });
+
+        console.log(newApp.userid, 'newApp.userid');
+
+        const newApp_ui = await database.collections.get('apps_ui').create((appsUI) => {
+          appsUI.app_id = newApp.userid;
+          appsUI.theme_id = 1;
+        });
+      }
+    });
+
+    const countt = await database.collections.get('apps').query().fetchCount();
+    console.log(countt, 'seedDatabase hasData');
+
+  }
+  else {
+    const appsdata = await database.collections.get('apps').query();
+    console.log(appsdata, 'appsdata seedDatabase');
+  }
+
+  const app_activityCount = await database.collections.get('app_activity').query().fetchCount();
+
+  if (app_activityCount === 0) {
+
+    console.log('Seeding running activity and achievements...');
+    
+    await database.write(async () => {
+      const runningActivity = await database.collections.get('app_activity').create((activity) => {
+        activity.activityid = '1';
+        activity.appid = '101';
+        activity.userid = '1';
+        activity.title = 'Morning Runs';
+        activity.description = 'Daily morning runs to keep fit';
+        activity.type = 'DAILY';
+        activity.time = '07:00';
+        activity.frequency = 1;
+        activity.start_date = new Date().getTime();
+
+        activity.notify = true;
+        activity.created_at = new Date().getTime();
       });
 
-      const countt = await database.collections.get('apps').query().fetchCount();
-      console.log(countt , 'seedDatabase hasData');
-    }
-    else {
-      const appsdata = await database.collections.get('apps').query();
-      console.log(appsdata, 'appsdata seedDatabase');
-    }
+      const runAchievements = [
+        { distance: '5km', duration: '30min', date: '2022-01-01' },
+        { distance: '6km', duration: '35min', date: '2022-01-02' },
+      ];
+
+      for (const achievement of runAchievements) {
+
+        console.log('achievement', achievement);
+        console.log(runningActivity.activityid, 'runningActivity.activityid');
+
+        await database.collections.get('app_activity_data').create((data) => {
+          data.activityid.set(runningActivity);
+          data.dataobj = JSON.stringify({
+            distance: achievement.distance,
+            duration: achievement.duration,
+            date: achievement.date
+          });
+        });
+      }
+    });
+
+    console.log('Seeded running activity and achievements.')
+  }
 }
 
 async function deleteAllRecords() {
   await database.write(async () => {
-    
+
     const allApps = await database.collections.get('apps').query().fetch();
-    
+
     await Promise.all(allApps.map(app => app.destroyPermanently()));
-    
+
     const allAppsUI = await database.collections.get('apps_ui').query().fetch();
-    
+
     await Promise.all(allAppsUI.map(appUI => appUI.destroyPermanently()));
 
   });
