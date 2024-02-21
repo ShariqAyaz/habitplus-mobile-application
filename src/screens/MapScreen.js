@@ -26,7 +26,7 @@ const MapScreen = () => {
               <body>
                 <div id="map" style="width: 100%; height: 100%"></div>
                 <script>
-                // Define two coordinates for the line
+                
                 var pointA = [51.505, -0.09];
                 var pointB = [51.51, -0.047];
                 var pointC = [51.49, -0.017];

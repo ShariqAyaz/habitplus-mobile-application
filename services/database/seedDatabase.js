@@ -151,7 +151,7 @@ async function seedDatabase() {
 
     await database.write(async () => {
       const runningActivity = await database.collections.get('app_activity').create((activity) => {
-        activity.activityid = '1';
+        activity.activityid = '2';
         activity.appid = '101';
         activity.userid = '1';
         activity.title = 'Custom Runs';

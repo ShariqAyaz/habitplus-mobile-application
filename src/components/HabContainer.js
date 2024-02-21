@@ -78,7 +78,7 @@ const importComponent = (componentType, props) => {
   }
 };
 
-const HabContainer = ({ onActivityRun,subAppConfig, onDelete }) => {
+const HabContainer = ({ onActivityRun, subAppConfig, onDelete }) => {
   const [components, setComponents] = useState([]);
   const [activityComponents, setActivityComponents] = useState([]); setActivityComponents
   const [isMenuVisible, setMenuVisible] = useState(false);
@@ -173,22 +173,24 @@ const HabContainer = ({ onActivityRun,subAppConfig, onDelete }) => {
 
       let activityRecords = [];
 
+      // activity line items load here
       if (activities.length > 0) {
+
         activityRecords = activities.map((activity, index) => {
           return (
             <TouchableOpacity key={index} onPress={() => onActivityRun(activity.activityid)}>
-            <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-              <Text style={styles.ActivityTitle}>{activity.title}</Text>
-              <Text> </Text>
-              <Text style={styles.ActivityFrequency}>{activity.type} at {activity.time}</Text>
-              <View style={styles.ActivityIcon}>
-                <Image
-                  source={require('../assets/img/run.png')}
-                  style={{ width: 18, height: 18 }}
-                />
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.ActivityTitle}>{activity.title}</Text>
+                <Text> </Text>
+                <Text style={styles.ActivityFrequency}>{activity.type} at {activity.time}</Text>
+                <View style={styles.ActivityIcon}>
+                  <Image
+                    source={require('../assets/img/run.png')}
+                    style={{ width: 18, height: 18 }}
+                  />
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
           );
         });
       }
@@ -239,13 +241,10 @@ const HabContainer = ({ onActivityRun,subAppConfig, onDelete }) => {
       {/* ***** Each Activity within App load from activity table, query exec localy ***** */}
       {activityComponents.map((Component, index) => (
         <View style={styles.ActivityView} key={index}>
-          <Text>
-            {Component}
-          </Text>
+          {Component}
         </View>
       ))}
       {/* ***** Each Activity within App load from activity table, query exec localy END ***** */}
-
 
       {/* The Button To create a new Activity / Habit Lead to Modal */}
       <Modal

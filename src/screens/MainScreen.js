@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { styles } from './styles/MainScreenStyle';
-import { Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
+import {  NativeModules, SafeAreaView, Switch, Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
 import Draggable from 'react-native-draggable';
+import { WebView } from 'react-native-webview';
 
 import HabContainer from '../components/HabContainer';
 
@@ -15,6 +16,7 @@ import Geolocation from 'react-native-geolocation-service';
 const MainScreen = ({ navigation }) => {
 
     const [activityModal, setActivityModal] = useState(false);
+    const [newActivityModal, setNewActivityModal] = useState(false);
     const [location, setLocation] = useState('');
     const [apps, setApps] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -22,7 +24,110 @@ const MainScreen = ({ navigation }) => {
     const [startLocation, setStartLocation] = useState(null);
     const [stopLocation, setStopLocation] = useState(null);
     const [userCoordinates, setUserCoordinates] = useState([0.00, -0.01]);
+    // Save new Habit
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [type, setType] = useState('');
+    const [time, setTime] = useState('');
+    const [day, setDay] = useState(null); // Use null for numeric inputs initially
+    const [date, setDate] = useState('');
+    const [month, setMonth] = useState(null); // Use null for numeric inputs initially
+    const [frequency, setFrequency] = useState(null); // Use null for numeric inputs initially
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [notify, setNotify] = useState(false);
 
+    const toggleSwitch = () => setNotify(previousState => !previousState);
+
+    const mapHtmlContent = `
+    <html>
+    <head>
+        <title>OpenStreetMap with Line</title>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    </head>
+    <body>
+        <div id="map" style="width: 100%; height: 100%"></div>
+        <script>
+        var pointA = [51.5905141, -0.22971917934976066];
+                var pointB = [51.5909852, -0.23096917935986088];
+                var pointC = [51.5916963, -0.22972917936996099];
+                var pointD = [51.5905141, -0.22971917934976066];
+
+                function calculateCenter(points) {
+                    var sumLat = 0;
+                    var sumLng = 0;
+                
+                    points.forEach(function(point) {
+                        sumLat += point[0];
+                        sumLng += point[1];
+                    });
+                
+                    var avgLat = sumLat / points.length;
+                    var avgLng = sumLng / points.length;
+                
+                    return [avgLat, avgLng];
+                }
+                
+                var centerPoint = calculateCenter([pointA, pointB, pointC, pointD]); 
+                
+                console.log("Center Point:", centerPoint);
+
+
+                  var map = L.map('map').setView(centerPoint, 17);
+  
+                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  }).addTo(map);
+  
+                  var pointList = [pointA, pointB, pointC, pointD];
+  
+                  // Create a polyline from the points and add it to the map
+                  var firstpolyline = new L.Polyline(pointList, {
+                      color: 'blue',
+                      weight: 3,
+                      opacity: 0.7,
+                      smoothFactor: 0
+                  });
+                  firstpolyline.addTo(map);
+  
+        </script>
+    </body>
+    </html>
+`;
+
+    const saveActivity = () => {
+        console.log("Saving new habit with the following details:");
+        console.log({ title, description, type, time, day, date, month, frequency, startDate, endDate, notify });
+
+        // Correct way to use database.write and .create
+        database.write(async () => {
+            const newHabit = await database.collections.get('app_activity').create((record) => {
+                record.title = title;
+                record.description = description;
+                record.appid = '101';
+                record.activityid = '3';
+                record.type = type;
+                record.time = time;
+                record.day = day;
+                record.date = date;
+                record.month = month;
+                record.frequency = frequency;
+                record.start_date = startDate; // Ensure these fields match your schema
+                record.end_date = endDate;
+                record.notify = notify;
+            });
+            console.log('New Habit Created:', newHabit);
+        });
+    };
+
+
+    // Save new Habit END
 
     useEffect(() => {
         if (isStart === true) {
@@ -111,10 +216,18 @@ const MainScreen = ({ navigation }) => {
         }, 3000);
     }
 
-    const ActivityRun = async (id) => {
+    const newHabit = async (id) => {
 
-        const activity = await database.collections.get('apps').query(Q.where('id', id)).fetch(1);
-        console.log('New Activity Entry Form',id);
+        const activity = await database.collections.get('apps').query(Q.where('appid', id)).fetch(1);
+
+        console.log('New Activity Entry Form', id);
+        console.log(activity[0].title);
+
+        setNewActivityModal(true);
+
+
+
+
         // if (activity[0].title === 'RUNNER') {
         //     setActivityModal(true);
         // }
@@ -125,16 +238,16 @@ const MainScreen = ({ navigation }) => {
 
     // 
     const loadApps = apps.map(app => ({
-            layout: 'vertical',
-            title: app.title,
-            description: app.desacription,
-            selected_theme: 1,
-            appid: app.appid,
-            columns: [],
-            components: [
-                { type: 'Text', props: { text: app.title, credit: 'By ' + app.author, appid: app.appid } },
-                { type: 'Button', props: { title: 'Make A New Habit', onPress: () => ActivityRun(app.id) } },
-            ],
+        layout: 'vertical',
+        title: app.title,
+        description: app.desacription,
+        selected_theme: 1,
+        appid: app.appid,
+        columns: [],
+        components: [
+            { type: 'Text', props: { text: app.title, credit: 'By ' + app.author, appid: app.appid } },
+            { type: 'Button', props: { title: 'Make A New Habit', onPress: () => newHabit(app.appid) } },
+        ],
     }));
 
     async function fetchAndProcessLocations() {
@@ -222,11 +335,106 @@ const MainScreen = ({ navigation }) => {
     };
 
     const activityIndividual = async (id) => {
-        console.log('activityIndividual',id)
+        console.log('activityIndividual', id)
+
         setActivityModal(true);
     }
+
     return (
         <View style={styles.container}>
+            <Modal
+                animationType="slide"
+                visible={newActivityModal}
+                backgroundColor={'#333333'}
+                transparent={false}
+                onRequestClose={() => setNewActivityModal(false)}
+            >
+                <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99, alignContent: 'center', alignSelf: 'stretch' }}>
+                    <View style={{ margin: 0, padding: 0, alignItems: 'center' }}>
+                        <Text style={{ textAlign: 'center', marginTop: 8, paddingTop: 6, fontFamily: 'Roboto-Black', color: 'white', fontSize: 24 }}>
+                            MAKE A NEW HABIT
+                        </Text>
+                        <View style={[styles.separator]} />
+                    </View>
+                    <View style={{ alignItems: 'center' }}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Title"
+                            onChangeText={text => setTitle(text)}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Description"
+                            onChangeText={text => setDescription(text)}
+                            multiline
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Type (DAILY, WEEKLY, MONTHLY, YEARLY)"
+                            onChangeText={text => setType(text)}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Time (HH:MM)"
+                            onChangeText={text => setTime(text)}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Day (1-31)"
+                            keyboardType="numeric"
+                            onChangeText={text => setDay(parseInt(text))}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Date (YYYY-MM-DD)"
+                            onChangeText={text => setDate(text)}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Month (1-12)"
+                            keyboardType="numeric"
+                            onChangeText={text => setMonth(parseInt(text))}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Frequency"
+                            keyboardType="numeric"
+                            onChangeText={text => setFrequency(parseInt(text))}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Start Date (YYYY-MM-DD)"
+                            onChangeText={text => setStartDate(text)}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="End Date (YYYY-MM-DD) - Optional"
+                            onChangeText={text => setEndDate(text)}
+                        />
+                        <View style={styles.switchContainer}>
+                            <Text style={styles.switchLabel}>Enable Notifications</Text>
+                            <Switch
+                                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                                thumbColor={notify ? "#f5dd4b" : "#f4f3f4"}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={toggleSwitch}
+                                value={notify}
+                            />
+                        </View>
+                        <TouchableOpacity
+                            style={styles.saveButton}
+                            onPress={() => saveActivity()}>
+                            <Text style={styles.saveButtonText}>Save Habit</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity
+                        style={styles.closeButton}
+                        onPress={() => setNewActivityModal(false)}>
+                        <Text style={styles.closeButtonText}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+
             <Modal
                 animationType="slide"
                 visible={activityModal}
@@ -239,6 +447,7 @@ const MainScreen = ({ navigation }) => {
                         <Text style={{ textAlign: 'center', marginTop: 8, paddingTop: 6, fontFamily: 'Roboto-Black', color: 'white', fontSize: 24 }}>
                             MAKE YOUR RUN SCHEDULE
                         </Text>
+
                         <View style={[styles.separator]} />
                         <TouchableOpacity
                             style={[styles.startButton]}
@@ -270,6 +479,15 @@ const MainScreen = ({ navigation }) => {
                         )}
 
                     </View>
+                    <View>
+                        <SafeAreaView style={{ height: 400, width: '100%'}}>
+                            <WebView
+                                style={{ height: 400, width: '100%' }}
+                                originWhitelist={['*']}
+                                source={{ html: mapHtmlContent }}
+                            />
+                        </SafeAreaView>
+                    </View>
 
                     {/*
                     map function depreciated
@@ -286,16 +504,18 @@ const MainScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </Modal>
-            <View style={[styles.topBar]}>
+            <View style={[styles.topBar, { flexDirection: 'column' }]}>
                 <Text style={[styles.greetingText]}>Hi Shariq</Text>
+
+                <Text style={{ color: 'red' }}>Score: 45</Text>
             </View>
             <View style={styles.bodyContainer}>
                 <ScrollView style={styles.body} scrollEventThrottle={6}>
                     {loadApps.map((appConfig, index) => (
-                        <HabContainer key={index} 
-                        subAppConfig={appConfig}
-                        onDelete={deleteContainer}
-                        onActivityRun={activityIndividual} 
+                        <HabContainer key={index}
+                            subAppConfig={appConfig}
+                            onDelete={deleteContainer}
+                            onActivityRun={activityIndividual}
                         />
 
                     ))}

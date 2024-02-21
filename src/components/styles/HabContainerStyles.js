@@ -5,8 +5,12 @@ export const styles = StyleSheet.create({
   CreditStyle:{ marginTop: 0, paddingTop: 0, paddingLeft: 4, color: '#ECB22E', fontSize: 12, fontStyle: 'italic' },
   HabContainerStyle:{ flexDirection: 'row', alignSelf: 'center', alignItems: 'center', padding: 2, marginTop: 8 
 },
-ActivityTitle:{ color: '#2EB67D', fontSize: 18, fontWeight: 'bold' },
-ActivityFrequency:{ color: 'white', fontSize: 18, fontWeight: 'normal' },
+ActivityTitle:{ 
+  color: '#2EB67D',textTransform: 'uppercase', fontSize: 12, fontWeight: 'bold' 
+},
+ActivityFrequency:{ 
+  color: 'white', fontSize: 10, fontWeight: 'normal' , textAlign: 'right'
+},
   buttonStyle: {
     width: '90%',
     height: 40,
@@ -18,14 +22,14 @@ ActivityFrequency:{ color: 'white', fontSize: 18, fontWeight: 'normal' },
   },
   ActivityIcon:{justifyContent: 'right', alignItems: 'right'},
   ActivityView:{
-    marginTop: 8,
-    paddingTop: 8,
-    paddingLeft: 10,
-    paddingRight: 10,
+    marginTop: 6,
+    paddingTop: 6,
+    paddingLeft: 8,
+    paddingRight: 8,
     paddingBottom: 8,
     borderWidth: 0.4,
-    borderColor: '#2EB67D',
-    width: '94%',
+    borderColor: 'white',
+    width: '88%',
     alignSelf: 'center',
   },
   greenButtonText: {

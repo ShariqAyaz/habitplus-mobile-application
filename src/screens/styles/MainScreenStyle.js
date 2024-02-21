@@ -9,6 +9,15 @@ export const styles = StyleSheet.create({
         width: '90%',
         height: '100%',
     },
+    input: {
+        backgroundColor: 'lightgray',
+        borderRadius: 0,
+        color: 'black',
+        padding: 10,
+        width: '90%',
+        marginBottom: 10,
+        fontSize: 16,
+    },
     closeButton: {
         width: 120,
         height: 50,
@@ -16,6 +25,16 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#F14F21',
         marginBottom: 20,
+        borderRadius: 30,
+        alignSelf: 'center', position: 'absolute', bottom: 0, marginBottom: 20
+    },
+    saveButton: {
+        width: 120,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'green',
+        marginBottom: 1,
         borderRadius: 30,
         alignSelf: 'center', position: 'absolute', bottom: 0, marginBottom: 20
     },
@@ -28,6 +47,12 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         marginTop: 20,
         alignSelf: 'center',
+    },
+    closeButtonText: {
+        fontFamily: 'Roboto-Bold',
+        fontWeight: 'bold',
+        color: 'white',
+        fontSize: 16,
     },
     closeButtonText: {
         fontFamily: 'Roboto-Bold',
