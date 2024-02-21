@@ -102,6 +102,8 @@ const DevConsole = ({ navigation }) => {
                             {appActivities.map((app_activity, index) => (
                                 <View key={index} style={{ backgroundColor: 'blue', padding: 10, marginVertical: 2 }}>
                                     <Text style={{ color: 'white' }}>Title: {app_activity.title}</Text>
+                                    <Text style={{ color: 'white' }}>activityid: {app_activity.activityid}</Text>
+                                    <Text style={{ color: 'white' }}>appid: {app_activity.appid}</Text>
                                 </View>
                             ))}
                         </ScrollView>

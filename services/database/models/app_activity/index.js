@@ -4,6 +4,11 @@ import { field, date, boolean, relation } from '@nozbe/watermelondb/decorators';
 export default class AppActivity extends Model {
   static table = 'app_activity';
 
+  static associations = {
+    apps: { type: 'belongs_to', key: 'appidfk' },
+    users: { type: 'belongs_to', key: 'useridfk' },
+  };
+  
   @field('activityid') activityid;
   @field('title') title;
   @field('description') description;
@@ -13,12 +18,16 @@ export default class AppActivity extends Model {
   @field('date') date;
   @field('month') month;
   @field('frequency') frequency;
-  @date('start_date') startDate;
-  @date('end_date') endDate;
-  @date('created_at') createdAt;
-  @date('updated_at') updatedAt;
+  @field('start_date') startDate;
+  @field('end_date') endDate;
+  @field('created_at') createdAt;
+  @field('updated_at') updatedAt;
   @field('notify') notify;
-
+  @field('appid') appid;
+  @field('userid') userid;
   @relation('apps', 'appidfk') app;
   @relation('users', 'useridfk') user;
+  
+  @field('appidfk') appidfk;
+  @field('useridfk') useridfk;
 }

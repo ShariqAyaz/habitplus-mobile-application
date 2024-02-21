@@ -5,6 +5,8 @@ export const styles = StyleSheet.create({
   CreditStyle:{ marginTop: 0, paddingTop: 0, paddingLeft: 4, color: '#ECB22E', fontSize: 12, fontStyle: 'italic' },
   HabContainerStyle:{ flexDirection: 'row', alignSelf: 'center', alignItems: 'center', padding: 2, marginTop: 8 
 },
+ActivityTitle:{ color: 'white', fontSize: 18, fontWeight: 'bold' },
+ActivityFrequency:{ color: 'silver', fontSize: 18, fontWeight: 'normal' },
   buttonStyle: {
     width: '90%',
     height: 40,
@@ -13,6 +15,18 @@ export const styles = StyleSheet.create({
     marginTop: 8,
     color: 'white',
     backgroundColor: '#075E54',
+  },
+  ActivityView:{
+    marginTop: 8,
+    marginBottom:8,
+    paddingTop: 8,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 8,
+    borderWidth: 0.4,
+    borderColor: 'white',
+    width: '94%',
+    alignSelf: 'center',
   },
   greenButtonText: {
     color: 'white', fontSize: 14, fontWeight: 'bold', alignSelf: 'center' 

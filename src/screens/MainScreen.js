@@ -14,7 +14,7 @@ import Geolocation from 'react-native-geolocation-service';
 
 const MainScreen = ({ navigation }) => {
 
-    const [modalVisible, setModalVisible] = useState(false);
+    const [activityModal, setActivityModal] = useState(false);
     const [location, setLocation] = useState('');
     const [apps, setApps] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -22,6 +22,7 @@ const MainScreen = ({ navigation }) => {
     const [startLocation, setStartLocation] = useState(null);
     const [stopLocation, setStopLocation] = useState(null);
     const [userCoordinates, setUserCoordinates] = useState([0.00, -0.01]);
+
 
     useEffect(() => {
         if (isStart === true) {
@@ -102,26 +103,6 @@ const MainScreen = ({ navigation }) => {
         }
     }
 
-    // Map Function depreciated
-    // const MapComponent = ({ location }) => {
-    //     if (!mapVisible || !location || isNaN(location.latitude) || isNaN(location.longitude)) {
-    //         return <Text>NO LOCATION</Text>;
-    //     }
-
-    //     return (
-    //         <MapboxGL.MapView style={styles.map}>
-    //             <MapboxGL.Camera
-    //                 zoomLevel={16}
-    //                 centerCoordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
-    //             />
-    //             <MapboxGL.PointAnnotation
-    //                 coordinate={[parseFloat(location.longitude), parseFloat(location.latitude)]}
-    //                 id="my-location"
-    //             />
-    //         </MapboxGL.MapView>
-    //     );
-    // };
-
     if (isLoading) {
         setTimeout(() => {
             return <Text style={[styles.greetingText]}>
@@ -133,29 +114,27 @@ const MainScreen = ({ navigation }) => {
     const ActivityRun = async (id) => {
 
         const activity = await database.collections.get('apps').query(Q.where('id', id)).fetch(1);
-
-
         if (activity[0].title === 'RUNNER') {
-
-            setModalVisible(true);
-
+            // Open Runner Modal
+            setActivityModal(true);
         }
         else {
             Alert.alert('Not Implemented', 'The activity is not implemented yet.\nPlease try another activity. ');
         }
     };
 
-    const transformedApps = apps.map(app => ({
-        layout: 'vertical',
-        title: app.title,
-        description: app.description,
-        selected_theme: 1,
-        columns: [],
-        components: [
-            { type: 'Text', props: { text: app.title, credit: 'By ' + app.author, id: app.id } },
-
-            { type: 'Button', props: { title: 'Make A New Habit', onPress: () => ActivityRun(app.id) } },
-        ],
+    // 
+    const loadApps = apps.map(app => ({
+            layout: 'vertical',
+            title: app.title,
+            description: app.desacription,
+            selected_theme: 1,
+            appid: app.appid,
+            columns: [],
+            components: [
+                { type: 'Text', props: { text: app.title, credit: 'By ' + app.author, appid: app.appid } },
+                { type: 'Button', props: { title: 'Make A New Habit', onPress: () => ActivityRun(app.id) } },
+            ],
     }));
 
     async function fetchAndProcessLocations() {
@@ -242,14 +221,18 @@ const MainScreen = ({ navigation }) => {
         }
     };
 
+    const activityIndividual = async (id) => {
+            console.log('activityIndividual',id)
+            setActivityModal(true);
+    }
     return (
         <View style={styles.container}>
             <Modal
                 animationType="slide"
-                visible={modalVisible}
+                visible={activityModal}
                 backgroundColor={'#333333'}
                 transparent={false}
-                onRequestClose={() => setModalVisible(false)}
+                onRequestClose={() => setActivityModal(false)}
             >
                 <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99 }}>
                     <View style={{ margin: 0, padding: 0 }}>
@@ -298,7 +281,7 @@ const MainScreen = ({ navigation }) => {
 
                     <TouchableOpacity
                         style={styles.closeButton}
-                        onPress={() => setModalVisible(false)}>
+                        onPress={() => setActivityModal(false)}>
                         <Text style={styles.closeButtonText}>Close</Text>
                     </TouchableOpacity>
                 </View>
@@ -308,9 +291,11 @@ const MainScreen = ({ navigation }) => {
             </View>
             <View style={styles.bodyContainer}>
                 <ScrollView style={styles.body} scrollEventThrottle={6}>
-                    {transformedApps.map((appConfig, index) => (
-                        <HabContainer key={index} subAppConfig={appConfig}
-                            onDelete={deleteContainer}
+                    {loadApps.map((appConfig, index) => (
+                        <HabContainer key={index} 
+                        subAppConfig={appConfig}
+                        onDelete={deleteContainer}
+                        onActivityRun={activityIndividual} 
                         />
 
                     ))}

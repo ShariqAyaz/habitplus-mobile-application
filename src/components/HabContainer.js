@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Modal, TouchableOpacity, Text, Dimensions, Button, CalendarText, TextInput, StyleSheet } from 'react-native';
+import { View, Image, Modal, TouchableOpacity, Text, Dimensions, Button, CalendarText, TextInput, StyleSheet } from 'react-native';
 import { styles } from './styles/HabContainerStyles';
 import { database } from '../../services/database/index';
 const { height } = Dimensions.get('window');
 import { Q } from '@nozbe/watermelondb';
 import { json } from '@nozbe/watermelondb/decorators';
+import { logError } from '@nozbe/watermelondb/utils/common';
 
 
 const renderGridType = (columns, components) => {
@@ -25,10 +26,8 @@ const renderGridType = (columns, components) => {
   );
 };
 
-
 const importComponent = (componentType, props) => {
   switch (componentType) {
-
     case 'Button':
       const TouchableOpacity = require('react-native').TouchableOpacity;
       const TextX = require('react-native').Text;
@@ -62,13 +61,8 @@ const importComponent = (componentType, props) => {
       );
 
     case 'FlatList':
-
-
       return (<View><Text>Text</Text></View>);
-
-
     case 'TextInput':
-
       return (
         <TextInput
           style={[styles.TextInputStyle]}
@@ -84,9 +78,9 @@ const importComponent = (componentType, props) => {
   }
 };
 
-
-const HabContainer = ({ subAppConfig,onDelete }) => {
+const HabContainer = ({ onActivityRun,subAppConfig, onDelete }) => {
   const [components, setComponents] = useState([]);
+  const [activityComponents, setActivityComponents] = useState([]); setActivityComponents
   const [isMenuVisible, setMenuVisible] = useState(false);
 
   const menuToggleRef = useRef(null);
@@ -105,7 +99,8 @@ const HabContainer = ({ subAppConfig,onDelete }) => {
 
   }
 
-  const renderModalContent = () => {
+  // Setting modal is access by 3 dots on each app, on main screen
+  const settingsModal = () => {
     return (
       <>
         <View style={{ margin: 0, padding: 0 }}>
@@ -149,19 +144,63 @@ const HabContainer = ({ subAppConfig,onDelete }) => {
   };
 
   useEffect(() => {
-    const loadedComponents = subAppConfig.components.map((comp, index) => {
-      // Generate a unique key for each component
-      const key = `${comp.type}-${index}`;
-      return (
-        <View key={key}>
-          {importComponent(comp.type, comp.props)}
-        </View>
-      );
-    });
-    
 
-    setComponents(loadedComponents);
-  }, [subAppConfig]);
+    // The "loadAppComponents" is a list of all components from the MainScreen.js const loadApps = apps.map(app => ({... components: [....
+    const loadAppComponents = async () => {
+      const loadAppComponents = subAppConfig.components.map((comp, index) => {
+        const key = `${comp.type}-${index}`;
+        return (
+          <View key={key}>
+            {importComponent(comp.type, comp.props)}
+          </View>
+        );
+      });
+
+      // Correctly set components state with loaded components
+      setComponents(loadAppComponents);
+
+      // Pick a unique App ID ( appid )
+      const appid = subAppConfig.appid;
+      console.log(appid);
+
+      // Fetch and log activities - corrected to await the result
+      const activities = await database.collections
+        .get('app_activity')
+        .query(Q.where('appid', appid))
+        .fetch();
+
+      console.log(activities);
+
+      let activityRecords = [];
+
+      if (activities.length > 0) {
+        activityRecords = activities.map((activity, index) => {
+          return (
+            <TouchableOpacity key={index} onPress={() => onActivityRun(activity.activityid)}>
+            <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={styles.ActivityTitle}>{activity.title}</Text>
+              <Text> </Text>
+              <Text style={styles.ActivityFrequency}>{activity.type} at {activity.time}</Text>
+              <View style={styles.ActivityIcon}>
+                <Image
+                  source={require('../assets/img/run.png')}
+                  style={{ width: 18, height: 18 }}
+                />
+              </View>
+            </View>
+          </TouchableOpacity>
+          );
+        });
+      }
+
+      setActivityComponents(activityRecords);
+
+    };
+
+    // Call the async function
+    loadAppComponents();
+  }, [subAppConfig]); // Dependency array
+
 
   const iconStyle = {
     position: 'absolute',
@@ -173,28 +212,51 @@ const HabContainer = ({ subAppConfig,onDelete }) => {
 
   return (
     <View style={styles.container}>
+
+      {/* 3 dots to open settings modal */}
       <TouchableOpacity
         style={{ ...iconStyle, zIndex: 20 }}
         onPress={() => setMenuVisible(true)}
       >
-        <Text style={{ fontWeight: 'bold', fontSize: 12, color: 'white' }}> . . . </Text>
+        <Text style={{ fontWeight: 'bold', fontSize: 14, color: 'white' }}> . . . </Text>
       </TouchableOpacity>
+      {/* 3 dots to open settings modal END */}
 
-      {subAppConfig.components.map((comp, index) => (
+      {/* ***** Each App by Each apps load from apps table, from MainScreen ***** */}
+      {/* below Approach temporarily depreciated and might used if need 
+          as the alternative is just below */}
+      {/*  {subAppConfig.components.map((comp, index) => (
         <View key={`${comp.type}-${index}`}>
           {importComponent(comp.type, comp.props)}
         </View>
+      ))}  */}
+      {components.map((Component, index) => (
+        <View key={index}>
+          {Component}
+        </View>
       ))}
+      {/* ***** Each App by Each apps load from apps table, from MainScreen END ***** */}
+      {/* ***** Each Activity within App load from activity table, query exec localy ***** */}
+      {activityComponents.map((Component, index) => (
+        <View style={styles.ActivityView} key={index}>
+          <Text>
+            {Component}
+          </Text>
+        </View>
+      ))}
+      {/* ***** Each Activity within App load from activity table, query exec localy END ***** */}
 
+
+      {/* The Button To create a new Activity / Habit Lead to Modal */}
       <Modal
         visible={isMenuVisible}
         transparent
         animationType="slide"
         onRequestClose={() => setMenuVisible(false)}
       >
-        
+
         <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99 }}>
-          {renderModalContent()}
+          {settingsModal()}
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => deleteApp(subAppConfig.title)}>
@@ -207,9 +269,11 @@ const HabContainer = ({ subAppConfig,onDelete }) => {
             onPress={() => setMenuVisible(false)}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
-          
+
         </View>
       </Modal>
+      {/* The Button To create a new Activity / Habit Lead to Modal END */}
+
     </View>
   );
 };
