@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { styles } from './styles/MainScreenStyle';
-import {  NativeModules, SafeAreaView, Switch, Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
+import { NativeModules, SafeAreaView, Switch, Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
 import Draggable from 'react-native-draggable';
 import { WebView } from 'react-native-webview';
+import { Picker } from '@react-native-picker/picker';
 
 import HabContainer from '../components/HabContainer';
 
@@ -24,15 +25,17 @@ const MainScreen = ({ navigation }) => {
     const [startLocation, setStartLocation] = useState(null);
     const [stopLocation, setStopLocation] = useState(null);
     const [userCoordinates, setUserCoordinates] = useState([0.00, -0.01]);
+
+    const [selectedType, setSelectedType] = useState('DAILY');
     // Save new Habit
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [type, setType] = useState('');
     const [time, setTime] = useState('');
-    const [day, setDay] = useState(null); // Use null for numeric inputs initially
+    const [day, setDay] = useState(null); 
     const [date, setDate] = useState('');
-    const [month, setMonth] = useState(null); // Use null for numeric inputs initially
-    const [frequency, setFrequency] = useState(null); // Use null for numeric inputs initially
+    const [month, setMonth] = useState(null); 
+    const [frequency, setFrequency] = useState(null); 
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [notify, setNotify] = useState(false);
@@ -225,9 +228,6 @@ const MainScreen = ({ navigation }) => {
 
         setNewActivityModal(true);
 
-
-
-
         // if (activity[0].title === 'RUNNER') {
         //     setActivityModal(true);
         // }
@@ -350,8 +350,8 @@ const MainScreen = ({ navigation }) => {
                 onRequestClose={() => setNewActivityModal(false)}
             >
                 <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99, alignContent: 'center', alignSelf: 'stretch' }}>
-                    <View style={{ margin: 0, padding: 0, alignItems: 'center' }}>
-                        <Text style={{ textAlign: 'center', marginTop: 8, paddingTop: 6, fontFamily: 'Roboto-Black', color: 'white', fontSize: 24 }}>
+                    <View style={{ margin: 4, padding: 4, alignItems: 'center' }}>
+                        <Text style={{ textAlign: 'center', marginTop: 8, paddingTop: 6, color: 'white', fontSize: 24, fontWeight:'bold' }}>
                             MAKE A NEW HABIT
                         </Text>
                         <View style={[styles.separator]} />
@@ -368,11 +368,16 @@ const MainScreen = ({ navigation }) => {
                             onChangeText={text => setDescription(text)}
                             multiline
                         />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Type (DAILY, WEEKLY, MONTHLY, YEARLY)"
-                            onChangeText={text => setType(text)}
-                        />
+                        <Picker
+                            selectedValue={selectedType}
+                            style={styles.picker}
+                            onValueChange={(itemValue, itemIndex) => setSelectedType(itemValue)}>
+                            <Picker.Item label="DAILY" value="DAILY" />
+                            <Picker.Item label="WEEKLY" value="WEEKLY" />
+                            <Picker.Item label="MONTHLY" value="MONTHLY" />
+                            <Picker.Item label="YEARLY" value="YEARLY" />
+                        </Picker>
+                        
                         <TextInput
                             style={styles.input}
                             placeholder="Time (HH:MM)"
@@ -480,7 +485,7 @@ const MainScreen = ({ navigation }) => {
 
                     </View>
                     <View>
-                        <SafeAreaView style={{ height: 400, width: '100%'}}>
+                        <SafeAreaView style={{ height: 400, width: '100%' }}>
                             <WebView
                                 style={{ height: 400, width: '100%' }}
                                 originWhitelist={['*']}

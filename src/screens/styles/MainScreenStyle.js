@@ -4,6 +4,14 @@ export const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    picker: {
+        width: '90%',
+        borderWidth: 1,
+        borderColor: 'black', // Add border color here
+        backgroundColor: 'lightgray', // Add background color here
+        color: 'black',
+        margin: 10,
+    },
     map: {
         flex: 1,
         width: '90%',
