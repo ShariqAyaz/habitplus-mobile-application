@@ -114,13 +114,13 @@ const MainScreen = ({ navigation }) => {
     const ActivityRun = async (id) => {
 
         const activity = await database.collections.get('apps').query(Q.where('id', id)).fetch(1);
-        if (activity[0].title === 'RUNNER') {
-            // Open Runner Modal
-            setActivityModal(true);
-        }
-        else {
-            Alert.alert('Not Implemented', 'The activity is not implemented yet.\nPlease try another activity. ');
-        }
+        console.log('New Activity Entry Form',id);
+        // if (activity[0].title === 'RUNNER') {
+        //     setActivityModal(true);
+        // }
+        // else {
+        //     Alert.alert('Not Implemented', 'The activity is not implemented yet.\nPlease try another activity. ');
+        // }
     };
 
     // 
@@ -222,8 +222,8 @@ const MainScreen = ({ navigation }) => {
     };
 
     const activityIndividual = async (id) => {
-            console.log('activityIndividual',id)
-            setActivityModal(true);
+        console.log('activityIndividual',id)
+        setActivityModal(true);
     }
     return (
         <View style={styles.container}>

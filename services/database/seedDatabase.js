@@ -149,6 +149,24 @@ async function seedDatabase() {
       }
     });
 
+    await database.write(async () => {
+      const runningActivity = await database.collections.get('app_activity').create((activity) => {
+        activity.activityid = '1';
+        activity.appid = '101';
+        activity.userid = '1';
+        activity.title = 'Custom Runs';
+        activity.description = 'Evening Extra Run';
+        activity.type = 'WEEKLY';
+        activity.time = '15:00';
+        activity.frequency = 1;
+        activity.start_date = new Date().getTime();
+
+        activity.notify = true;
+        activity.created_at = new Date().getTime();
+      });
+
+    });
+
     console.log('Seeded running activity and achievements.\n')
   }
 }
