@@ -1,12 +1,10 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, date, relation, json } from '@nozbe/watermelondb/decorators';
+import { field, date, boolean, relation } from '@nozbe/watermelondb/decorators';
 
 export default class AppActivity extends Model {
   static table = 'app_activity';
 
-  @field('activityid') eventid;
-  @relation('apps', 'appid') app;
-  @relation('users', 'userid') user; 
+  @field('activityid') activityid;
   @field('title') title;
   @field('description') description;
   @field('type') type;
@@ -20,4 +18,7 @@ export default class AppActivity extends Model {
   @date('created_at') createdAt;
   @date('updated_at') updatedAt;
   @field('notify') notify;
+
+  @relation('apps', 'appidfk') app;
+  @relation('users', 'useridfk') user;
 }

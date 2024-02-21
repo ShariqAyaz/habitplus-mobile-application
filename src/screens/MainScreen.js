@@ -24,16 +24,18 @@ const MainScreen = ({ navigation }) => {
     const [userCoordinates, setUserCoordinates] = useState([0.00, -0.01]);
 
     useEffect(() => {
-        const fetchAndProcessLocation = async () => {
-            const newLocation = await getCurrentLocation();
-            setLocation(newLocation);
-        };
-        fetchAndProcessLocation();
-        const intervalId = setInterval(() => {
+        if (isStart === true) {
+            const fetchAndProcessLocation = async () => {
+                const newLocation = await getCurrentLocation();
+                setLocation(newLocation);
+            };
             fetchAndProcessLocation();
-        }, 10000);
+            const intervalId = setInterval(() => {
+                fetchAndProcessLocation();
+            }, 10000);
 
-        return () => clearInterval(intervalId);
+            return () => clearInterval(intervalId);
+        }
     }, []);
 
     useEffect(() => {
@@ -175,6 +177,7 @@ const MainScreen = ({ navigation }) => {
 
     // need to fix
     const getCurrentLocation = (action) => {
+
         console.log('getCurrentLocation() \t Getting Current Location');
         Geolocation.getCurrentPosition(
             (position) => {
@@ -198,7 +201,7 @@ const MainScreen = ({ navigation }) => {
 
                             if (action === 'start') {
                                 setStartLocation(data);
-                                
+
                                 database.write(async () => {
                                     await database.collections.get('locations').create(location => {
                                         location.latitude = position.coords.latitude;

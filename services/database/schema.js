@@ -26,7 +26,7 @@ export const HabSchema = appSchema({
     tableSchema({
       name: 'apps_ui',
       columns: [
-        { name: 'appid', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'appid' },
+        { name: 'appidfk', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'appid' },
         { name: 'theme_id', type: 'number' },
       ],
     }),
@@ -34,16 +34,18 @@ export const HabSchema = appSchema({
       name: 'apps_comps',
       columns: [
         { name: '_id', type: 'string', isIndexed: true, isOptional: false, isPrimaryKey: true },
-        { name: 'appid', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'appid' },
+        { name: 'appidfk', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'appid' },
         { name: 'comp_id', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'components', foreignColumn: '_id' },
       ],
     }),
     tableSchema({
       name: 'app_activity',
       columns: [
-        { name: 'activityid', type: 'string', isIndexed: true, isOptional: false, isPrimaryKey: true },
-        { name: 'appid', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'appid' },
-        { name: 'userid', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'users', foreignColumn: 'userid' },
+        { name: 'activityid', type: 'string', isOptional: false},
+        { name: 'appidfk', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'appid' },
+        { name: 'useridfk', type: 'string', isIndexed: true, isForeignKey: true, foreignTable: 'users', foreignColumn: 'userid' },
+        { name: 'appid', type: 'string'},
+        { name: 'userid', type: 'string'},
         { name: 'title', type: 'string' },
         { name: 'description', type: 'string', isOptional: true },
         { name: 'type', type: 'string', default: 'DAILY' }, ///{'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'}
@@ -62,7 +64,8 @@ export const HabSchema = appSchema({
     tableSchema({
       name: 'app_activity_data',
       columns: [
-        { name: 'activityid', type: 'string', isForeignKey: true, foreignTable: 'app_activity', foreignColumn: 'activityid' },
+        { name: 'activityidfk', type: 'string', isForeignKey: true, foreignTable: 'app_activity', foreignColumn: 'id' },
+        { name: 'activityid', type: 'string',isOptional: false },
         { name: 'dataobj', type: 'string' },
       ],
     }),
@@ -83,7 +86,7 @@ export const HabSchema = appSchema({
         { name: 'latitude', type: 'number', isOptional: false },
         { name: 'longitude', type: 'number', isOptional: false },
         { name: 'timestamp', type: 'number', isOptional: false },
-        { name: 'appid', type: 'string', isOptional: true, isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'appid' },
+        { name: 'appidfk', type: 'string', isOptional: true, isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'appid' },
       ]
     })
 

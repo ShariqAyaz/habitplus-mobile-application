@@ -12,6 +12,10 @@ const DevConsole = ({ navigation }) => {
     const [appActivityData, setAppActivityData] = useState([]);
 
     useEffect(() => {
+        console.log('Updated appActivityData:', appActivityData);
+    }, [appActivityData]);
+
+    useEffect(() => {
         const fetchLocations = async () => {
             const locations = await database.collections.get('locations').query().fetch();
             setLocationData(locations.map(loc => loc._raw));
@@ -29,10 +33,13 @@ const DevConsole = ({ navigation }) => {
 
         const fetchAppActivityData = async () => {
             const app_activity_data = await database.collections.get('app_activity_data').query().fetch();
-            setAppActivityData(app_activity_data.map(app_activity_data => app_activity_data._raw));
+            setAppActivityData(app_activity_data.map(app_activity_data => ({
+                ...app_activity_data._raw,
+                dataobj: JSON.parse(app_activity_data._raw.dataobj || '{}'),
+            })));
 
-            console.log(app_activity_data);
-        }
+            console.log('appActivityData: ', appActivityData);
+        };
 
         const fetchUsers = async () => {
             const users = await database.collections.get('users').query().fetch();
@@ -102,12 +109,27 @@ const DevConsole = ({ navigation }) => {
                             App Activity Data
                         </Text>
                         <ScrollView>
-                            {appActivityData.map((a, index) => (
-                                <View key={index} style={{ backgroundColor: 'blue', padding: 10, marginVertical: 2 }}>
-                                    <Text style={{ color: 'white' }}>ActivityID: {a.activityid}</Text>
-                                </View>
-                            ))}
-                        </ScrollView>
+    {appActivityData.map((activity, index) => (
+        <View key={index} style={{ backgroundColor: 'blue', padding: 10, marginVertical: 2 }}>
+            <Text style={{ color: 'white' }}>ActivityID: {activity.activityid}</Text>
+            <Text style={{ color: 'white' }}>
+                Distance: {activity.dataobj.distance || 'N/A'}
+            </Text>
+            <Text style={{ color: 'white' }}>
+                Duration: {activity.dataobj.duration || 'N/A'}
+            </Text>
+            <Text style={{ color: 'white' }}>
+                Date: {activity.dataobj.date || 'N/A'}
+            </Text>
+            {activity.dataobj.coordinates && activity.dataobj.coordinates.map((coordinate, i) => (
+                <Text key={i} style={{ color: 'white' }}>
+                    Coordinate: {coordinate.latitude}, {coordinate.longitude}, {coordinate.timestamp}
+                </Text>
+            ))}
+        </View>
+    ))}
+</ScrollView>
+
                         <Text>Users</Text>
                         <ScrollView>
                             {usersData.map((user, index) => (
