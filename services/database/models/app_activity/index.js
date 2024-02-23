@@ -8,7 +8,7 @@ export default class AppActivity extends Model {
     apps: { type: 'belongs_to', key: 'appidfk' },
     users: { type: 'belongs_to', key: 'useridfk' },
   };
-  
+
   @field('activityid') activityid;
   @field('title') title;
   @field('description') description;
@@ -23,6 +23,8 @@ export default class AppActivity extends Model {
   @field('created_at') createdAt;
   @field('updated_at') updatedAt;
   @field('notify') notify;
+  @field('isExpire') isExpire;
+  @field('isVisible') isVisible;
   @field('appid') appid;
   @field('userid') userid;
   @relation('apps', 'appidfk') app;

@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { styles } from './styles/MainScreenStyle';
-import { NativeModules, SafeAreaView, Switch, Image, Alert, View, TextInput, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
-import Draggable from 'react-native-draggable';
+
+import {
+    NativeModules, SafeAreaView, Switch, Image, Alert, View,
+    TextInput, Text, TouchableOpacity, ScrollView, Modal
+} from 'react-native';
+
+import DatePicker from '@react-native-community/datetimepicker';
+
 import { WebView } from 'react-native-webview';
 import { Picker } from '@react-native-picker/picker';
 
@@ -16,6 +22,7 @@ import Geolocation from 'react-native-geolocation-service';
 
 const MainScreen = ({ navigation }) => {
 
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const [activityModal, setActivityModal] = useState(false);
     const [newActivityModal, setNewActivityModal] = useState(false);
     const [location, setLocation] = useState('');
@@ -24,23 +31,67 @@ const MainScreen = ({ navigation }) => {
     const [isStart, setIsStart] = useState(false);
     const [startLocation, setStartLocation] = useState(null);
     const [stopLocation, setStopLocation] = useState(null);
+    const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+    const [selectedDaySlot, setSelectedDaySlot] = useState('MONDAY');
     const [userCoordinates, setUserCoordinates] = useState([0.00, -0.01]);
-
-    const [selectedType, setSelectedType] = useState('DAILY');
-    // Save new Habit
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [habitType, setHabitType] = useState('N/A');
+    const [title, setTitle] = useState('Make A Run Habit');
+    const [description, setDescription] = useState('A Fresh air dose. A few miles more. A habit to adore.');
     const [type, setType] = useState('');
     const [time, setTime] = useState('');
-    const [day, setDay] = useState(null); 
-    const [date, setDate] = useState('');
-    const [month, setMonth] = useState(null); 
-    const [frequency, setFrequency] = useState(null); 
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+    const [day, setDay] = useState(null);
+    const [month, setMonth] = useState(null);
     const [notify, setNotify] = useState(false);
+    const [date, setDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
 
     const toggleSwitch = () => setNotify(previousState => !previousState);
+
+    useEffect(() => {
+        let intervalId;
+
+        const fetchAndProcessLocation = async () => {
+            const newLocation = await getCurrentLocation();
+            setLocation(newLocation);
+        };
+
+        if (isStart) {
+            fetchAndProcessLocation(); // Initial fetch for the current location
+            intervalId = setInterval(fetchAndProcessLocation, 10000); // Continuously fetch location every 10 seconds
+        }
+
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId); // Clear the interval if the component unmounts or isStart changes to false
+            }
+        };
+    }, [isStart]);
+
+    useEffect(() => {
+        if (location) {
+            console.log('useEffect->location-> \t Location:', location.latitude, location.longitude);
+            if (!isNaN(location.latitude) && !isNaN(location.longitude)) {
+                setUserCoordinates([location.latitude, location.longitude]);
+            }
+        }
+    }, [location]);
+
+    useEffect(() => {
+        const fetchAppsData = async () => {
+            setIsLoading(true);
+            const appsData = await database.collections.get('apps').query().fetch();
+            setApps(appsData.map(app => ({
+                ...app._raw,
+
+            })));
+            setIsLoading(false);
+        };
+
+        fetchAppsData();
+        requestLocationPermission();
+
+    }, []);
 
     const mapHtmlContent = `
     <html>
@@ -102,11 +153,11 @@ const MainScreen = ({ navigation }) => {
         </script>
     </body>
     </html>
-`;
+    `;
 
     const saveActivity = () => {
         console.log("Saving new habit with the following details:");
-        console.log({ title, description, type, time, day, date, month, frequency, startDate, endDate, notify });
+        console.log({ title, description, type, time, day, date, month, startDate, endDate, notify });
 
         // Correct way to use database.write and .create
         database.write(async () => {
@@ -120,7 +171,7 @@ const MainScreen = ({ navigation }) => {
                 record.day = day;
                 record.date = date;
                 record.month = month;
-                record.frequency = frequency;
+                record.frequency = 1;
                 record.start_date = startDate; // Ensure these fields match your schema
                 record.end_date = endDate;
                 record.notify = notify;
@@ -128,61 +179,6 @@ const MainScreen = ({ navigation }) => {
             console.log('New Habit Created:', newHabit);
         });
     };
-
-
-    // Save new Habit END
-
-    useEffect(() => {
-        if (isStart === true) {
-            const fetchAndProcessLocation = async () => {
-                const newLocation = await getCurrentLocation();
-                setLocation(newLocation);
-            };
-            fetchAndProcessLocation();
-            const intervalId = setInterval(() => {
-                fetchAndProcessLocation();
-            }, 10000);
-
-            return () => clearInterval(intervalId);
-        }
-    }, []);
-
-    useEffect(() => {
-
-        if (isStart) {
-            const intervalId = setInterval(() => {
-                getCurrentLocation('start');
-            }, 10000);
-
-            return () => clearInterval(intervalId);
-        }
-    }, [isStart]);
-
-    useEffect(() => {
-        if (location) {
-            console.log('useEffect->location-> \t Location:', location.latitude, location.longitude);
-            if (!isNaN(location.latitude) && !isNaN(location.longitude)) {
-                setUserCoordinates([location.latitude, location.longitude]);
-            }
-        }
-    }, [location]);
-
-    useEffect(() => {
-        const fetchAppsData = async () => {
-            console.log('fetchAppsData() \t Fetching Apps Data');
-            setIsLoading(true);
-            const appsData = await database.collections.get('apps').query().fetch();
-            setApps(appsData.map(app => ({
-                ...app._raw,
-
-            })));
-            setIsLoading(false);
-        };
-
-        fetchAppsData();
-        requestLocationPermission();
-
-    }, []);
 
     const toggleStartStop = () => {
         setIsStart(!isStart);
@@ -236,7 +232,6 @@ const MainScreen = ({ navigation }) => {
         // }
     };
 
-    // 
     const loadApps = apps.map(app => ({
         layout: 'vertical',
         title: app.title,
@@ -267,9 +262,7 @@ const MainScreen = ({ navigation }) => {
         }
     }
 
-    // need to fix
     const getCurrentLocation = (action) => {
-
         console.log('getCurrentLocation() \t Getting Current Location');
         Geolocation.getCurrentPosition(
             (position) => {
@@ -285,15 +278,12 @@ const MainScreen = ({ navigation }) => {
                         console.log("getCurrentLocation()->Stop Location: textual data");
                         fetchAndProcessLocations();
                     }
-
                     const url = `https://t6hlbd54wg.execute-api.us-east-1.amazonaws.com/api/Location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {
-
                             if (action === 'start') {
                                 setStartLocation(data);
-
                                 database.write(async () => {
                                     await database.collections.get('locations').create(location => {
                                         location.latitude = position.coords.latitude;
@@ -336,8 +326,101 @@ const MainScreen = ({ navigation }) => {
 
     const activityIndividual = async (id) => {
         console.log('activityIndividual', id)
-
         setActivityModal(true);
+    }
+
+    const onHabitTypeValueChange = (value) => {
+        setHabitType(value);
+    }
+
+    const TimeSlot = Array.from({ length: 96 }, (_, i) => {
+        const hour = Math.floor(i / 4);
+        const minute = 15 * (i % 4);
+        return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    });
+
+    const onDateChange = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShowDatePicker(false);
+        setStartDate(currentDate);
+    };
+
+    const openDatePicker = () => {
+        setShowDatePicker(true);
+    };
+
+    function onHabitTypeChange() {
+        switch (habitType) {
+            case 'DAILY':
+                return (<><Text style={styles.helpingTitle}>SELECT TIME</Text>
+                    <Picker
+                        selectedValue={selectedTimeSlot}
+                        style={styles.picker}
+                        onValueChange={value => setSelectedTimeSlot(value)}
+                    >
+                        {TimeSlot.map((time, index) => (
+                            <Picker.Item key={index} label={time} value={time} />
+                        ))}
+                    </Picker></>);
+            case 'WEEKLY':
+                return (<><Text style={styles.helpingTitle}>SELECT DAY</Text>
+                    <Picker
+                        selectedValue={selectedDaySlot}
+                        style={styles.picker}
+                        onValueChange={value => setSelectedDaySlot(value)}
+                    >
+                        {["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"].map((day, index) =>
+                            <Picker.Item key={index} label={day} value={day} />
+                        )}
+                    </Picker>
+                    <Text style={styles.helpingTitle}>SELECT TIME</Text>
+                    <Picker
+                        selectedValue={selectedTimeSlot}
+                        style={styles.picker}
+                        onValueChange={value => setSelectedTimeSlot(value)}
+                    >
+                        {TimeSlot.map((time, index) => (
+                            <Picker.Item key={index} label={time} value={time} />
+                        ))}
+                    </Picker></>);
+            case 'MONTHLY':
+                return (<><View>
+                    {showDatePicker && <><DatePicker
+                        style={styles.input}
+                        value={startDate}
+                        mode="date"
+                        display="default"
+                        placeholder="Start Date (YYYY-MM-DD)"
+                        format="YYYY-MM-DD"
+                        minDate={new Date()}
+                        maxDate="2100-12-31"
+                        confirmBtnText="Confirm"
+                        cancelBtnText="Cancel"
+                        onChange={onDateChange}
+                    /></>}<View>
+                        <Text style={styles.helpingTitle}>
+                            SELECTED DATE
+                        </Text>
+                        <TouchableOpacity style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
+                            <Text style={styles.helpingTitle}>{startDate.toLocaleDateString()}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={styles.helpingTitle}>SELECT TIME</Text>
+                    <Picker
+                        selectedValue={selectedTimeSlot}
+                        style={styles.picker}
+                        onValueChange={(itemValue) => setSelectedTimeSlot(itemValue)}
+                    >
+                        {TimeSlot.map((time, index) => (
+                            <Picker.Item key={index} label={time} value={time} />
+                        ))}
+                    </Picker>
+                </View>
+                </>
+                );
+            default:
+                return null;
+        }
     }
 
     return (
@@ -349,97 +432,75 @@ const MainScreen = ({ navigation }) => {
                 transparent={false}
                 onRequestClose={() => setNewActivityModal(false)}
             >
-                <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99, alignContent: 'center', alignSelf: 'stretch' }}>
-                    <View style={{ margin: 4, padding: 4, alignItems: 'center' }}>
-                        <Text style={{ textAlign: 'center', marginTop: 8, paddingTop: 6, color: 'white', fontSize: 24, fontWeight:'bold' }}>
+                <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99 }}>
+                    <View style={{ margin: 6, paddingBottom: 10, alignItems: 'center' }}>
+                        <Text style={styles.modalTitle}>
                             MAKE A NEW HABIT
                         </Text>
-                        <View style={[styles.separator]} />
+                        <Text style={styles.modalSubTitle}>
+                            Lace up and go, feel the fresh air flow.
+                            Track your mileage, watch your running habit grow.
+                            A few details more, and see your progress soar.
+                        </Text>
                     </View>
                     <View style={{ alignItems: 'center' }}>
+                        <Text style={styles.helpingTitle}>Title</Text>
                         <TextInput
-                            style={styles.input}
+                            style={styles.inputTitle}
                             placeholder="Title"
+                            value={title}
                             onChangeText={text => setTitle(text)}
                         />
+                        <Text style={styles.helpingTitle}>Description</Text>
                         <TextInput
-                            style={styles.input}
+                            style={styles.inputDescription}
                             placeholder="Description"
+                            value={description}
+                            multiline={true}
                             onChangeText={text => setDescription(text)}
-                            multiline
                         />
-                        <Picker
-                            selectedValue={selectedType}
-                            style={styles.picker}
-                            onValueChange={(itemValue, itemIndex) => setSelectedType(itemValue)}>
-                            <Picker.Item label="DAILY" value="DAILY" />
-                            <Picker.Item label="WEEKLY" value="WEEKLY" />
-                            <Picker.Item label="MONTHLY" value="MONTHLY" />
-                            <Picker.Item label="YEARLY" value="YEARLY" />
-                        </Picker>
-                        
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Time (HH:MM)"
-                            onChangeText={text => setTime(text)}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Day (1-31)"
-                            keyboardType="numeric"
-                            onChangeText={text => setDay(parseInt(text))}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Date (YYYY-MM-DD)"
-                            onChangeText={text => setDate(text)}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Month (1-12)"
-                            keyboardType="numeric"
-                            onChangeText={text => setMonth(parseInt(text))}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Frequency"
-                            keyboardType="numeric"
-                            onChangeText={text => setFrequency(parseInt(text))}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Start Date (YYYY-MM-DD)"
-                            onChangeText={text => setStartDate(text)}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="End Date (YYYY-MM-DD) - Optional"
-                            onChangeText={text => setEndDate(text)}
-                        />
-                        <View style={styles.switchContainer}>
-                            <Text style={styles.switchLabel}>Enable Notifications</Text>
-                            <Switch
-                                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                                thumbColor={notify ? "#f5dd4b" : "#f4f3f4"}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={toggleSwitch}
-                                value={notify}
-                            />
+
+                        <View style={styles.DateTimeSelectionView}>
+                            <Text style={styles.helpingTitle}>How Regularly ?</Text>
+                            <Picker
+                                selectedValue={habitType}
+                                style={styles.picker}
+                                onValueChange={value => onHabitTypeValueChange(value)}>
+                                <Picker.Item label="HOW REGULARLY ?" value="N/A" />
+                                <Picker.Item label="DAILY" value="DAILY" />
+                                <Picker.Item label="WEEKLY" value="WEEKLY" />
+                                <Picker.Item label="MONTHLY" value="MONTHLY" />
+                            </Picker>
+                            {onHabitTypeChange(habitType)}
                         </View>
-                        <TouchableOpacity
-                            style={styles.saveButton}
-                            onPress={() => saveActivity()}>
-                            <Text style={styles.saveButtonText}>Save Habit</Text>
-                        </TouchableOpacity>
+
                     </View>
-                    <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={() => setNewActivityModal(false)}>
-                        <Text style={styles.closeButtonText}>Close</Text>
-                    </TouchableOpacity>
+                    <View style={styles.notifyView}>
+                        <Text style={styles.notifyText}>NOTIFY?</Text>
+                        <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={notify ? "#f5dd4b" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={toggleSwitch}
+                            value={notify}
+                        />
+                    </View>
+                    <View style={styles.bottomModal}>
+                        <View style={{ flex: 1, justifyContent: 'space-around', flexDirection: 'row' }}>
+                            <TouchableOpacity
+                                style={styles.saveButton}
+                                onPress={() => saveActivity()}>
+                                <Text style={styles.saveButtonText}>Save Habit</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.closeButton}
+                                onPress={() => setNewActivityModal(false)}>
+                                <Text style={styles.closeButtonText}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
             </Modal>
-
             <Modal
                 animationType="slide"
                 visible={activityModal}
@@ -465,21 +526,21 @@ const MainScreen = ({ navigation }) => {
                                 setIsStart(!isStart);
                             }}
                         >
-                            <Text style={styles.closeButtonText}>{isStart ? 'Stop' : 'Start'}</Text>
+                            <Text style={styles.btnLocationStartStop}>{isStart ? 'Stop' : 'Start'}</Text>
                         </TouchableOpacity>
                         {startLocation && (
                             <>
-                                <Text style={styles.closeButtonText}>Start Name: {startLocation.name}</Text>
-                                <Text style={styles.closeButtonText}>Start Latitude: {startLocation.lat}</Text>
-                                <Text style={styles.closeButtonText}>Start Longitude: {startLocation.lon}</Text>
+                                <Text style={styles.btnLocationStartStop}>Start Name: {startLocation.name}</Text>
+                                <Text style={styles.btnLocationStartStop}>Start Latitude: {startLocation.lat}</Text>
+                                <Text style={styles.btnLocationStartStop}>Start Longitude: {startLocation.lon}</Text>
                             </>
                         )}
 
                         {stopLocation && (
                             <>
-                                <Text style={styles.closeButtonText}>Stop Name: {stopLocation.name}</Text>
-                                <Text style={styles.closeButtonText}>Stop Latitude: {stopLocation.lat}</Text>
-                                <Text style={styles.closeButtonText}>Stop Longitude: {stopLocation.lon}</Text>
+                                <Text style={styles.btnLocationStartStop}>Stop Name: {stopLocation.name}</Text>
+                                <Text style={styles.btnLocationStartStop}>Stop Latitude: {stopLocation.lat}</Text>
+                                <Text style={styles.btnLocationStartStop}>Stop Longitude: {stopLocation.lon}</Text>
                             </>
                         )}
 

@@ -59,6 +59,7 @@ async function seedDatabase() {
       }
     ];
 
+    
     await database.write(async () => {
 
       for (const app of apps) {
@@ -106,9 +107,11 @@ async function seedDatabase() {
         activity.time = '07:00';
         activity.frequency = 1;
         activity.start_date = new Date().getTime();
-
+        activity.isExpire = false;
+        activity.isVisible = true;
         activity.notify = true;
         activity.created_at = new Date().getTime();
+        activity.updated_at = new Date().getTime();
       });
 
       const runAchievements = [
@@ -150,21 +153,24 @@ async function seedDatabase() {
     });
 
     await database.write(async () => {
-      const runningActivity = await database.collections.get('app_activity').create((activity) => {
-        activity.activityid = '2';
-        activity.appid = '101';
-        activity.userid = '1';
-        activity.title = 'Custom Runs';
-        activity.description = 'Evening Extra Run';
-        activity.type = 'WEEKLY';
-        activity.time = '15:00';
-        activity.frequency = 1;
-        activity.start_date = new Date().getTime();
-
-        activity.notify = true;
-        activity.created_at = new Date().getTime();
+      const weeklyActivity = await database.collections.get('app_activity_data').create((activity) => {
+        activity.activityid = '2'; 
+        activity.appid = '101'; 
+        activity.userid = '1'; 
+        activity.title = 'Weekend Hikes';
+        activity.description = 'Weekly hikes to explore nature and boost fitness';
+        activity.type = 'WEEKLY';        
+        activity.day = 6; 
+        activity.time = '08:00'; 
+        activity.frequency = 1; 
+        activity.start_date = new Date().getTime();         
+        activity.isExpire = false; 
+        activity.isVisible = true; 
+        activity.notify = true; 
+        activity.created_at = new Date().getTime(); 
+        activity.updated_at = new Date().getTime(); 
       });
-
+      
     });
 
     console.log('Seeded running activity and achievements.\n')

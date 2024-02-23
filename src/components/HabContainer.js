@@ -7,7 +7,6 @@ import { Q } from '@nozbe/watermelondb';
 import { json } from '@nozbe/watermelondb/decorators';
 import { logError } from '@nozbe/watermelondb/utils/common';
 
-
 const renderGridType = (columns, components) => {
   const header = (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
@@ -194,22 +193,18 @@ const HabContainer = ({ onActivityRun, subAppConfig, onDelete }) => {
           );
         });
       }
-
       setActivityComponents(activityRecords);
-
     };
 
-    // Call the async function
     loadAppComponents();
-  }, [subAppConfig]); // Dependency array
-
+  }, [subAppConfig]);
 
   const iconStyle = {
     position: 'absolute',
     top: 10,
     right: 10,
-    padding: 10, // Make it easier to touch
-    zIndex: 10, // Ensure it's above other content
+    padding: 10,
+    zIndex: 10,
   };
 
   return (
@@ -263,7 +258,6 @@ const HabContainer = ({ onActivityRun, subAppConfig, onDelete }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-
             style={styles.closeButton}
             onPress={() => setMenuVisible(false)}>
             <Text style={styles.closeButtonText}>Close</Text>

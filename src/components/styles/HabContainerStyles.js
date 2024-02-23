@@ -1,16 +1,17 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  TitleStyle:{ color: 'white', fontSize: 24, fontWeight: 'bold' },
-  CreditStyle:{ marginTop: 0, paddingTop: 0, paddingLeft: 4, color: '#ECB22E', fontSize: 12, fontStyle: 'italic' },
-  HabContainerStyle:{ flexDirection: 'row', alignSelf: 'center', alignItems: 'center', padding: 2, marginTop: 8 
-},
-ActivityTitle:{ 
-  color: '#2EB67D',textTransform: 'uppercase', fontSize: 12, fontWeight: 'bold' 
-},
-ActivityFrequency:{ 
-  color: 'white', fontSize: 10, fontWeight: 'normal' , textAlign: 'right'
-},
+  TitleStyle: { color: 'white', fontSize: 24, fontWeight: 'bold' },
+  CreditStyle: { marginTop: 0, paddingTop: 0, paddingLeft: 4, color: '#ECB22E', fontSize: 12, fontStyle: 'italic' },
+  HabContainerStyle: {
+    flexDirection: 'row', alignSelf: 'center', alignItems: 'center', padding: 2, marginTop: 8
+  },
+  ActivityTitle: {
+    color: '#2EB67D', textTransform: 'uppercase', fontSize: 12, fontWeight: 'bold'
+  },
+  ActivityFrequency: {
+    color: 'white', fontSize: 10, fontWeight: 'normal', textAlign: 'right'
+  },
   buttonStyle: {
     width: '90%',
     height: 40,
@@ -20,8 +21,8 @@ ActivityFrequency:{
     color: 'white',
     backgroundColor: '#075E54',
   },
-  ActivityIcon:{justifyContent: 'right', alignItems: 'right'},
-  ActivityView:{
+  ActivityIcon: { justifyContent: 'right', alignItems: 'right' },
+  ActivityView: {
     marginTop: 6,
     paddingTop: 6,
     paddingLeft: 8,
@@ -33,14 +34,14 @@ ActivityFrequency:{
     alignSelf: 'center',
   },
   greenButtonText: {
-    color: 'white', fontSize: 14, fontWeight: 'bold', alignSelf: 'center' 
+    color: 'white', fontSize: 14, fontWeight: 'bold', alignSelf: 'center'
   },
-  circle:{
+  circle: {
     width: 25,
     height: 25,
-    borderRadius: 100/2,
-    padding:6,
-    margin:16,
+    borderRadius: 100 / 2,
+    padding: 6,
+    margin: 16,
     borderWidth: 0,
     backgroundColor: '#333',
     alignSelf: 'center',
@@ -55,8 +56,8 @@ ActivityFrequency:{
     padding: 20, // Example padding
     textAlign: 'center',
   },
-  
-  itemContainer : {
+
+  itemContainer: {
     backgroundColor: '#333',
     padding: 10,
     marginVertical: 5,
@@ -84,7 +85,7 @@ ActivityFrequency:{
   contentContainer: {
     alignItems: 'center',
     marginTop: 20,
-    color: 'black', 
+    color: 'black',
     fontColor: 'black',
   },
   separator: {
@@ -92,7 +93,7 @@ ActivityFrequency:{
     backgroundColor: '#ECB22E',
     width: '90%',
     marginVertical: 4,
-    alignSelf: 'center',  
+    alignSelf: 'center',
   },
   closeButton: {
     width: 120,
@@ -110,10 +111,10 @@ ActivityFrequency:{
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'red',
-    marginBottom:100,
+    marginBottom: 100,
     borderRadius: 30,
-    alignSelf: 'center', position: 'absolute', 
-    bottom: 0, 
+    alignSelf: 'center', position: 'absolute',
+    bottom: 0,
   },
   closeButtonText: {
     fontFamily: 'Roboto-Black',
@@ -145,16 +146,16 @@ ActivityFrequency:{
     shadowRadius: 4,
     elevation: 5,
   },
-  TextInputStyle:{
+  TextInputStyle: {
     borderColor: 'white',
-        borderWidth: 0.3,
-        margin: 8,
-        width: '90%',
-        marginBottom: 8,
-        borderRadius: 2,
-        color: 'white',
-        alignSelf: 'center',
-        padding: 10,
+    borderWidth: 0.3,
+    margin: 8,
+    width: '90%',
+    marginBottom: 8,
+    borderRadius: 2,
+    color: 'white',
+    alignSelf: 'center',
+    padding: 10,
   }
   // Add other styles here if needed
 });
