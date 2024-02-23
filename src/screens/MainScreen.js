@@ -447,8 +447,8 @@ const MainScreen = ({ navigation }) => {
                             <View style={styles.notifyView}>
                                 <Text style={styles.notifyText}>NOTIFY?</Text>
                                 <Switch
-                                    trackColor={{ false: "#767577", true: "green" }}
-                                    thumbColor={notify ? "#f5dd4b" : "red"}
+                                    trackColor={{ false: "#767577", true: "black" }}
+                                    thumbColor={notify ? "green" : "red"}
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={toggleSwitch}
                                     value={notify}
