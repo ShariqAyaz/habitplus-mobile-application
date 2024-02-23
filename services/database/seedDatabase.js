@@ -137,7 +137,6 @@ async function seedDatabase() {
         }
       ];
       
-
       for (const achievement of runAchievements) {
         await database.collections.get('app_activity_data').create(data => {
           data.activityidfk = runningActivity.id; 
@@ -153,7 +152,7 @@ async function seedDatabase() {
     });
 
     await database.write(async () => {
-      const weeklyActivity = await database.collections.get('app_activity_data').create((activity) => {
+      const weeklyActivity = await database.collections.get('app_activity').create((activity) => {
         activity.activityid = '2'; 
         activity.appid = '101'; 
         activity.userid = '1'; 

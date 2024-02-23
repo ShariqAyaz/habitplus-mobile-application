@@ -1,22 +1,16 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { styles } from './styles/MainScreenStyle';
-
 import {
     NativeModules, SafeAreaView, Switch, Image, Alert, View,
     TextInput, Text, TouchableOpacity, ScrollView, Modal
 } from 'react-native';
-
 import DatePicker from '@react-native-community/datetimepicker';
-
 import { WebView } from 'react-native-webview';
 import { Picker } from '@react-native-picker/picker';
-
 import HabContainer from '../components/HabContainer';
-
 import { database } from '../../services/database/index';
 import { Q } from '@nozbe/watermelondb';
 import { date, json } from '@nozbe/watermelondb/decorators';
-
 import { PermissionsAndroid } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 
@@ -50,27 +44,23 @@ const MainScreen = ({ navigation }) => {
 
     useEffect(() => {
         let intervalId;
-
         const fetchAndProcessLocation = async () => {
             const newLocation = await getCurrentLocation();
             setLocation(newLocation);
         };
-
         if (isStart) {
-            fetchAndProcessLocation(); // Initial fetch for the current location
-            intervalId = setInterval(fetchAndProcessLocation, 10000); // Continuously fetch location every 10 seconds
+            fetchAndProcessLocation();
+            intervalId = setInterval(fetchAndProcessLocation, 10000);
         }
-
         return () => {
             if (intervalId) {
-                clearInterval(intervalId); // Clear the interval if the component unmounts or isStart changes to false
+                clearInterval(intervalId);
             }
         };
     }, [isStart]);
 
     useEffect(() => {
         if (location) {
-            console.log('useEffect->location-> \t Location:', location.latitude, location.longitude);
             if (!isNaN(location.latitude) && !isNaN(location.longitude)) {
                 setUserCoordinates([location.latitude, location.longitude]);
             }
@@ -87,10 +77,8 @@ const MainScreen = ({ navigation }) => {
             })));
             setIsLoading(false);
         };
-
         fetchAppsData();
         requestLocationPermission();
-
     }, []);
 
     const mapHtmlContent = `
@@ -141,7 +129,7 @@ const MainScreen = ({ navigation }) => {
   
                   var pointList = [pointA, pointB, pointC, pointD];
   
-                  // Create a polyline from the points and add it to the map
+                 
                   var firstpolyline = new L.Polyline(pointList, {
                       color: 'blue',
                       weight: 3,
@@ -155,30 +143,37 @@ const MainScreen = ({ navigation }) => {
     </html>
     `;
 
-    const saveActivity = () => {
+    const saveActivity = async () => {
         console.log("Saving new habit with the following details:");
-        console.log({ title, description, type, time, day, date, month, startDate, endDate, notify });
+        console.log({ title, description, type, time, day, date, month, frequency: 1, startDate, endDate, notify, isExpire: false, isVisible: true });
 
-        // Correct way to use database.write and .create
-        database.write(async () => {
-            const newHabit = await database.collections.get('app_activity').create((record) => {
-                record.title = title;
-                record.description = description;
-                record.appid = '101';
-                record.activityid = '3';
-                record.type = type;
-                record.time = time;
-                record.day = day;
-                record.date = date;
-                record.month = month;
-                record.frequency = 1;
-                record.start_date = startDate; // Ensure these fields match your schema
-                record.end_date = endDate;
-                record.notify = notify;
+        try {
+            await database.write(async () => {
+                const newHabit = await database.collections.get('app_activity').create(record => {
+                    record.title = title;
+                    record.description = description;
+                    record.appid = '101';
+                    record.activityid = '3';
+                    record.type = habitType;
+                    record.time = time;
+                    record.day = selectedDaySlot;
+                    record.date = date;
+                    record.month = month;
+                    record.frequency = 1;
+                    record.start_date = startDate;
+                    record.end_date = endDate;
+                    record.notify = notify;
+                    record.isExpire = false;
+                    record.isVisible = true;
+                });
+                console.log('New Habit Created:', newHabit._raw);
             });
-            console.log('New Habit Created:', newHabit);
-        });
+            console.log("Activity saved successfully.");
+        } catch (error) {
+            console.error("Error saving activity:", error);
+        }
     };
+
 
     const toggleStartStop = () => {
         setIsStart(!isStart);
@@ -216,20 +211,10 @@ const MainScreen = ({ navigation }) => {
     }
 
     const newHabit = async (id) => {
-
         const activity = await database.collections.get('apps').query(Q.where('appid', id)).fetch(1);
-
         console.log('New Activity Entry Form', id);
         console.log(activity[0].title);
-
         setNewActivityModal(true);
-
-        // if (activity[0].title === 'RUNNER') {
-        //     setActivityModal(true);
-        // }
-        // else {
-        //     Alert.alert('Not Implemented', 'The activity is not implemented yet.\nPlease try another activity. ');
-        // }
     };
 
     const loadApps = apps.map(app => ({
@@ -263,7 +248,6 @@ const MainScreen = ({ navigation }) => {
     }
 
     const getCurrentLocation = (action) => {
-        console.log('getCurrentLocation() \t Getting Current Location');
         Geolocation.getCurrentPosition(
             (position) => {
                 const newLocation = {
@@ -273,9 +257,7 @@ const MainScreen = ({ navigation }) => {
                 if (!isNaN(newLocation.latitude) && !isNaN(newLocation.longitude)) {
                     setLocation(newLocation);
                     if (action === 'start') {
-                        console.log("getCurrentLocation()->Start Location: textual data");
                     } else if (action === 'end') {
-                        console.log("getCurrentLocation()->Stop Location: textual data");
                         fetchAndProcessLocations();
                     }
                     const url = `https://t6hlbd54wg.execute-api.us-east-1.amazonaws.com/api/Location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
@@ -402,7 +384,7 @@ const MainScreen = ({ navigation }) => {
                             SELECTED DATE
                         </Text>
                         <TouchableOpacity style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
-                            <Text style={styles.helpingTitle}>{startDate.toLocaleDateString()}</Text>
+                            <Text style={styles.datePickerbtn}>{startDate.toLocaleDateString()}</Text>
                         </TouchableOpacity>
                     </View>
                     <Text style={styles.helpingTitle}>SELECT TIME</Text>
@@ -432,8 +414,8 @@ const MainScreen = ({ navigation }) => {
                 transparent={false}
                 onRequestClose={() => setNewActivityModal(false)}
             >
-                <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99 }}>
-                    <View style={{ margin: 6, paddingBottom: 10, alignItems: 'center' }}>
+                <View style={styles.modalNewHabit}>
+                    <View style={{ marginBottom: 12, paddingBottom: 4, borderBottomWidth: 0.4, backgroundColor: 'white', borderBottomColor: 'black', width: '100%' }}>
                         <Text style={styles.modalTitle}>
                             MAKE A NEW HABIT
                         </Text>
@@ -443,43 +425,44 @@ const MainScreen = ({ navigation }) => {
                             A few details more, and see your progress soar.
                         </Text>
                     </View>
-                    <View style={{ alignItems: 'center' }}>
-                        <Text style={styles.helpingTitle}>Title</Text>
-                        <TextInput
-                            style={styles.inputTitle}
-                            placeholder="Title"
-                            value={title}
-                            onChangeText={text => setTitle(text)}
-                        />
-                        <Text style={styles.helpingTitle}>Description</Text>
-                        <TextInput
-                            style={styles.inputDescription}
-                            placeholder="Description"
-                            value={description}
-                            multiline={true}
-                            onChangeText={text => setDescription(text)}
-                        />
-
-                        <View style={styles.DateTimeSelectionView}>
-                            <Text style={styles.helpingTitle}>How Regularly ?</Text>
-                            <Picker
-                                selectedValue={habitType}
-                                style={styles.picker}
-                                onValueChange={value => onHabitTypeValueChange(value)}>
-                                <Picker.Item label="HOW REGULARLY ?" value="N/A" />
-                                <Picker.Item label="DAILY" value="DAILY" />
-                                <Picker.Item label="WEEKLY" value="WEEKLY" />
-                                <Picker.Item label="MONTHLY" value="MONTHLY" />
-                            </Picker>
-                            {onHabitTypeChange(habitType)}
+                    <View style={styles.ModalGroupView}>
+                        <View style={{ alignItems: 'center' }}>
+                            <Text style={styles.helpingTitle}>Title</Text>
+                            <TextInput
+                                style={styles.inputTitle}
+                                placeholder="Title"
+                                value={title}
+                                onChangeText={text => setTitle(text)}
+                            />
+                            <Text style={styles.helpingTitle}>Description</Text>
+                            <TextInput
+                                style={styles.inputDescription}
+                                placeholder="Description"
+                                value={description}
+                                multiline={true}
+                                onChangeText={text => setDescription(text)}
+                            />
                         </View>
+                    </View>
 
+                    <View style={styles.ModalGroupView}>
+                        <Text style={styles.helpingTitle}>How Regularly ?</Text>
+                        <Picker
+                            selectedValue={habitType}
+                            style={styles.picker}
+                            onValueChange={value => onHabitTypeValueChange(value)}>
+                            <Picker.Item label="HOW REGULARLY ?" value="N/A" />
+                            <Picker.Item label="DAILY" value="DAILY" />
+                            <Picker.Item label="WEEKLY" value="WEEKLY" />
+                            <Picker.Item label="MONTHLY" value="MONTHLY" />
+                        </Picker>
+                        {onHabitTypeChange(habitType)}
                     </View>
                     <View style={styles.notifyView}>
                         <Text style={styles.notifyText}>NOTIFY?</Text>
                         <Switch
-                            trackColor={{ false: "#767577", true: "#81b0ff" }}
-                            thumbColor={notify ? "#f5dd4b" : "#f4f3f4"}
+                            trackColor={{ false: "#767577", true: "green" }}
+                            thumbColor={notify ? "#f5dd4b" : "red"}
                             ios_backgroundColor="#3e3e3e"
                             onValueChange={toggleSwitch}
                             value={notify}
@@ -535,7 +518,6 @@ const MainScreen = ({ navigation }) => {
                                 <Text style={styles.btnLocationStartStop}>Start Longitude: {startLocation.lon}</Text>
                             </>
                         )}
-
                         {stopLocation && (
                             <>
                                 <Text style={styles.btnLocationStartStop}>Stop Name: {stopLocation.name}</Text>
@@ -543,7 +525,6 @@ const MainScreen = ({ navigation }) => {
                                 <Text style={styles.btnLocationStartStop}>Stop Longitude: {stopLocation.lon}</Text>
                             </>
                         )}
-
                     </View>
                     <View>
                         <SafeAreaView style={{ height: 400, width: '100%' }}>
@@ -555,14 +536,6 @@ const MainScreen = ({ navigation }) => {
                         </SafeAreaView>
                     </View>
 
-                    {/*
-                    map function depreciated
-                    */}
-                    {/* 
-                        <View style={[styles.container, { alignItems: 'center', paddingTop: 20, paddingBottom: 95 }]}>
-                        <MapComponent location={location} />
-                    </View> */}
-
                     <TouchableOpacity
                         style={styles.closeButton}
                         onPress={() => setActivityModal(false)}>
@@ -572,7 +545,6 @@ const MainScreen = ({ navigation }) => {
             </Modal>
             <View style={[styles.topBar, { flexDirection: 'column' }]}>
                 <Text style={[styles.greetingText]}>Hi Shariq</Text>
-
                 <Text style={{ color: 'red' }}>Score: 45</Text>
             </View>
             <View style={styles.bodyContainer}>
@@ -583,7 +555,6 @@ const MainScreen = ({ navigation }) => {
                             onDelete={deleteContainer}
                             onActivityRun={activityIndividual}
                         />
-
                     ))}
                 </ScrollView>
             </View>

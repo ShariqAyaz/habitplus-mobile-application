@@ -168,8 +168,6 @@ const HabContainer = ({ onActivityRun, subAppConfig, onDelete }) => {
         .query(Q.where('appid', appid))
         .fetch();
 
-      console.log(activities);
-
       let activityRecords = [];
 
       // activity line items load here
