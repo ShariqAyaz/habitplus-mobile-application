@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { ColorScheme } from '../../constants/ColorScheme';
 
 export const styles = StyleSheet.create({
     container: {
@@ -12,7 +13,7 @@ export const styles = StyleSheet.create({
     modalTitle: {
         textAlign: 'center',
         marginTop: 6,
-        color: '#333333',
+        color: ColorScheme.primary,
         fontSize: 18,
         fontWeight: 'bold',
         paddingBottom: 0,
@@ -22,7 +23,7 @@ export const styles = StyleSheet.create({
         textAlign: 'justify',
         marginTop: 0,
         width: '90%',
-        color: 'black',
+        color: ColorScheme.secondary,
         fontSize: 12,
         fontStyle: 'italic',
         paddingLeft:25
@@ -41,9 +42,6 @@ export const styles = StyleSheet.create({
         marginBottom: -4,
         fontSize: 14,
         fontWeight: 'bold',
-        textShadowColor: 'gray',
-        textShadowOffset: { width: -2, height: 0.1 },
-        textShadowRadius: 5,
     },
     notifyView: {
         position: 'absolute',
@@ -144,7 +142,7 @@ export const styles = StyleSheet.create({
     saveButton: {
         width: 120,
         height: 50,
-        backgroundColor: 'green',
+        backgroundColor: ColorScheme.success,
         borderRadius: 35,
         bottom: 0,
         marginBottom: 20,
