@@ -413,14 +413,14 @@ const MainScreen = ({ navigation }) => {
                     <ScrollView style={{flex: 1,marginBottom:68,marginTop:-10 }} >
                         <View style={[styles.ModalGroupView, {marginTop: 10}]}>
                             <View style={{ alignItems: 'center' }}>
-                                <Text style={styles.helpingTitle}>Title</Text>
+                                <Text style={styles.helpingTitle}>TITLE</Text>
                                 <TextInput
                                     style={styles.inputTitle}
                                     placeholder="Title"
                                     value={title}
                                     onChangeText={text => setTitle(text)}
                                 />
-                                <Text style={styles.helpingTitle}>Description</Text>
+                                <Text style={styles.helpingTitle}>DESCRIPTION</Text>
                                 <TextInput
                                     style={styles.inputDescription}
                                     placeholder="Description"
@@ -431,7 +431,7 @@ const MainScreen = ({ navigation }) => {
                             </View>
                         </View>
                         <View style={styles.ModalGroupView}>
-                            <Text style={styles.helpingTitle}>How Regularly ?</Text>
+                            <Text style={styles.helpingTitle}>HOW REGULARLY ?</Text>
                             <Picker
                                 selectedValue={habitType}
                                 style={styles.picker}
