@@ -398,8 +398,7 @@ const MainScreen = ({ navigation }) => {
                 visible={newActivityModal}
                 backgroundColor={'#333333'}
                 transparent={false}
-                onRequestClose={() => setNewActivityModal(false)}
-            >
+                onRequestClose={() => setNewActivityModal(false)}>
                 <View style={styles.modalNewHabit}>
                     <View style={{ marginBottom: 12, paddingBottom: 4, borderBottomWidth: 0.4, backgroundColor: 'white', borderBottomColor: 'black', width: '100%' }}>
                         <Text style={styles.modalTitle}>
@@ -411,49 +410,52 @@ const MainScreen = ({ navigation }) => {
                             A few details more, and see your progress soar.
                         </Text>
                     </View>
-                    <View style={styles.ModalGroupView}>
-                        <View style={{ alignItems: 'center' }}>
-                            <Text style={styles.helpingTitle}>Title</Text>
-                            <TextInput
-                                style={styles.inputTitle}
-                                placeholder="Title"
-                                value={title}
-                                onChangeText={text => setTitle(text)}
-                            />
-                            <Text style={styles.helpingTitle}>Description</Text>
-                            <TextInput
-                                style={styles.inputDescription}
-                                placeholder="Description"
-                                value={description}
-                                multiline={true}
-                                onChangeText={text => setDescription(text)}
-                            />
+                    <ScrollView style={{flex: 1,marginBottom:68,marginTop:-10 }} >
+                        <View style={[styles.ModalGroupView, {marginTop: 10}]}>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text style={styles.helpingTitle}>Title</Text>
+                                <TextInput
+                                    style={styles.inputTitle}
+                                    placeholder="Title"
+                                    value={title}
+                                    onChangeText={text => setTitle(text)}
+                                />
+                                <Text style={styles.helpingTitle}>Description</Text>
+                                <TextInput
+                                    style={styles.inputDescription}
+                                    placeholder="Description"
+                                    value={description}
+                                    multiline={true}
+                                    onChangeText={text => setDescription(text)}
+                                />
+                            </View>
                         </View>
-                    </View>
-
-                    <View style={styles.ModalGroupView}>
-                        <Text style={styles.helpingTitle}>How Regularly ?</Text>
-                        <Picker
-                            selectedValue={habitType}
-                            style={styles.picker}
-                            onValueChange={value => onHabitTypeValueChange(value)}>
-                            <Picker.Item label="HOW REGULARLY ?" value="N/A" />
-                            <Picker.Item label="DAILY" value="DAILY" />
-                            <Picker.Item label="WEEKLY" value="WEEKLY" />
-                            <Picker.Item label="MONTHLY" value="MONTHLY" />
-                        </Picker>
-                        {onHabitTypeChange(habitType)}
-                    </View>
-                    <View style={styles.notifyView}>
-                        <Text style={styles.notifyText}>NOTIFY?</Text>
-                        <Switch
-                            trackColor={{ false: "#767577", true: "green" }}
-                            thumbColor={notify ? "#f5dd4b" : "red"}
-                            ios_backgroundColor="#3e3e3e"
-                            onValueChange={toggleSwitch}
-                            value={notify}
-                        />
-                    </View>
+                        <View style={styles.ModalGroupView}>
+                            <Text style={styles.helpingTitle}>How Regularly ?</Text>
+                            <Picker
+                                selectedValue={habitType}
+                                style={styles.picker}
+                                onValueChange={value => onHabitTypeValueChange(value)}>
+                                <Picker.Item label="HOW REGULARLY ?" value="N/A" />
+                                <Picker.Item label="DAILY" value="DAILY" />
+                                <Picker.Item label="WEEKLY" value="WEEKLY" />
+                                <Picker.Item label="MONTHLY" value="MONTHLY" />
+                            </Picker>
+                            {onHabitTypeChange(habitType)}
+                        </View>
+                        <View style={styles.ModalGroupView}>
+                            <View style={styles.notifyView}>
+                                <Text style={styles.notifyText}>NOTIFY?</Text>
+                                <Switch
+                                    trackColor={{ false: "#767577", true: "green" }}
+                                    thumbColor={notify ? "#f5dd4b" : "red"}
+                                    ios_backgroundColor="#3e3e3e"
+                                    onValueChange={toggleSwitch}
+                                    value={notify}
+                                />
+                            </View>
+                        </View>
+                    </ScrollView>
                     <View style={styles.bottomModal}>
                         <View style={{ flex: 1, justifyContent: 'space-around', flexDirection: 'row' }}>
                             <TouchableOpacity
