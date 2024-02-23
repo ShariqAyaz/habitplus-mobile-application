@@ -29,8 +29,9 @@ export const styles = StyleSheet.create({
         paddingLeft:25
     },
     datePickerbtn: {
-        color: 'white',
-        fontSize: 10,
+        color: 'black',
+        marginTop: 8,
+        fontSize: 14,
         fontWeight: 'bold',
     },
     helpingTitle: {
@@ -51,16 +52,13 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     notifyText: {
-        color: 'white',
+        color: '#333333',
         textAlign: 'left',
         alignSelf: 'flex-start',
         fontSize: 14,
         marginTop: 3,
         marginLeft: 3,
-        fontWeight: 'bold',
-        textShadowColor: 'black',
-        textShadowOffset: { width: -2, height: 0.1 },
-        textShadowRadius: 5,
+        fontWeight: 'bold'
     },
     ModalGroupView: {
         width: '94%',
@@ -71,9 +69,9 @@ export const styles = StyleSheet.create({
         paddingBottom: 12,
     },
     datePicker: {
-        backgroundColor: '#36454F',
+        backgroundColor: 'lightgray',
         borderRadius: 0,
-        color: 'white',
+        color: '#333333',
         width: '90%',
         height: 40,
         marginTop: 6,
@@ -86,13 +84,13 @@ export const styles = StyleSheet.create({
         paddingRight: 0,
     },
     picker: {
-        backgroundColor: '#36454F',
-        borderRadius: 0,
-        color: 'white',
+        backgroundColor: 'lightgray',
+        color: 'black',
         width: '90%',
         margin: 6,
         borderRadius: 6,
         alignSelf: 'center',
+        fontWeight: 'bold',
         fontSize: 16,
         paddingLeft: 18,
         paddingRight: 18,
@@ -228,8 +226,12 @@ export const styles = StyleSheet.create({
     bottomModal: {
         position: 'absolute',
         bottom: 0,
+        paddingTop: 12,
+        borderColor: 'black',
+        borderWidth: 0.4,
         width: '100%',
         flexDirection: 'row',
+        backgroundColor: 'white',
         justifyContent: 'space-around'
     },
     bottomBar: {

@@ -73,7 +73,6 @@ const MainScreen = ({ navigation }) => {
             const appsData = await database.collections.get('apps').query().fetch();
             setApps(appsData.map(app => ({
                 ...app._raw,
-
             })));
             setIsLoading(false);
         };
@@ -100,36 +99,24 @@ const MainScreen = ({ navigation }) => {
                 var pointB = [51.5909852, -0.23096917935986088];
                 var pointC = [51.5916963, -0.22972917936996099];
                 var pointD = [51.5905141, -0.22971917934976066];
-
                 function calculateCenter(points) {
                     var sumLat = 0;
                     var sumLng = 0;
-                
                     points.forEach(function(point) {
                         sumLat += point[0];
                         sumLng += point[1];
                     });
-                
                     var avgLat = sumLat / points.length;
                     var avgLng = sumLng / points.length;
-                
                     return [avgLat, avgLng];
                 }
-                
-                var centerPoint = calculateCenter([pointA, pointB, pointC, pointD]); 
-                
+                var centerPoint = calculateCenter([pointA, pointB, pointC, pointD]);
                 console.log("Center Point:", centerPoint);
-
-
                   var map = L.map('map').setView(centerPoint, 17);
-  
                   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   }).addTo(map);
-  
                   var pointList = [pointA, pointB, pointC, pointD];
-  
-                 
                   var firstpolyline = new L.Polyline(pointList, {
                       color: 'blue',
                       weight: 3,
@@ -137,7 +124,6 @@ const MainScreen = ({ navigation }) => {
                       smoothFactor: 0
                   });
                   firstpolyline.addTo(map);
-  
         </script>
     </body>
     </html>
