@@ -160,7 +160,6 @@ const MainScreen = ({ navigation }) => {
         }
     };
 
-
     const toggleStartStop = () => {
         setIsStart(!isStart);
     };
