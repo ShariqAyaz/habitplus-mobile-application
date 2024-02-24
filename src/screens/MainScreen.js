@@ -31,6 +31,7 @@ const MainScreen = ({ navigation }) => {
     const [habitType, setHabitType] = useState('N/A');
     const [title, setTitle] = useState('Make A Run Habit');
     const [description, setDescription] = useState('A Fresh air dose. A few miles more. A habit to adore.');
+    const [selectedAppDetails, setSelectedAppDetails] = useState({ verbose_title: '', verbose_description: '', appid: '' });
     const [type, setType] = useState('');
     const [time, setTime] = useState('');
     const [day, setDay] = useState(null);
@@ -129,8 +130,35 @@ const MainScreen = ({ navigation }) => {
     </html>
     `;
 
+    // this is for the New Habit Modal reset
+    const resetModalState = () => {
+        setTitle('');
+        setDescription('');
+        setHabitType('N/A');
+    };
+
+    const handleAppSelection = (app) => {
+        setSelectedAppDetails({
+            verbose_title: app.verbose_title,
+            verbose_description: app.verbose_description,
+            appid: app.appid
+        });
+        setNewActivityModal(true);
+    };
+
+
     const saveActivity = async () => {
-        console.log("Saving new habit with the following details:");
+
+        console.log("Saving new habit for app ID:", selectedAppDetails.appid);
+
+        const currentDate = new Date();
+        const defaultDate = currentDate.toISOString().split('T')[0];
+        const defaultTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+
+        const finalDate = date || defaultDate;
+        const finalTime = time || defaultTime;
+        const finalDay = day || currentDate.getDay();
+
         console.log({ title, description, type, time, day, date, month, frequency: 1, startDate, endDate, notify, isExpire: false, isVisible: true });
 
         try {
@@ -141,20 +169,22 @@ const MainScreen = ({ navigation }) => {
                     record.appid = '101';
                     record.activityid = '3';
                     record.type = habitType;
-                    record.time = time;
-                    record.day = selectedDaySlot;
-                    record.date = date;
-                    record.month = month;
+                    record.time = finalTime;
+                    record.day = finalDay;
+                    record.date = finalDate;
+                    record.month = month || currentDate.getMonth() + 1;
                     record.frequency = 1;
-                    record.start_date = startDate;
-                    record.end_date = endDate;
+                    record.start_date = startDate || currentDate;
+                    record.end_date = endDate || new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate());
                     record.notify = notify;
                     record.isExpire = false;
                     record.isVisible = true;
                 });
                 console.log('New Habit Created:', newHabit._raw);
             });
+            setNewActivityModal(false);
             console.log("Activity saved successfully.");
+            resetModalState();
         } catch (error) {
             console.error("Error saving activity:", error);
         }
@@ -296,6 +326,20 @@ const MainScreen = ({ navigation }) => {
         setActivityModal(true);
     }
 
+    closeNewHabitModal = () => {
+        Alert.alert("Close without saving?", "Are you sure you want to close it without saving changes?",
+            [
+                { text: "No", style: "cancel" },
+                {
+                    text: "Yes", onPress: () => {
+                        resetModalState();
+                        setNewActivityModal(false);
+                    }
+                }
+            ]
+        );
+    };
+
     const onHabitTypeValueChange = (value) => {
         setHabitType(value);
     }
@@ -401,16 +445,14 @@ const MainScreen = ({ navigation }) => {
                 <View style={styles.modalNewHabit}>
                     <View style={{ marginBottom: 12, paddingBottom: 4, borderBottomWidth: 0.4, backgroundColor: 'white', borderBottomColor: 'black', width: '100%' }}>
                         <Text style={styles.modalTitle}>
-                            MAKE A NEW HABIT
+                            {selectedAppDetails.verbose_title || 'MAKE A NEW HABIT'}
                         </Text>
                         <Text style={styles.modalSubTitle}>
-                            Lace up and go, feel the fresh air flow.
-                            Track your mileage, watch your running habit grow.
-                            A few details more, and see your progress soar.
+                            {selectedAppDetails.verbose_description || 'Lace up and go, feel the fresh air flow.'}
                         </Text>
                     </View>
-                    <ScrollView style={{flex: 1,marginBottom:68,marginTop:-10 }} >
-                        <View style={[styles.ModalGroupView, {marginTop: 10}]}>
+                    <ScrollView style={{ flex: 1, marginBottom: 68, marginTop: -10 }} >
+                        <View style={[styles.ModalGroupView, { marginTop: 10 }]}>
                             <View style={{ alignItems: 'center' }}>
                                 <Text style={styles.helpingTitle}>TITLE</Text>
                                 <TextInput
@@ -464,7 +506,7 @@ const MainScreen = ({ navigation }) => {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.closeButton}
-                                onPress={() => setNewActivityModal(false)}>
+                                onPress={() => closeNewHabitModal()}>
                                 <Text style={styles.closeButtonText}>Close</Text>
                             </TouchableOpacity>
                         </View>
@@ -534,17 +576,22 @@ const MainScreen = ({ navigation }) => {
                 <Text style={[styles.greetingText]}>Hi Shariq</Text>
                 <Text style={{ color: 'red' }}>Score: 45</Text>
             </View>
+            {/* Apps Container */}
             <View style={styles.bodyContainer}>
                 <ScrollView style={styles.body} scrollEventThrottle={6}>
+                    {/* HabContainer Injected Pull */}
                     {loadApps.map((appConfig, index) => (
                         <HabContainer key={index}
                             subAppConfig={appConfig}
                             onDelete={deleteContainer}
                             onActivityRun={activityIndividual}
+                            onAppSelected={handleAppSelection} 
                         />
                     ))}
+                    {/* HabContainer Injected Pull END */}
                 </ScrollView>
-            </View>
+            </View> {/* Apps Container END */}
+
             <View style={styles.bottomBar}>
                 <TouchableOpacity style={styles.bottomBarButton} onPress={() => nav('Explore')}>
                     <View style={styles.iconContainer}>

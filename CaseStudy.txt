@@ -1,0 +1,10 @@
+Long Path enable: Via ADMIN: New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
+-Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+
+Altering BuildFolder to resolve LongPath
+allprojects {
+    buildDir = "C:/tmp/${rootProject.name}/${project.name}"
+    repositories {
+       ...
+    }
+}

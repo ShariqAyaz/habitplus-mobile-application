@@ -77,7 +77,7 @@ const importComponent = (componentType, props) => {
   }
 };
 
-const HabContainer = ({ onActivityRun, subAppConfig, onDelete }) => {
+const HabContainer = ({ onActivityRun, subAppConfig, onDelete, onAppSelected }) => {
   const [components, setComponents] = useState([]);
   const [activityComponents, setActivityComponents] = useState([]); setActivityComponents
   const [isMenuVisible, setMenuVisible] = useState(false);
