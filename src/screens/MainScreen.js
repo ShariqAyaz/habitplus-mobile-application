@@ -2,7 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { styles } from './styles/MainScreenStyle';
 import {
     NativeModules, SafeAreaView, Switch, Image, Alert, View,
-    TextInput, Text, TouchableOpacity, ScrollView, Modal
+    TextInput, Text, TouchableOpacity, ScrollView, Modal,
+    BackHandler
 } from 'react-native';
 import DatePicker from '@react-native-community/datetimepicker';
 import { WebView } from 'react-native-webview';
@@ -80,6 +81,24 @@ const MainScreen = ({ navigation }) => {
         fetchAppsData();
         requestLocationPermission();
     }, []);
+
+    const backAction = () => {
+
+        if (newActivityModal === true) {
+            if (title.trim() && description.trim()) {
+                saveActivity();
+            } else {
+                return true;
+            }
+        }
+        return false
+    };
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+        console.log(backHandler);
+        return () => backHandler.remove();
+    }, [title, description]);
 
     const mapHtmlContent = `
     <html>
@@ -585,7 +604,7 @@ const MainScreen = ({ navigation }) => {
                             subAppConfig={appConfig}
                             onDelete={deleteContainer}
                             onActivityRun={activityIndividual}
-                            onAppSelected={handleAppSelection} 
+                            onAppSelected={handleAppSelection}
                         />
                     ))}
                     {/* HabContainer Injected Pull END */}
