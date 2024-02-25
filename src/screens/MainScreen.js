@@ -3,7 +3,7 @@ import { styles } from './styles/MainScreenStyle';
 import {
     NativeModules, SafeAreaView, Switch, Image, Alert, View,
     TextInput, Text, TouchableOpacity, ScrollView, Modal,
-    BackHandler
+    //BackHandler
 } from 'react-native';
 import DatePicker from '@react-native-community/datetimepicker';
 import { WebView } from 'react-native-webview';
@@ -26,7 +26,6 @@ const MainScreen = ({ navigation }) => {
     const [isStart, setIsStart] = useState(false);
     const [startLocation, setStartLocation] = useState(null);
     const [stopLocation, setStopLocation] = useState(null);
-    const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
     const [selectedDaySlot, setSelectedDaySlot] = useState('MONDAY');
     const [userCoordinates, setUserCoordinates] = useState([0.00, -0.01]);
     const [habitType, setHabitType] = useState('N/A');
@@ -37,7 +36,7 @@ const MainScreen = ({ navigation }) => {
     const [time, setTime] = useState('');
     const [day, setDay] = useState(null);
     const [month, setMonth] = useState(null);
-    const [notify, setNotify] = useState(false);
+    const [notify, setNotify] = useState(true);
     const [date, setDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -94,11 +93,11 @@ const MainScreen = ({ navigation }) => {
         return false
     };
 
-    useEffect(() => {
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-        console.log(backHandler);
-        return () => backHandler.remove();
-    }, [title, description]);
+    // useEffect(() => {
+    //     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    //     console.log(backHandler);
+    //     return () => backHandler.remove();
+    // }, [title, description]);
 
     const mapHtmlContent = `
     <html>
@@ -167,6 +166,10 @@ const MainScreen = ({ navigation }) => {
 
 
     const saveActivity = async () => {
+
+        if (title.trim() === '' || description.trim() === '' || habitType === 'N/A') {
+            return Alert.alert("Invalid Input", "Please fill all the fields and select a habit type.");
+        }
 
         console.log("Saving new habit for app ID:", selectedAppDetails.appid);
 
@@ -260,7 +263,7 @@ const MainScreen = ({ navigation }) => {
         columns: [],
         components: [
             { type: 'Text', props: { text: app.title, credit: 'By ' + app.author, appid: app.appid } },
-            { type: 'Button', props: { title: 'Make A New Habit', onPress: () => newHabit(app.appid) } },
+            { type: 'Button', props: { title: 'Make A New Habit', onPress: () => { newHabit(app.appid) }  } },
         ],
     }));
 
@@ -384,9 +387,9 @@ const MainScreen = ({ navigation }) => {
             case 'DAILY':
                 return (<><Text style={styles.helpingTitle}>SELECT TIME</Text>
                     <Picker
-                        selectedValue={selectedTimeSlot}
+                        selectedValue={time}
                         style={styles.picker}
-                        onValueChange={value => setSelectedTimeSlot(value)}
+                        onValueChange={value => setTime(value)}
                     >
                         {TimeSlot.map((time, index) => (
                             <Picker.Item key={index} label={time} value={time} />
@@ -405,9 +408,9 @@ const MainScreen = ({ navigation }) => {
                     </Picker>
                     <Text style={styles.helpingTitle}>SELECT TIME</Text>
                     <Picker
-                        selectedValue={selectedTimeSlot}
+                        selectedValue={time}
                         style={styles.picker}
-                        onValueChange={value => setSelectedTimeSlot(value)}
+                        onValueChange={value => setTime(value)}
                     >
                         {TimeSlot.map((time, index) => (
                             <Picker.Item key={index} label={time} value={time} />
@@ -437,9 +440,9 @@ const MainScreen = ({ navigation }) => {
                     </View>
                     <Text style={styles.helpingTitle}>SELECT TIME</Text>
                     <Picker
-                        selectedValue={selectedTimeSlot}
+                        selectedValue={time}
                         style={styles.picker}
-                        onValueChange={(itemValue) => setSelectedTimeSlot(itemValue)}
+                        onValueChange={(itemValue) => setTime(itemValue)}
                     >
                         {TimeSlot.map((time, index) => (
                             <Picker.Item key={index} label={time} value={time} />
@@ -508,7 +511,7 @@ const MainScreen = ({ navigation }) => {
                                 <Text style={styles.notifyText}>NOTIFY?</Text>
                                 <Switch
                                     trackColor={{ false: "#767577", true: "black" }}
-                                    thumbColor={notify ? "green" : "red"}
+                                    thumbColor={notify ? "green" : "darkgray"}
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={toggleSwitch}
                                     value={notify}
@@ -537,8 +540,7 @@ const MainScreen = ({ navigation }) => {
                 visible={activityModal}
                 backgroundColor={'#333333'}
                 transparent={false}
-                onRequestClose={() => setActivityModal(false)}
-            >
+                onRequestClose={() => setActivityModal(false)}>
                 <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99 }}>
                     <View style={{ margin: 0, padding: 0 }}>
                         <Text style={{ textAlign: 'center', marginTop: 8, paddingTop: 6, fontFamily: 'Roboto-Black', color: 'white', fontSize: 24 }}>
@@ -595,6 +597,7 @@ const MainScreen = ({ navigation }) => {
                 <Text style={[styles.greetingText]}>Hi Shariq</Text>
                 <Text style={{ color: 'red' }}>Score: 45</Text>
             </View>
+
             {/* Apps Container */}
             <View style={styles.bodyContainer}>
                 <ScrollView style={styles.body} scrollEventThrottle={6}>
@@ -609,7 +612,8 @@ const MainScreen = ({ navigation }) => {
                     ))}
                     {/* HabContainer Injected Pull END */}
                 </ScrollView>
-            </View> {/* Apps Container END */}
+            </View>
+            {/* Apps Container END */}
 
             <View style={styles.bottomBar}>
                 <TouchableOpacity style={styles.bottomBarButton} onPress={() => nav('Explore')}>
