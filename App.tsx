@@ -18,56 +18,67 @@ import Profile from './src/screens/Profile';
 import infloading from './src/screens/infloading';
 import MapScreen from './src/screens/MapScreen';
 import DevConsole from './src/screens/DevConsole';
+import LoginTest from './src/screens/LoginTest';
+import NotificationService from './services/notifications/NotificationService';
 
-const Stack = createStackNavigator(); 
+import PushNotification from 'react-native-push-notification';
+
+const Stack = createStackNavigator();
 
 const App = () => {
-  const [isSplash, setIsSplash] = useState(true); 
-  const [initialRoute, setInitialRoute] = useState('Welcome'); 
+  const [isSplash, setIsSplash] = useState(true);
+  const [initialRoute, setInitialRoute] = useState('Welcome');
 
-  useEffect(() => {
-    
-    const checkLoginStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem('userToken');
-        if (token) {
-          setInitialRoute('MainX'); 
-          // setInitialRoute('infloading'); 
-        } else {
-          setInitialRoute('Welcome'); 
+    useEffect(() => {
+      PushNotification.configure({
+      });
+      NotificationService.requestPermission();
+    }, []);
+
+    useEffect(() => {
+
+      const checkLoginStatus = async () => {
+        try {
+          const token = await AsyncStorage.getItem('userToken');
+          if (token) {
+            setInitialRoute('MainX');
+            // setInitialRoute('infloading'); 
+          } else {
+            setInitialRoute('Welcome');
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsSplash(false);
         }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsSplash(false); 
-      }
-    };
+      };
 
-    checkLoginStatus();
-  }, []);
+      checkLoginStatus();
+    }, []);
 
-  if (isSplash) {
-    return <SplashScreen />; 
-  }
+    if (isSplash) {
+      return <SplashScreen />;
+    }
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute}>
-        <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-        <Stack.Screen name="MainX" component={MainX} options={{ headerShown: false }} />
-        <Stack.Screen name="MainScreen" component={MainScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="GettingStarted" component={GettingStarted} options={{ headerShown: false }} />
-        <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-        <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
-        <Stack.Screen name="MarketPlace" component={MarketPlace} options={{ headerShown: false }} />
-        <Stack.Screen name="infloading" component={infloading} options={{ headerShown: false }} />
-        <Stack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="DevConsole" component={DevConsole} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
+    return (
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={initialRoute}>
+          <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
+          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+          <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+          <Stack.Screen name="MainX" component={MainX} options={{ headerShown: false }} />
+          <Stack.Screen name="MainScreen" component={MainScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="GettingStarted" component={GettingStarted} options={{ headerShown: false }} />
+          <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+          <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
+          <Stack.Screen name="MarketPlace" component={MarketPlace} options={{ headerShown: false }} />
+          <Stack.Screen name="infloading" component={infloading} options={{ headerShown: false }} />
+          <Stack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="DevConsole" component={DevConsole} options={{ headerShown: false }} />
+          <Stack.Screen name="LoginTest" component={LoginTest} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  };
 
-export default App;
+  export default App;

@@ -7,21 +7,21 @@ const LoginTest = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleLogin = () => {
-        // Email format validation using regex
+        
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             setErrorMessage('Invalid email format');
             return;
         }
 
-        // Password length validation
+        
         if (password.length < 8) {
             setErrorMessage('Password must be at least 8 characters long');
             return;
         }
 
-        // Simulating login with a mock function or API call
-        const loginSuccess = true; // Replace with your login logic
+        
+        const loginSuccess = true; 
         if (loginSuccess) {
             navigation.navigate('Dashboard');
         } else {

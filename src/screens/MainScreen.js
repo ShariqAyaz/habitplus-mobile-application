@@ -1,10 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { styles } from './styles/MainScreenStyle';
+import AppActivityService from '../../services/database/AppActivityService';
+
 import {
     NativeModules, SafeAreaView, Switch, Image, Alert, View,
     TextInput, Text, TouchableOpacity, ScrollView, Modal,
+    Keyboard, TouchableWithoutFeedback
     //BackHandler
 } from 'react-native';
+
+import { ColorScheme } from '../constants/ColorScheme';
 import DatePicker from '@react-native-community/datetimepicker';
 import { WebView } from 'react-native-webview';
 import { Picker } from '@react-native-picker/picker';
@@ -14,6 +19,7 @@ import { Q } from '@nozbe/watermelondb';
 import { date, json } from '@nozbe/watermelondb/decorators';
 import { PermissionsAndroid } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
+
 
 const MainScreen = ({ navigation }) => {
 
@@ -41,7 +47,7 @@ const MainScreen = ({ navigation }) => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
 
-    const toggleSwitch = () => setNotify(previousState => !previousState);
+    const toggleSwitch = () => setNotify(curstate => !curstate);
 
     useEffect(() => {
         let intervalId;
@@ -145,8 +151,7 @@ const MainScreen = ({ navigation }) => {
                   firstpolyline.addTo(map);
         </script>
     </body>
-    </html>
-    `;
+    </html>`;
 
     // this is for the New Habit Modal reset
     const resetModalState = () => {
@@ -166,46 +171,43 @@ const MainScreen = ({ navigation }) => {
 
 
     const saveActivity = async () => {
-
         if (title.trim() === '' || description.trim() === '' || habitType === 'N/A') {
             return Alert.alert("Invalid Input", "Please fill all the fields and select a habit type.");
         }
-
+    
         console.log("Saving new habit for app ID:", selectedAppDetails.appid);
-
+    
         const currentDate = new Date();
         const defaultDate = currentDate.toISOString().split('T')[0];
         const defaultTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
-
+    
         const finalDate = date || defaultDate;
         const finalTime = time || defaultTime;
         const finalDay = day || currentDate.getDay();
-
-        console.log({ title, description, type, time, day, date, month, frequency: 1, startDate, endDate, notify, isExpire: false, isVisible: true });
-
+    
+        const newAppActivityData = {
+            title: title,
+            description: description,
+            appid: '101', //selectedAppDetails.appid, 
+            activityid: '3', 
+            type: habitType,
+            time: finalTime,
+            day: finalDay,
+            date: finalDate,
+            month: month || currentDate.getMonth() + 1,
+            frequency: 1,
+            start_date: startDate || currentDate,
+            end_date: endDate || new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate()),
+            notify: notify,
+            isExpire: false,
+            isVisible: true,
+        };
+    
         try {
-            await database.write(async () => {
-                const newHabit = await database.collections.get('app_activity').create(record => {
-                    record.title = title;
-                    record.description = description;
-                    record.appid = '101';
-                    record.activityid = '3';
-                    record.type = habitType;
-                    record.time = finalTime;
-                    record.day = finalDay;
-                    record.date = finalDate;
-                    record.month = month || currentDate.getMonth() + 1;
-                    record.frequency = 1;
-                    record.start_date = startDate || currentDate;
-                    record.end_date = endDate || new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate());
-                    record.notify = notify;
-                    record.isExpire = false;
-                    record.isVisible = true;
-                });
-                console.log('New Habit Created:', newHabit._raw);
-            });
-            setNewActivityModal(false);
+
+            await AppActivityService.createActivity(newAppActivityData);
             console.log("Activity saved successfully.");
+            setNewActivityModal(false);
             resetModalState();
         } catch (error) {
             console.error("Error saving activity:", error);
@@ -464,6 +466,7 @@ const MainScreen = ({ navigation }) => {
                 backgroundColor={'#333333'}
                 transparent={false}
                 onRequestClose={() => setNewActivityModal(false)}>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.modalNewHabit}>
                     <View style={{ marginBottom: 12, paddingBottom: 4, borderBottomWidth: 0.4, backgroundColor: 'white', borderBottomColor: 'black', width: '100%' }}>
                         <Text style={styles.modalTitle}>
@@ -534,6 +537,7 @@ const MainScreen = ({ navigation }) => {
                         </View>
                     </View>
                 </View>
+                    </TouchableWithoutFeedback>
             </Modal>
             <Modal
                 animationType="slide"
@@ -594,7 +598,7 @@ const MainScreen = ({ navigation }) => {
                 </View>
             </Modal>
             <View style={[styles.topBar, { flexDirection: 'column' }]}>
-                <Text style={[styles.greetingText]}>Hi Shariq</Text>
+            <Text style={{ color: ColorScheme.greetingText }}>Hi Shariq</Text>
                 <Text style={{ color: 'red' }}>Score: 45</Text>
             </View>
 
