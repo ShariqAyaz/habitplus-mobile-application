@@ -6,6 +6,10 @@ pods/
 # Gradle files
 android/.gradle/
 android/build/
+android/app/.cxx/*
+android/app/build/
+android/app/intermediates/
+android/app/outputs/
 android/local.properties
 android/gradle.properties
 
@@ -23,7 +27,7 @@ Thumbs.db
 node_modules/
 
 # React Native
-android/*
+# android/*
 !android/app/src/main/
 ios/
 *.log
