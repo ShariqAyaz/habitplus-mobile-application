@@ -19,7 +19,6 @@ import infloading from './src/screens/infloading';
 import MapScreen from './src/screens/MapScreen';
 import DevConsole from './src/screens/DevConsole';
 import LoginTest from './src/screens/LoginTest';
-import NotificationService from './services/notifications/NotificationService';
 
 import PushNotification from 'react-native-push-notification';
 
@@ -29,11 +28,18 @@ const App = () => {
   const [isSplash, setIsSplash] = useState(true);
   const [initialRoute, setInitialRoute] = useState('Welcome');
 
-    useEffect(() => {
-      PushNotification.configure({
-      });
-      NotificationService.requestPermission();
-    }, []);
+  useEffect(() => {
+    PushNotification.configure({
+      onRegister: function (token) {
+        console.log("TOKEN:", token);
+      },
+      onNotification: function (notification) {
+        console.log("NOTIFICATION:", notification);
+      },
+      requestPermissions: true,
+    });
+
+   }, []);
 
     useEffect(() => {
 
