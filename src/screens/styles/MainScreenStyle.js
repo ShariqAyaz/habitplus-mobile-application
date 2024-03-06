@@ -129,9 +129,9 @@ export const styles = StyleSheet.create({
     closeButton: {
         width: 120,
         height: 50,
-        backgroundColor: '#F14F21',
+        backgroundColor: '#C01818',
         marginBottom: 20,
-        borderRadius: 35,
+        borderRadius: 60,
         bottom: 0,
         marginBottom: 20
     },
@@ -139,7 +139,7 @@ export const styles = StyleSheet.create({
         width: 120,
         height: 50,
         backgroundColor: ColorScheme.success,
-        borderRadius: 35,
+        borderRadius: 60,
         bottom: 0,
         marginBottom: 20,
         marginBottom: 20

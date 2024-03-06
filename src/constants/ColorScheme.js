@@ -26,7 +26,7 @@ export const ColorScheme = {
 
   /// Functional Colors
   error: '#F14F21',
-  success: '#4CAF50',
+  success: '#008374',
   info: '#ECB22E',
 
   /// Text & Iconss
