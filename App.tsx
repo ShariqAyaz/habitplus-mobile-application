@@ -21,7 +21,7 @@ import DevConsole from './src/screens/DevConsole';
 import LoginTest from './src/screens/LoginTest';
 import NotificationService from './services/notifications/NotificationService';
 
-import PushNotification from 'react-native-push-notification';
+//import PushNotification from 'react-native-push-notification';
 
 const Stack = createStackNavigator();
 
@@ -29,11 +29,11 @@ const App = () => {
   const [isSplash, setIsSplash] = useState(true);
   const [initialRoute, setInitialRoute] = useState('Welcome');
 
-    useEffect(() => {
-      PushNotification.configure({
-      });
-      NotificationService.requestPermission();
-    }, []);
+    // useEffect(() => {
+    //   PushNotification.configure({
+    //   });
+    //   NotificationService.requestPermission();
+    // }, []);
 
     useEffect(() => {
 
