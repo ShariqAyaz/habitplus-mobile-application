@@ -1,10 +1,19 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  TitleStyle: { color: 'white', fontSize: 24, fontWeight: 'bold' },
-  CreditStyle: { marginTop: 0, paddingTop: 0, paddingLeft: 4, color: '#ECB22E', fontSize: 12, fontStyle: 'italic' },
+  TitleStyle: {
+    color: 'white',
+    fontSize: 24, fontWeight: 'bold'
+  },
+  CreditStyle: {
+    marginTop: 0,
+    paddingTop: 0, paddingLeft: 4, color: '#ECB22E',
+    fontSize: 12, fontStyle: 'italic'
+  },
   HabContainerStyle: {
-    flexDirection: 'row', alignSelf: 'center', alignItems: 'center', padding: 2, marginTop: 8
+    flexDirection: 'row',
+    alignSelf: 'center', alignItems: 'center',
+    padding: 0, marginTop: 4
   },
   ActivityTitle: {
     color: '#2EB67D', textTransform: 'uppercase', fontSize: 12, fontWeight: 'bold'
@@ -128,23 +137,24 @@ export const styles = StyleSheet.create({
     marginTop: 20,
     fontColor: 'black',
   },
+  // Main Hab App Container
   container: {
     minHeight: 120,
     padding: 4,
-    width: '88%',
+    width: '96%',
     alignSelf: 'center',
     paddingBottom: 16,
     margin: 8,
-    marginBottom: 20,
-    borderRadius: 22,
+    marginBottom: 6,
+    borderRadius: 18,
     backgroundColor: '#333333',
     flexGrow: 1,
     flexShrink: 1,
     shadowColor: 'black',
-    shadowOffset: { width: -10, height: 10 },
-    shadowOpacity: 0.54,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 0.44,
+    shadowRadius: 5,
+    elevation: 2,
   },
   TextInputStyle: {
     borderColor: 'white',

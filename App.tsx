@@ -20,7 +20,7 @@ import MapScreen from './src/screens/MapScreen';
 import DevConsole from './src/screens/DevConsole';
 import LoginTest from './src/screens/LoginTest';
 
-// import PushNotification from 'react-native-push-notification';
+import PushNotification from 'react-native-push-notification';
 
 const Stack = createStackNavigator();
 
@@ -28,63 +28,78 @@ const App = () => {
   const [isSplash, setIsSplash] = useState(true);
   const [initialRoute, setInitialRoute] = useState('Welcome');
 
-  // useEffect(() => {
-  //   PushNotification.configure({
-  //     onRegister: function (token) {
-  //       console.log("TOKEN:", token);
-  //     },
-  //     onNotification: function (notification) {
-  //       console.log("NOTIFICATION:", notification);
-  //     },
-  //     requestPermissions: true,
-  //   });
-
-  //  }, []);
-
-    useEffect(() => {
-
-      const checkLoginStatus = async () => {
-        try {
-          const token = await AsyncStorage.getItem('userToken');
-          if (token) {
-            setInitialRoute('MainX');
-            // setInitialRoute('infloading'); 
-          } else {
-            setInitialRoute('Welcome');
-          }
-        } catch (error) {
-          console.error(error);
-        } finally {
-          setIsSplash(false);
-        }
-      };
-
-      checkLoginStatus();
-    }, []);
-
-    if (isSplash) {
-      return <SplashScreen />;
-    }
-
-    return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName={initialRoute}>
-          <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
-          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-          <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-          <Stack.Screen name="MainX" component={MainX} options={{ headerShown: false }} />
-          <Stack.Screen name="MainScreen" component={MainScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="GettingStarted" component={GettingStarted} options={{ headerShown: false }} />
-          <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-          <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
-          <Stack.Screen name="MarketPlace" component={MarketPlace} options={{ headerShown: false }} />
-          <Stack.Screen name="infloading" component={infloading} options={{ headerShown: false }} />
-          <Stack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="DevConsole" component={DevConsole} options={{ headerShown: false }} />
-          <Stack.Screen name="LoginTest" component={LoginTest} options={{ headerShown: false }} />
-        </Stack.Navigator>
-      </NavigationContainer>
+  let bool = true;
+  const LocalNotification = () => {
+    const key = Date.now().toString(); // Key must be unique everytime
+    PushNotification.createChannel(
+        {
+            channelId: key, // (required)
+            channelName: "Local messasge", // (required)
+            channelDescription: "Notification for Local message", // (optional) default: undefined.
+            importance: 4, // (optional) default: 4. Int value of the Android notification importance
+            vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+        },
+        (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
     );
-  };
+    PushNotification.localNotification({
+        channelId: key, //this must be same with channelid in createchannel
+        title: 'Local Message',
+        message: 'Local message !!',
+    })
+};
 
-  export default App;
+if (bool===true) {
+    LocalNotification();
+    bool = !bool;
+    console.log('Local Notification');
+    
+}
+
+
+  useEffect(() => {
+
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        if (token) {
+          setInitialRoute('MainX');
+          // setInitialRoute('infloading'); 
+        } else {
+          setInitialRoute('Welcome');
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsSplash(false);
+      }
+    };
+
+    checkLoginStatus();
+  }, []);
+
+  if (isSplash) {
+    return <SplashScreen />;
+  }
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+        <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+        <Stack.Screen name="MainX" component={MainX} options={{ headerShown: false }} />
+        <Stack.Screen name="MainScreen" component={MainScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="GettingStarted" component={GettingStarted} options={{ headerShown: false }} />
+        <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+        <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
+        <Stack.Screen name="MarketPlace" component={MarketPlace} options={{ headerShown: false }} />
+        <Stack.Screen name="infloading" component={infloading} options={{ headerShown: false }} />
+        <Stack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="DevConsole" component={DevConsole} options={{ headerShown: false }} />
+        <Stack.Screen name="LoginTest" component={LoginTest} options={{ headerShown: false }} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default App;

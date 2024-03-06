@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "982372897759",
-    "project_id": "habitplusplus-b0bd4",
-    "storage_bucket": "habitplusplus-b0bd4.appspot.com"
+    "project_number": "590578784076",
+    "project_id": "habitntime",
+    "storage_bucket": "habitntime.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:982372897759:android:874b832c6650e86c282a6a",
+        "mobilesdk_app_id": "1:590578784076:android:42fb6eabd3fe047e9761e9",
         "android_client_info": {
           "package_name": "com.habitplusplus"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCNVeSEgBU1397Tdcs5QicPjc0msXq_x5g"
+          "current_key": "AIzaSyCckPCUmAH1noxbld_NYPq3zBTcbEaCvDw"
         }
       ],
       "services": {

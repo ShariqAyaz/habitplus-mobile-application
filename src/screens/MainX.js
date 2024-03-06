@@ -3,11 +3,33 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { database } from '../../services/database/index';
 import { Q } from '@nozbe/watermelondb';
+import PushNotification from 'react-native-push-notification';
+import RemoteNotification from '../../RemoteNotification';
 
 const MainX = ({ navigation }) => {
   const [isTokenSaved, setIsTokenSaved] = useState(false);
   const [appsCount, setAppsCount] = useState(0);
   const [appsData, setAppsData] = useState([]);
+
+  const LocalNotification = () => {
+    console.log('LocalNotification');
+    const key = Date.now().toString(); // Key must be unique everytime
+    PushNotification.createChannel(
+      {
+        channelId: key, // (required)
+        channelName: "Local messasge", // (required)
+        channelDescription: "Notification for Local message", // (optional) default: undefined.
+        importance: 4, // (optional) default: 4. Int value of the Android notification importance
+        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+      },
+      (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+    PushNotification.localNotification({
+      channelId: key, //this must be same with channelid in createchannel
+      title: 'Local Message',
+      message: 'Local message !!',
+    })
+  };
 
   useEffect(() => {
 
@@ -20,8 +42,8 @@ const MainX = ({ navigation }) => {
 
       const xx = app_activity_data.map((app_activity_data => app_activity_data));
 
-      console.log('app_activity_data:', xx );
-      
+      console.log('app_activity_data:', xx);
+
       const appsWithData = await Promise.all(apps.map(async (app) => {
         const appUI = await database.collections.get('apps_ui')
           .query()
@@ -91,15 +113,17 @@ const MainX = ({ navigation }) => {
           </View>
         )}
         <View style={styles.buttonRow}>
+        <RemoteNotification />
+
           <TouchableOpacity
             style={[styles.button, { borderRadius: 4 }]}
-            onPress={() => navigation.navigate('DevConsole') }
+            onPress={() => navigation.navigate('DevConsole')}
           >
             <Text style={[styles.buttonText, { color: 'black' }]}>Developer Console</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button, { borderRadius: 4 }]}
-            onPress={() => navigation.navigate('TestScreen') }
+            style={[styles.button, { borderRadius: 6 }]}
+            onPress={LocalNotification}
           >
             <Text style={[styles.buttonText, { color: 'black' }]}>TestScreen</Text>
           </TouchableOpacity>
