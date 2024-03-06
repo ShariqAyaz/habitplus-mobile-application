@@ -168,6 +168,8 @@ const HabContainer = ({ onActivityRun, subAppConfig, onDelete, onAppSelected }) 
         .query(Q.where('appid', appid))
         .fetch();
 
+      //console.log(activities[activities.length-1].day);
+
       let activityRecords = [];
 
       // activity line items load here
@@ -176,15 +178,29 @@ const HabContainer = ({ onActivityRun, subAppConfig, onDelete, onAppSelected }) 
         activityRecords = activities.map((activity, index) => {
           return (
             <TouchableOpacity key={index} onPress={() => onActivityRun(activity.activityid)}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.ActivityTitle}>{activity.title}</Text>
-                <Text> </Text>
-                <Text style={styles.ActivityFrequency}>{activity.type} at {activity.time}</Text>
-                <View style={styles.ActivityIcon}>
-                  <Image
-                    source={require('../assets/img/run.png')}
-                    style={{ width: 18, height: 18 }}
-                  />
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 0.21 }}>
+                  <Text style={[styles.ActivityFrequency, { color: '#dbebfa', textAlign: 'justify' }]}>{activity.type}</Text>
+                </View>
+                <View style={{ flex: 0.60, flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={styles.ActivityTitle}>{activity.title}</Text>
+                </View>
+                <View style={{ flex: 0.38, flexDirection: 'row', justifyContent: 'space-between' }}>
+                  {/* <Text style={styles.ActivityFrequencyAt}><Text style={{color:'white', fontWeight:'100'}}>@ </Text>{activity.time} {activity.day}</Text> */}
+                  {activity.type === 'DAILY' && (
+                    <Text style={styles.ActivityFrequencyAt}>{activity.time}</Text>
+                  )}
+                  {activity.type === 'WEEKLY' && (
+                    <Text style={styles.ActivityFrequencyAt}>{['MONDAY', 'TUESDAY', 'WEEKDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'][activity.day]} {activity.time}</Text>
+                  )}
+                  {activity.type === 'MONTHLY' && (
+                    <Text style={styles.ActivityFrequencyAt}>
+                      {new Date(activity.date).toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: '2-digit'
+                              })} {activity.time}</Text>
+                  )}
                 </View>
               </View>
             </TouchableOpacity>
@@ -246,7 +262,6 @@ const HabContainer = ({ onActivityRun, subAppConfig, onDelete, onAppSelected }) 
         animationType="slide"
         onRequestClose={() => setMenuVisible(false)}
       >
-
         <View style={{ backgroundColor: '#333333', flex: 1, opacity: 0.99 }}>
           {settingsModal()}
           <TouchableOpacity

@@ -213,7 +213,7 @@ export const styles = StyleSheet.create({
     },
     bodyContainer: {
         flex: 1,
-        marginTop: 80,
+        marginTop: 60,
         height: '100%',
         width: '100%',
         marginBottom: 60,

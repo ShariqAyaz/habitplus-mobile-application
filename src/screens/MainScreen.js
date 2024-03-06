@@ -40,7 +40,6 @@ const MainScreen = ({ navigation }) => {
     const [selectedAppDetails, setSelectedAppDetails] = useState({ verbose_title: '', verbose_description: '', appid: '' });
     const [type, setType] = useState('');
     const [time, setTime] = useState('');
-    const [day, setDay] = useState(null);
     const [month, setMonth] = useState(null);
     const [notify, setNotify] = useState(true);
     const [date, setDate] = useState(new Date());
@@ -174,35 +173,78 @@ const MainScreen = ({ navigation }) => {
         if (title.trim() === '' || description.trim() === '' || habitType === 'N/A') {
             return Alert.alert("Invalid Input", "Please fill all the fields and select a habit type.");
         }
-    
-        console.log("Saving new habit for app ID:", selectedAppDetails.appid);
-    
+
+        console.log("Saving new habit for app ID:", selectedAppDetails.appid, habitType, startDate);
+
         const currentDate = new Date();
         const defaultDate = currentDate.toISOString().split('T')[0];
         const defaultTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
-    
+
         const finalDate = date || defaultDate;
         const finalTime = time || defaultTime;
-        const finalDay = day || currentDate.getDay();
-    
-        const newAppActivityData = {
-            title: title,
-            description: description,
-            appid: '101', //selectedAppDetails.appid, 
-            activityid: '3', 
-            type: habitType,
-            time: finalTime,
-            day: finalDay,
-            date: finalDate,
-            month: month || currentDate.getMonth() + 1,
-            frequency: 1,
-            start_date: startDate || currentDate,
-            end_date: endDate || new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate()),
-            notify: notify,
-            isExpire: false,
-            isVisible: true,
-        };
-    
+        const finalDay = selectedDaySlot || currentDate.getDay();
+
+        let newAppActivityData = {};
+
+        if (habitType === 'MONTHLY') {
+            newAppActivityData = {
+                title: title,
+                description: description,
+                appid: '101', //selectedAppDetails.appid, 
+                activityid: '3',
+                type: habitType,
+                time: finalTime,
+                day: finalDay,
+                date: Date.parse(startDate), // Convert date to timestamp
+                month: month || currentDate.getMonth() + 1,
+                frequency: 1,
+                start_date: Date.parse(startDate), // Convert date to timestamp
+                end_date: endDate ? Date.parse(endDate) : Date.parse(new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate())),
+                notify: notify,
+                isExpire: false,
+                isVisible: true,
+            };
+
+        } else if (habitType === 'DAILY') {
+            newAppActivityData = {
+                title: title,
+                description: description,
+                appid: '101', //selectedAppDetails.appid, 
+                activityid: '3',
+                type: habitType,
+                time: finalTime,
+                day: finalDay,
+                date: finalDate,
+                month: month || currentDate.getMonth() + 1,
+                frequency: 1,
+                start_date: startDate || currentDate,
+                end_date: endDate || new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate()),
+                notify: notify,
+                isExpire: false,
+                isVisible: true,
+            };
+
+        }
+        else if (habitType === 'WEEKLY') {
+            newAppActivityData = {
+                title: title,
+                description: description,
+                appid: '101', //selectedAppDetails.appid, 
+                activityid: '3',
+                type: habitType,
+                time: finalTime,
+                day: selectedDaySlot,
+                date: finalDate,
+                month: month || currentDate.getMonth() + 1,
+                frequency: 1,
+                start_date: startDate || currentDate,
+                end_date: endDate || new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate()),
+                notify: notify,
+                isExpire: false,
+                isVisible: true,
+            };
+        }
+
         try {
 
             await AppActivityService.createActivity(newAppActivityData);
@@ -212,6 +254,9 @@ const MainScreen = ({ navigation }) => {
         } catch (error) {
             console.error("Error saving activity:", error);
         }
+
+
+
     };
 
     const toggleStartStop = () => {
@@ -265,7 +310,7 @@ const MainScreen = ({ navigation }) => {
         columns: [],
         components: [
             { type: 'Text', props: { text: app.title, credit: 'By ' + app.author, appid: app.appid } },
-            { type: 'Button', props: { title: 'Make A New Habit', onPress: () => { newHabit(app.appid) }  } },
+            { type: 'Button', props: { title: 'Make A New Habit', onPress: () => { newHabit(app.appid) } } },
         ],
     }));
 
@@ -405,7 +450,7 @@ const MainScreen = ({ navigation }) => {
                         onValueChange={value => setSelectedDaySlot(value)}
                     >
                         {["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"].map((day, index) =>
-                            <Picker.Item key={index} label={day} value={day} />
+                            <Picker.Item key={index} label={day} value={index} />
                         )}
                     </Picker>
                     <Text style={styles.helpingTitle}>SELECT TIME</Text>
@@ -467,77 +512,77 @@ const MainScreen = ({ navigation }) => {
                 transparent={false}
                 onRequestClose={() => setNewActivityModal(false)}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={styles.modalNewHabit}>
-                    <View style={{ marginBottom: 12, paddingBottom: 4, borderBottomWidth: 0.4, backgroundColor: 'white', borderBottomColor: 'black', width: '100%' }}>
-                        <Text style={styles.modalTitle}>
-                            {selectedAppDetails.verbose_title || 'MAKE A NEW HABIT'}
-                        </Text>
-                        <Text style={styles.modalSubTitle}>
-                            {selectedAppDetails.verbose_description || 'Lace up and go, feel the fresh air flow.'}
-                        </Text>
-                    </View>
-                    <ScrollView style={{ flex: 1, marginBottom: 68, marginTop: -10 }} >
-                        <View style={[styles.ModalGroupView, { marginTop: 10 }]}>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={styles.helpingTitle}>TITLE</Text>
-                                <TextInput
-                                    style={styles.inputTitle}
-                                    placeholder="Title"
-                                    value={title}
-                                    onChangeText={text => setTitle(text)}
-                                />
-                                <Text style={styles.helpingTitle}>DESCRIPTION</Text>
-                                <TextInput
-                                    style={styles.inputDescription}
-                                    placeholder="Description"
-                                    value={description}
-                                    multiline={true}
-                                    onChangeText={text => setDescription(text)}
-                                />
+                    <View style={styles.modalNewHabit}>
+                        <View style={{ marginBottom: 12, paddingBottom: 4, borderBottomWidth: 0.4, backgroundColor: 'white', borderBottomColor: 'black', width: '100%' }}>
+                            <Text style={styles.modalTitle}>
+                                {selectedAppDetails.verbose_title || 'MAKE A NEW HABIT'}
+                            </Text>
+                            <Text style={styles.modalSubTitle}>
+                                {selectedAppDetails.verbose_description || 'Lace up and go, feel the fresh air flow.'}
+                            </Text>
+                        </View>
+                        <ScrollView style={{ flex: 1, marginBottom: 68, marginTop: -10 }} >
+                            <View style={[styles.ModalGroupView, { marginTop: 10 }]}>
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={styles.helpingTitle}>TITLE</Text>
+                                    <TextInput
+                                        style={styles.inputTitle}
+                                        placeholder="Title"
+                                        value={title}
+                                        onChangeText={text => setTitle(text)}
+                                    />
+                                    <Text style={styles.helpingTitle}>DESCRIPTION</Text>
+                                    <TextInput
+                                        style={styles.inputDescription}
+                                        placeholder="Description"
+                                        value={description}
+                                        multiline={true}
+                                        onChangeText={text => setDescription(text)}
+                                    />
+                                </View>
+                            </View>
+                            <View style={styles.ModalGroupView}>
+                                <Text style={styles.helpingTitle}>HOW REGULARLY ?</Text>
+                                <Picker
+                                    selectedValue={habitType}
+                                    style={styles.picker}
+                                    onValueChange={value => onHabitTypeValueChange(value)}>
+                                    <Picker.Item label="HOW REGULARLY ?" value="N/A" />
+                                    <Picker.Item label="DAILY" value="DAILY" />
+                                    <Picker.Item label="WEEKLY" value="WEEKLY" />
+                                    <Picker.Item label="MONTHLY" value="MONTHLY" />
+                                </Picker>
+                                {onHabitTypeChange(habitType)}
+                            </View>
+                            <View style={styles.ModalGroupView}>
+                                <View style={styles.notifyView}>
+                                    <Text style={styles.notifyText}>NOTIFY?</Text>
+                                    <Switch
+                                        trackColor={{ false: "#767577", true: "black" }}
+                                        thumbColor={notify ? "green" : "darkgray"}
+                                        ios_backgroundColor="#3e3e3e"
+                                        onValueChange={toggleSwitch}
+                                        value={notify}
+                                    />
+                                </View>
+                            </View>
+                        </ScrollView>
+                        <View style={styles.bottomModal}>
+                            <View style={{ flex: 1, justifyContent: 'space-around', flexDirection: 'row' }}>
+                                <TouchableOpacity
+                                    style={styles.saveButton}
+                                    onPress={() => saveActivity()}>
+                                    <Text style={styles.saveButtonText}>Save Habit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.closeButton}
+                                    onPress={() => closeNewHabitModal()}>
+                                    <Text style={styles.closeButtonText}>Close</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={styles.ModalGroupView}>
-                            <Text style={styles.helpingTitle}>HOW REGULARLY ?</Text>
-                            <Picker
-                                selectedValue={habitType}
-                                style={styles.picker}
-                                onValueChange={value => onHabitTypeValueChange(value)}>
-                                <Picker.Item label="HOW REGULARLY ?" value="N/A" />
-                                <Picker.Item label="DAILY" value="DAILY" />
-                                <Picker.Item label="WEEKLY" value="WEEKLY" />
-                                <Picker.Item label="MONTHLY" value="MONTHLY" />
-                            </Picker>
-                            {onHabitTypeChange(habitType)}
-                        </View>
-                        <View style={styles.ModalGroupView}>
-                            <View style={styles.notifyView}>
-                                <Text style={styles.notifyText}>NOTIFY?</Text>
-                                <Switch
-                                    trackColor={{ false: "#767577", true: "black" }}
-                                    thumbColor={notify ? "green" : "darkgray"}
-                                    ios_backgroundColor="#3e3e3e"
-                                    onValueChange={toggleSwitch}
-                                    value={notify}
-                                />
-                            </View>
-                        </View>
-                    </ScrollView>
-                    <View style={styles.bottomModal}>
-                        <View style={{ flex: 1, justifyContent: 'space-around', flexDirection: 'row' }}>
-                            <TouchableOpacity
-                                style={styles.saveButton}
-                                onPress={() => saveActivity()}>
-                                <Text style={styles.saveButtonText}>Save Habit</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.closeButton}
-                                onPress={() => closeNewHabitModal()}>
-                                <Text style={styles.closeButtonText}>Close</Text>
-                            </TouchableOpacity>
-                        </View>
                     </View>
-                </View>
-                    </TouchableWithoutFeedback>
+                </TouchableWithoutFeedback>
             </Modal>
             <Modal
                 animationType="slide"
@@ -598,7 +643,7 @@ const MainScreen = ({ navigation }) => {
                 </View>
             </Modal>
             <View style={[styles.topBar, { flexDirection: 'column' }]}>
-            <Text style={{ color: ColorScheme.greetingText }}>Hi Shariq</Text>
+                <Text style={{ color: ColorScheme.greetingText }}>Hi Shariq</Text>
                 <Text style={{ color: 'red' }}>Score: 45</Text>
             </View>
 

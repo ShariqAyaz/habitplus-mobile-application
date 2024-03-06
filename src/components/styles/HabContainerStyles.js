@@ -1,46 +1,86 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  TitleStyle: {
+    // Main Hab App Container
+    container: {
+      minHeight: 120,
+      paddingTop: 6,
+      paddingLeft: 6,
+      paddingRight: 6,
+      paddingBottom: 18,
+      width: '94%',
+      alignSelf: 'center',
+      margin: 8,
+      marginBottom: 6,
+      borderRadius: 18,
+      backgroundColor: '#333333',
+      flexGrow: 1,
+      flexShrink: 1,
+      shadowColor: 'black',
+      shadowOffset: { width: 2, height: 4 },
+      shadowOpacity: 0.44,
+      shadowRadius: 5,
+      elevation: 2,
+    },
+    TitleStyle: {
     color: 'white',
     fontSize: 24, fontWeight: 'bold'
   },
   CreditStyle: {
-    marginTop: 0,
-    paddingTop: 0, paddingLeft: 4, color: '#ECB22E',
-    fontSize: 12, fontStyle: 'italic'
+    marginTop: -4,
+    paddingTop: 0,
+    paddingLeft: 4,
+    color: '#ECB22E',
+    fontSize: 13,
+    fontStyle: 'italic',
+    fontWeight:'200',
   },
   HabContainerStyle: {
     flexDirection: 'row',
-    alignSelf: 'center', alignItems: 'center',
-    padding: 0, marginTop: 4
+    alignSelf: 'center',
+    alignItems: 'center',
+    padding: 0, marginTop: 3
+  },
+  ActivityView: {
+    marginTop: 3,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 12,
+    paddingRight: 8,
+    borderWidth: 0.3,
+    borderRadius: 1,
+    backgroundColor: '#3f3f3f',
+    width: '94%',
+    alignSelf: 'center',
   },
   ActivityTitle: {
-    color: '#2EB67D', textTransform: 'uppercase', fontSize: 12, fontWeight: 'bold'
+    color: 'white',
+    textTransform: 'uppercase',
+    fontSize: 11,
+    fontWeight: 'bold'
   },
   ActivityFrequency: {
-    color: 'white', fontSize: 10, fontWeight: 'normal', textAlign: 'right'
+    color: '#003666', fontSize: 10,
+    fontWeight: 'bold'
+  },
+  ActivityFrequencyAt: {
+    color: 'white', fontSize: 12,
+    fontWeight: '100',
+  },
+  ActivityIcon: {
+    justifyContent: 'right',
+    alignItems: 'right'
   },
   buttonStyle: {
-    width: '90%',
+    width: '94%',
     height: 40,
     alignSelf: 'center',
     padding: 10,
+    marginBottom: 3,
     marginTop: 8,
     color: 'white',
-    backgroundColor: '#075E54',
-  },
-  ActivityIcon: { justifyContent: 'right', alignItems: 'right' },
-  ActivityView: {
-    marginTop: 6,
-    paddingTop: 6,
-    paddingLeft: 8,
-    paddingRight: 8,
-    paddingBottom: 8,
-    borderWidth: 0.4,
-    borderColor: 'white',
-    width: '88%',
-    alignSelf: 'center',
+    backgroundColor: '#0085ad',
+  
   },
   greenButtonText: {
     color: 'white', fontSize: 14, fontWeight: 'bold', alignSelf: 'center'
@@ -65,7 +105,6 @@ export const styles = StyleSheet.create({
     padding: 20, // Example padding
     textAlign: 'center',
   },
-
   itemContainer: {
     backgroundColor: '#333',
     padding: 10,
@@ -137,25 +176,6 @@ export const styles = StyleSheet.create({
     marginTop: 20,
     fontColor: 'black',
   },
-  // Main Hab App Container
-  container: {
-    minHeight: 120,
-    padding: 4,
-    width: '96%',
-    alignSelf: 'center',
-    paddingBottom: 16,
-    margin: 8,
-    marginBottom: 6,
-    borderRadius: 18,
-    backgroundColor: '#333333',
-    flexGrow: 1,
-    flexShrink: 1,
-    shadowColor: 'black',
-    shadowOffset: { width: 2, height: 4 },
-    shadowOpacity: 0.44,
-    shadowRadius: 5,
-    elevation: 2,
-  },
   TextInputStyle: {
     borderColor: 'white',
     borderWidth: 0.3,
@@ -167,5 +187,4 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     padding: 10,
   }
-  // Add other styles here if needed
 });
