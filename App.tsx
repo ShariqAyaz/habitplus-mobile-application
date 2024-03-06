@@ -20,7 +20,7 @@ import MapScreen from './src/screens/MapScreen';
 import DevConsole from './src/screens/DevConsole';
 import LoginTest from './src/screens/LoginTest';
 
-//import PushNotification from 'react-native-push-notification';
+// import PushNotification from 'react-native-push-notification';
 
 const Stack = createStackNavigator();
 
@@ -28,18 +28,18 @@ const App = () => {
   const [isSplash, setIsSplash] = useState(true);
   const [initialRoute, setInitialRoute] = useState('Welcome');
 
-  useEffect(() => {
-    PushNotification.configure({
-      onRegister: function (token) {
-        console.log("TOKEN:", token);
-      },
-      onNotification: function (notification) {
-        console.log("NOTIFICATION:", notification);
-      },
-      requestPermissions: true,
-    });
+  // useEffect(() => {
+  //   PushNotification.configure({
+  //     onRegister: function (token) {
+  //       console.log("TOKEN:", token);
+  //     },
+  //     onNotification: function (notification) {
+  //       console.log("NOTIFICATION:", notification);
+  //     },
+  //     requestPermissions: true,
+  //   });
 
-   }, []);
+  //  }, []);
 
     useEffect(() => {
 
