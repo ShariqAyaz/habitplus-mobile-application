@@ -20,6 +20,15 @@ import { date, json } from '@nozbe/watermelondb/decorators';
 import { PermissionsAndroid } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 
+const calculateCenter = (points) => {
+    let lat = 0;
+    let lng = 0;
+    points.forEach(point => {
+        lat += point[0];
+        lng += point[1];
+    });
+    return [lat / points.length, lng / points.length];
+};
 
 const MainScreen = ({ navigation }) => {
 
@@ -45,13 +54,26 @@ const MainScreen = ({ navigation }) => {
     const [date, setDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
+    const [mapPoints, setMapPoints] = useState([]);
+    const [action, setAction] = useState('');
 
     const toggleSwitch = () => setNotify(curstate => !curstate);
 
     useEffect(() => {
+        const fetchLocations = async () => {
+            const locations = await database.collections.get('locations').query().fetch();
+            const points = locations.map(loc => [loc.latitude, loc.longitude]);
+            setMapPoints(points);
+        };
+
+        fetchLocations();
+    }, []);
+
+
+    useEffect(() => {
         let intervalId;
         const fetchAndProcessLocation = async () => {
-            const newLocation = await getCurrentLocation();
+            const newLocation = await getCurrentLocation(action);
             setLocation(newLocation);
         };
         if (isStart) {
@@ -87,7 +109,6 @@ const MainScreen = ({ navigation }) => {
     }, []);
 
     const backAction = () => {
-
         if (newActivityModal === true) {
             if (title.trim() && description.trim()) {
                 saveActivity();
@@ -98,61 +119,42 @@ const MainScreen = ({ navigation }) => {
         return false
     };
 
-    // useEffect(() => {
-    //     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-    //     console.log(backHandler);
-    //     return () => backHandler.remove();
-    // }, [title, description]);
 
-    const mapHtmlContent = `
-    <html>
-    <head>
-        <title>OpenStreetMap with Line</title>
-        <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-        crossorigin=""/>
-        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-        crossorigin=""></script>
-    </head>
-    <body>
-        <div id="map" style="width: 100%; height: 100%"></div>
-        <script>
-        var pointA = [51.5905141, -0.22971917934976066];
-                var pointB = [51.5909852, -0.23096917935986088];
-                var pointC = [51.5916963, -0.22972917936996099];
-                var pointD = [51.5905141, -0.22971917934976066];
-                function calculateCenter(points) {
-                    var sumLat = 0;
-                    var sumLng = 0;
-                    points.forEach(function(point) {
-                        sumLat += point[0];
-                        sumLng += point[1];
-                    });
-                    var avgLat = sumLat / points.length;
-                    var avgLng = sumLng / points.length;
-                    return [avgLat, avgLng];
-                }
-                var centerPoint = calculateCenter([pointA, pointB, pointC, pointD]);
-                console.log("Center Point:", centerPoint);
-                  var map = L.map('map').setView(centerPoint, 17);
-                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  }).addTo(map);
-                  var pointList = [pointA, pointB, pointC, pointD];
-                  var firstpolyline = new L.Polyline(pointList, {
-                      color: 'blue',
-                      weight: 3,
-                      opacity: 0.7,
-                      smoothFactor: 0
-                  });
-                  firstpolyline.addTo(map);
-        </script>
-    </body>
-    </html>`;
+    const generateMapHtml = (points) => {
+        const pointsString = points.map(point => `[${point.join(', ')}]`).join(', ');
+        const centerPoint = calculateCenter(points);
 
-    // this is for the New Habit Modal reset
+        return `
+        <html>
+        <head>
+            <title>OpenStreetMap with Line</title>
+            <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""/>
+            <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+        </head>
+        <body>
+            <div id="map" style="width: 100%; height: 100%"></div>
+            <script>
+            var points = [${pointsString}];
+            var centerPoint = [${centerPoint.join(', ')}];
+            var map = L.map('map').setView(centerPoint, 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            var polyline = new L.Polyline(points, {
+                color: 'blue',
+                weight: 3,
+                opacity: 0.7,
+                smoothFactor: 1
+            }).addTo(map);
+            </script>
+        </body>
+        </html>`;
+    };
+
+
+
+
     const resetModalState = () => {
         setTitle('');
         setDescription('');
@@ -332,6 +334,9 @@ const MainScreen = ({ navigation }) => {
     }
 
     const getCurrentLocation = (action) => {
+
+        console.log('getCurrentLocation() -> \t Action:', action);
+
         Geolocation.getCurrentPosition(
             (position) => {
                 const newLocation = {
@@ -344,12 +349,26 @@ const MainScreen = ({ navigation }) => {
                     } else if (action === 'end') {
                         fetchAndProcessLocations();
                     }
-                    const url = `https://t6hlbd54wg.execute-api.us-east-1.amazonaws.com/api/Location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
+                    const url = `https://yspiekfpv6.execute-api.us-east-1.amazonaws.com/prod/location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`;
+
+                    console.log(position.coords.latitude);
+                    console.log(position.coords.longitude);
+
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {
+
+                            console.log(1);
+
+                            const locationData = {
+                                name: data.features[0].place_name,
+                                lat: data.features[0].center[1],
+                                lon: data.features[0].center[0]
+                            };
+
                             if (action === 'start') {
-                                setStartLocation(data);
+                                console.log('Start Save Location:', locationData);
+                                setStartLocation(locationData);
                                 database.write(async () => {
                                     await database.collections.get('locations').create(location => {
                                         location.latitude = position.coords.latitude;
@@ -359,7 +378,7 @@ const MainScreen = ({ navigation }) => {
                                 });
 
                             } else if (action === 'end') {
-                                setStopLocation(data);
+                                setStopLocation(locationData);
                             }
                         })
                         .catch(error => {
@@ -602,8 +621,10 @@ const MainScreen = ({ navigation }) => {
                             onPress={() => {
                                 if (!isStart) {
                                     getCurrentLocation('start');
+                                    setAction('start');
                                 } else {
                                     getCurrentLocation('end');
+                                    setAction('end');
                                 }
                                 setIsStart(!isStart);
                             }}
@@ -626,13 +647,16 @@ const MainScreen = ({ navigation }) => {
                         )}
                     </View>
                     <View>
-                        <SafeAreaView style={{ height: 400, width: '100%' }}>
-                            <WebView
-                                style={{ height: 400, width: '100%' }}
-                                originWhitelist={['*']}
-                                source={{ html: mapHtmlContent }}
-                            />
-                        </SafeAreaView>
+                        {mapPoints.length > 0 && (
+                            <SafeAreaView style={{ height: 400, width: '100%' }}>
+                                <WebView
+                                    style={{ height: 400, width: '100%' }}
+                                    originWhitelist={['*']}
+                                    source={{ html: generateMapHtml(mapPoints) }}
+                                />
+                            </SafeAreaView>
+                        )}
+
                     </View>
 
                     <TouchableOpacity

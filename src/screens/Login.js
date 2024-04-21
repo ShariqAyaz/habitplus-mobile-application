@@ -25,88 +25,93 @@ const LoginScreen = () => {
         if (isEmailValid) {
             setIsLoginButtonDisabled(true);
             try {
-                const url = `${API_URL}/Login`;
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email: trimmedEmail, password: trimmedPassword }),
-                });
+                // 1.0 - Invoking the Login API passing the email and password
 
-                let accessToken;
+                // const url = `${API_URL}/Login`;
+                // const response = await fetch(url, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify({ email: trimmedEmail, password: trimmedPassword }),
+                // });
 
-                if (response.status === 200) {
-                    const data = await response.json();
+                //      let accessToken;
 
-                    console.log(data);
+                // 1.1 - If the response status is 200, then we have a successful login
+                // if (response.status === 200) {
+                //     const data = await response.json();
 
-                    if (data && data.accessToken) {
-                        accessToken = data.accessToken;
-                    }
+                //     console.log(data);
 
-                    if (accessToken) {
+                //     if (data && data.accessToken) {
+                //         accessToken = data.accessToken;
+                //     }
 
-                        // Here adding the login user to the local database because it is offline first approach but still need internet access to login for the first time
-                        const usersCollection = database.collections.get('users');
+                //     if (accessToken) {
 
-                        const user = await usersCollection.query(Q.where('email', trimmedEmail)).fetch();
+                // Here adding the login user to the local database because it is offline first approach but still need internet access to login for the first time
+                
+                const usersCollection = database.collections.get('users');
 
-                        if (user.length > 0) {
-                            console.log("User found");
+                const user = await usersCollection.query(Q.where('email', trimmedEmail)).fetch();
 
-                            // if user found must chk if apps exits or not
-                            await database.write(async () => {
-                                user[0].update((record) => {
-                                    record.email = trimmedEmail;
-                                    record.accessToken = accessToken;
-                                    record.updated_at = Date.now();
-                                    record.userid = data.userid;
-                                });
-                            });
-                        } else {
-                            await database.write(async () => {
-                                usersCollection.create((record) => {
-                                    record.email = trimmedEmail;
-                                    record.accessToken = accessToken;
-                                    record.fullname = "",
-                                        record.created_at = Date.now();
-                                    record.updated_at = Date.now();
-                                    record.userid = data.userid;
-                                });
-                            });
+                if (user.length > 0) {
+                    console.log("User found");
 
-                            // seems first time for that user or first time 
-                            seedDatabase();
-                        }
-
-
-                        await AsyncStorage.setItem('userToken', accessToken);
-                        navigation.navigate('MainX');
-
-                    } else {
-                        console.log("Access token is undefined");
-                        setErrorMessage('Access token is undefined. Please try again.');
-                    }
+                    // if user found must chk if apps exits or not
+                    await database.write(async () => {
+                        user[0].update((record) => {
+                            record.email = trimmedEmail;
+                            record.accessToken = 'accessToken';
+                            record.updated_at = Date.now();
+                            record.userid = 1;//data.userid;
+                        });
+                    });
                 } else {
-                    const errorData = await response.json();
+                    await database.write(async () => {
+                        usersCollection.create((record) => {
+                            record.email = trimmedEmail;
+                            record.accessToken = 'accessToken';
+                            record.fullname = "",
+                                record.created_at = Date.now();
+                            record.updated_at = Date.now();
+                            record.userid = 1;//data.userid;
+                        });
+                    });
 
-                    console.log('Error response:', errorData);
-                    setErrorMessage('Invalid credentials. Please try again.');
-                    setIsLoginButtonDisabled(false);
-
-                    // Show an alert box with the error message
-                    Alert.alert('Login Failed', 'Invalid credentials. Please try again.');
+                    // seems first time for that user or first time 
+                    seedDatabase();
                 }
+
+
+                await AsyncStorage.setItem('userToken', 'accessToken');
+                navigation.navigate('MainX');
+
+                //             } else {
+                //                 console.log("Access token is undefined");
+                //                 setErrorMessage('Access token is undefined. Please try again.');
+                //             }
+                //         } else {
+                //             const errorData = await response.json();
+
+                //             console.log('Error response:', errorData);
+                //             setErrorMessage('Invalid credentials. Please try again.');
+                //             setIsLoginButtonDisabled(false);
+
+                //             // Show an alert box with the error message
+                //             Alert.alert('Login Failed', 'Invalid credentials. Please try again.');
+                //         }
 
             } catch (error) {
                 console.log(error);
                 setErrorMessage('An error occurred. Please try again later.');
             }
-        } else {
-            console.log('Invalid email. Please try again.');
+            // } else {
+            //     console.log('Invalid email. Please try again.');
         }
     };
+
 
     const handleLogout = async () => {
         try {

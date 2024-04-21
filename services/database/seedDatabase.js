@@ -6,6 +6,7 @@ async function seedDatabase() {
 
   console.log(appsdata, 'apps seedDatabase');
 
+  console.log('Seeding database...');
   if (appsdata === 0) {
 
     console.log('Seeding new data...');
