@@ -13,38 +13,31 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.channels.FileChannel
 
-class DatabaseBackupModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
-
+class DatabaseBackupModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     override fun getName(): String {
         return "DatabaseBackup"
     }
 
     @ReactMethod
     fun createBackup(successCallback: Callback, errorCallback: Callback) {
-        
-        if (ContextCompat.checkSelfPermission(reactContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        // Check if WRITE_EXTERNAL_STORAGE permission is granted
+        if (ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             errorCallback.invoke("Permission Denied")
             return
         }
 
         try {
-            // Path to the internal database
-            val currentDBPath = "/data/data/${reactContext.packageName}/databases/habdatabase"
+            val currentDBPath = "/data/data/${getReactApplicationContext().packageName}/databases/habdatabase"
             val currentDB = File(currentDBPath)
-            // Path to where you want to backup the database in the external storage
             val backupDB = File(Environment.getExternalStorageDirectory(), "habdatabase_backup.db")
 
             if (currentDB.exists()) {
-                // Create channels for the files
                 val src: FileChannel = FileInputStream(currentDB).channel
                 val dst: FileChannel = FileOutputStream(backupDB).channel
-
-                // Copy the database file from internal storage to external storage
                 dst.transferFrom(src, 0, src.size())
                 src.close()
                 dst.close()
 
-                // Invoke the success callback with the path of the backup file
                 successCallback.invoke("Backup created at: ${backupDB.absolutePath}")
             } else {
                 errorCallback.invoke("Database file not found")
