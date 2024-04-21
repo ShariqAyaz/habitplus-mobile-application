@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { styles } from './styles/MainScreenStyle';
 import AppActivityService from '../../services/database/AppActivityService';
+import BackupButton from './BackupButton';
 
 import {
     NativeModules, SafeAreaView, Switch, Image, Alert, View,
@@ -668,6 +669,7 @@ const MainScreen = ({ navigation }) => {
                 </View>
             </Modal>
             <View style={[styles.topBar, { flexDirection: 'column' }]}>
+                
                 <Text style={{ color: ColorScheme.greetingText }}>Hi Shariq</Text>
                 <Text style={{ color: 'red' }}>Score: 45</Text>
             </View>
