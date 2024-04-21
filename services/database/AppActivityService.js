@@ -1,5 +1,7 @@
 
 import { database } from './index';
+import { Q } from '@nozbe/watermelondb';
+
 
 const AppActivityService = {
 
@@ -34,6 +36,19 @@ const AppActivityService = {
         return database.collections.get('app_activity').query().fetch();
     },
 
+    fetchActivityData: async (activityId) => {
+        console.log('AppActivityService -> fetchActivityData: activityId:', activityId);
+        // Using `where` to filter by `activityid`
+        const activities = await database.collections.get('app_activity')
+            .query(Q.where('activityid', activityId))
+            .fetch();
+
+        // Since `activityid` should be unique, we expect to find only one or none
+        return activities.length > 0 ? activities[0] : null;
+    },
+
+
+
     updateActivity: async (activityId, updates) => {
         await database.write(async () => {
             const activity = await database.collections.get('app_activity').find(activityId);
@@ -49,6 +64,38 @@ const AppActivityService = {
             await activity.markAsDeleted();
         });
     },
+
+    createActivityData: async (data) => {
+        console.log('INVOKED: createActivityData', data.activityid);
+        await database.write(async () => {
+            await database.collections.get('app_activity_data').create(activityData => {
+                activityData.activityid = data.activityid;
+                activityData.dataobj = data.dataobj;
+            });
+        });
+    },
+
+    finalizeActivityData: async (activityId) => {
+        await database.write(async () => {
+            const activityData = await database.collections.get('app_activity_data').find(activityId);
+            const dataObj = JSON.parse(activityData.dataobj);
+
+            // Example calculation functions that you would need to define based on your data structure
+            const totalDistance = calculateTotalDistance(dataObj.coordinates);
+            const totalDuration = calculateTotalDuration(dataObj.coordinates);
+
+            await activityData.update(data => {
+                data.dataobj = JSON.stringify({
+                    ...dataObj,
+                    distance: totalDistance + ' km',  // Assuming distance needs to be updated
+                    duration: totalDuration + ' min',  // Assuming duration needs to be updated
+                    isComplete: true  // Optionally mark the activity as complete
+                });
+            });
+        });
+    },
+
+
 };
 
 

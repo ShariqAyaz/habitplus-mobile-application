@@ -56,9 +56,58 @@ const MainScreen = ({ navigation }) => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [mapPoints, setMapPoints] = useState([]);
+    const [intervalId, setIntervalId] = useState(null);
+    const [currentActivity, setCurrentActivity] = useState(null);
+    const [activityId, setActivityId] = useState(null);
+
     const [action, setAction] = useState('');
 
     const toggleSwitch = () => setNotify(curstate => !curstate);
+
+    const startTracking = async (activityId) => {
+        const existingActivity = await AppActivityService.fetchActivityData(activityId);
+        
+        if (!existingActivity) {
+            await AppActivityService.createActivityData({
+                activityid: activityId,
+                dataobj: JSON.stringify({
+                    distance: "0km",
+                    duration: "0min",
+                    date: new Date().toISOString().split('T')[0],
+                    coordinates: []
+                })
+            });
+        }
+
+        const newIntervalId = setInterval(async () => {
+            const newCoord = await getCurrentLocation();
+            await saveCoordinates(activityId, newCoord);
+        }, 10000);
+
+        setIntervalId(newIntervalId);
+        setCurrentActivity(activityId);
+    };
+
+
+    const stopTracking = async () => {
+        clearInterval(intervalId);
+        const activityData = await AppActivityService.fetchActivityData(currentActivity);
+        const finalData = calculateFinalMetrics(JSON.parse(activityData.dataobj));
+        await AppActivityService.updateActivityData(currentActivity, {
+            distance: finalData.distance,
+            duration: finalData.duration
+        });
+        setIntervalId(null);
+        setCurrentActivity(null);
+    };
+
+    const saveCoordinates = async (activityId, coord) => {
+        const activityData = await AppActivityService.fetchActivityData(activityId);
+        const data = JSON.parse(activityData.dataobj);
+        data.coordinates.push(coord);
+        await AppActivityService.updateActivityData(activityId, { dataobj: JSON.stringify(data) });
+    };
+
 
     useEffect(() => {
         const fetchLocations = async () => {
@@ -180,6 +229,10 @@ const MainScreen = ({ navigation }) => {
 
         console.log("Saving new habit for app ID:", selectedAppDetails.appid, habitType, startDate);
 
+        const maxActivityId = await database.collections.get('app_activity').query().fetch();
+        const newActivityId = maxActivityId.reduce((max, item) => Math.max(max, parseInt(item.activityid, 10)), 0) + 1;
+
+        
         const currentDate = new Date();
         const defaultDate = currentDate.toISOString().split('T')[0];
         const defaultTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
@@ -194,8 +247,8 @@ const MainScreen = ({ navigation }) => {
             newAppActivityData = {
                 title: title,
                 description: description,
-                appid: '101', //selectedAppDetails.appid, 
-                activityid: '3',
+                appid: selectedAppDetails.appid, 
+                activityid: newActivityId.toString(),
                 type: habitType,
                 time: finalTime,
                 day: finalDay,
@@ -213,8 +266,8 @@ const MainScreen = ({ navigation }) => {
             newAppActivityData = {
                 title: title,
                 description: description,
-                appid: '101', //selectedAppDetails.appid, 
-                activityid: '3',
+                appid: selectedAppDetails.appid, 
+                activityid: newActivityId.toString(),
                 type: habitType,
                 time: finalTime,
                 day: finalDay,
@@ -233,8 +286,8 @@ const MainScreen = ({ navigation }) => {
             newAppActivityData = {
                 title: title,
                 description: description,
-                appid: '101', //selectedAppDetails.appid, 
-                activityid: '3',
+                appid: selectedAppDetails.appid, 
+                activityid: newActivityId.toString(),
                 type: habitType,
                 time: finalTime,
                 day: selectedDaySlot,
@@ -302,6 +355,7 @@ const MainScreen = ({ navigation }) => {
         const activity = await database.collections.get('apps').query(Q.where('appid', id)).fetch(1);
         console.log('New Activity Entry Form', id);
         console.log(activity[0].title);
+        setSelectedAppDetails({appid:id});
         setNewActivityModal(true);
     };
 
@@ -376,8 +430,17 @@ const MainScreen = ({ navigation }) => {
                                         location.latitude = position.coords.latitude;
                                         location.longitude = position.coords.longitude;
                                         location.timestamp = new Date();
+                                        location.appidfk =  activityId;
                                     });
                                 });
+
+                                // database.write(async () => {
+                                //     await database.collections.get('locations').create(location => {
+                                //         location.latitude = position.coords.latitude;
+                                //         location.longitude = position.coords.longitude;
+                                //         location.timestamp = new Date();
+                                //     });
+                                // });
 
                             } else if (action === 'end') {
                                 setStopLocation(locationData);
@@ -413,6 +476,7 @@ const MainScreen = ({ navigation }) => {
 
     const activityIndividual = async (id) => {
         console.log('activityIndividual', id)
+        setActivityId(id);
         setActivityModal(true);
     }
 

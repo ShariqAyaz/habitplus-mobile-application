@@ -115,41 +115,41 @@ async function seedDatabase() {
         activity.updated_at = new Date().getTime();
       });
 
-      const runAchievements = [
-        { 
-          distance: '5km', 
-          duration: '30min', 
-          date: '2022-01-01',
-        },
-        { 
-          distance: '6km', 
-          duration: '35min', 
-          date: '2022-01-02',
-        },
-        { 
-          distance: '2km', 
-          duration: '15min', 
-          date: '2022-01-03',
-          coordinates: [
-            { latitude: 37.78825, longitude: -122.4324, timestamp: '2022-01-03T07:00:00Z' },
-            { latitude: 37.78836, longitude: -122.4325, timestamp: '2022-01-03T07:15:00Z' },
-            { latitude: 37.78838, longitude: -122.4325, timestamp: '2022-01-03T07:55:00Z' },
-          ],
-        }
-      ];
+    //   const runAchievements = [
+    //     { 
+    //       distance: '5km', 
+    //       duration: '30min', 
+    //       date: '2022-01-01',
+    //     },
+    //     { 
+    //       distance: '6km', 
+    //       duration: '35min', 
+    //       date: '2022-01-02',
+    //     },
+    //     { 
+    //       distance: '2km', 
+    //       duration: '15min', 
+    //       date: '2022-01-03',
+    //       coordinates: [
+    //         { latitude: 37.78825, longitude: -122.4324, timestamp: '2022-01-03T07:00:00Z' },
+    //         { latitude: 37.78836, longitude: -122.4325, timestamp: '2022-01-03T07:15:00Z' },
+    //         { latitude: 37.78838, longitude: -122.4325, timestamp: '2022-01-03T07:55:00Z' },
+    //       ],
+    //     }
+    //   ];
       
-      for (const achievement of runAchievements) {
-        await database.collections.get('app_activity_data').create(data => {
-          data.activityidfk = runningActivity.id; 
-          data.activityid = runningActivity.activityid; 
-          data.dataobj = JSON.stringify({
-            distance: achievement.distance,
-            duration: achievement.duration,
-            date: achievement.date,
-            coordinates: achievement.coordinates
-          });
-        });
-      }
+    //   for (const achievement of runAchievements) {
+    //     await database.collections.get('app_activity_data').create(data => {
+    //       data.activityidfk = runningActivity.id; 
+    //       data.activityid = runningActivity.activityid; 
+    //       data.dataobj = JSON.stringify({
+    //         distance: achievement.distance,
+    //         duration: achievement.duration,
+    //         date: achievement.date,
+    //         coordinates: achievement.coordinates
+    //       });
+    //     });
+    //   }
     });
 
     await database.write(async () => {

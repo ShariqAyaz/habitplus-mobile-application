@@ -160,7 +160,7 @@ const HabContainer = ({ onActivityRun, subAppConfig, onDelete, onAppSelected }) 
 
       // Pick a unique App ID ( appid )
       const appid = subAppConfig.appid;
-      console.log(appid);
+      // console.log(appid);
 
       // Fetch and log activities - corrected to await the result
       const activities = await database.collections
