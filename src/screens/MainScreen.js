@@ -63,6 +63,7 @@ const MainScreen = ({ navigation }) => {
         const fetchLocations = async () => {
             const locations = await database.collections.get('locations').query().fetch();
             const points = locations.map(loc => [loc.latitude, loc.longitude]);
+            console.log('fetchLocations() -> \t Points:', points);
             setMapPoints(points);
         };
 

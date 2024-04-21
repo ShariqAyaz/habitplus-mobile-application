@@ -5,6 +5,7 @@ import { database } from '../../services/database/index';
 import { Q } from '@nozbe/watermelondb';
 import PushNotification from 'react-native-push-notification';
 import RemoteNotification from '../../RemoteNotification';
+import BackupButton from './BackupButton';
 
 const MainX = ({ navigation }) => {
   const [isTokenSaved, setIsTokenSaved] = useState(false);
@@ -113,7 +114,7 @@ const MainX = ({ navigation }) => {
           </View>
         )}
         <View style={styles.buttonRow}>
-        <RemoteNotification />
+          <RemoteNotification />
 
           <TouchableOpacity
             style={[styles.button, { borderRadius: 4 }]}
@@ -185,6 +186,25 @@ const MainX = ({ navigation }) => {
             <Text style={[styles.buttonText, { color: 'black' }]}>MyScreen</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.buttonRow}>
+        <BackupButton /> 
+          {appsData.map((app, index) => (
+            <View key={index} style={styles.appContainer}>
+              <Text style={styles.appTitle}>{app.title}</Text>
+              <Text>{app.description}</Text>
+              {app.apps_ui && app.apps_ui.map((ui, uiIndex) => (
+                <Text key={uiIndex}>Theme ID: {ui.theme_id}</Text>
+              ))}
+            </View>
+          ))}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => console.log('Test Button Pressed')}>
+            <Text style={styles.buttonText}>Test Button</Text>
+          </TouchableOpacity>
+        </View>
+        
+
       </View>
     </View>
   );
@@ -205,7 +225,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     paddingHorizontal: 20,
-  },
+},
+appContainer: {
+    marginBottom: 15,
+},
+appTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+},
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
