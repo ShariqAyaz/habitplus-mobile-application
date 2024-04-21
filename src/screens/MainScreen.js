@@ -66,7 +66,7 @@ const MainScreen = ({ navigation }) => {
 
     const startTracking = async (activityId) => {
         const existingActivity = await AppActivityService.fetchActivityData(activityId);
-        
+
         if (!existingActivity) {
             await AppActivityService.createActivityData({
                 activityid: activityId,
@@ -111,7 +111,7 @@ const MainScreen = ({ navigation }) => {
 
     useEffect(() => {
         const fetchLocations = async () => {
-            const locations = await database.collections.get('locations').query().fetch();
+            const locations = await database.collections.get('locations').query(Q.where('activityID', Q.eq(activityId))).fetch();
             const points = locations.map(loc => [loc.latitude, loc.longitude]);
             console.log('fetchLocations() -> \t Points:', points);
             setMapPoints(points);
@@ -204,8 +204,6 @@ const MainScreen = ({ navigation }) => {
     };
 
 
-
-
     const resetModalState = () => {
         setTitle('');
         setDescription('');
@@ -232,7 +230,7 @@ const MainScreen = ({ navigation }) => {
         const maxActivityId = await database.collections.get('app_activity').query().fetch();
         const newActivityId = maxActivityId.reduce((max, item) => Math.max(max, parseInt(item.activityid, 10)), 0) + 1;
 
-        
+
         const currentDate = new Date();
         const defaultDate = currentDate.toISOString().split('T')[0];
         const defaultTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
@@ -247,7 +245,7 @@ const MainScreen = ({ navigation }) => {
             newAppActivityData = {
                 title: title,
                 description: description,
-                appid: selectedAppDetails.appid, 
+                appid: selectedAppDetails.appid,
                 activityid: newActivityId.toString(),
                 type: habitType,
                 time: finalTime,
@@ -266,7 +264,7 @@ const MainScreen = ({ navigation }) => {
             newAppActivityData = {
                 title: title,
                 description: description,
-                appid: selectedAppDetails.appid, 
+                appid: selectedAppDetails.appid,
                 activityid: newActivityId.toString(),
                 type: habitType,
                 time: finalTime,
@@ -286,7 +284,7 @@ const MainScreen = ({ navigation }) => {
             newAppActivityData = {
                 title: title,
                 description: description,
-                appid: selectedAppDetails.appid, 
+                appid: selectedAppDetails.appid,
                 activityid: newActivityId.toString(),
                 type: habitType,
                 time: finalTime,
@@ -355,7 +353,7 @@ const MainScreen = ({ navigation }) => {
         const activity = await database.collections.get('apps').query(Q.where('appid', id)).fetch(1);
         console.log('New Activity Entry Form', id);
         console.log(activity[0].title);
-        setSelectedAppDetails({appid:id});
+        setSelectedAppDetails({ appid: id });
         setNewActivityModal(true);
     };
 
@@ -424,13 +422,14 @@ const MainScreen = ({ navigation }) => {
 
                             if (action === 'start') {
                                 console.log('Start Save Location:', locationData);
+                                console.log(activityId);
                                 setStartLocation(locationData);
                                 database.write(async () => {
                                     await database.collections.get('locations').create(location => {
                                         location.latitude = position.coords.latitude;
                                         location.longitude = position.coords.longitude;
                                         location.timestamp = new Date();
-                                        location.appidfk =  activityId;
+                                        location.activityID = String(activityId);
                                     });
                                 });
 
@@ -475,9 +474,14 @@ const MainScreen = ({ navigation }) => {
     };
 
     const activityIndividual = async (id) => {
-        console.log('activityIndividual', id)
+        console.log('XXactivityIndividual', id)
         setActivityId(id);
         setActivityModal(true);
+
+        const locations = await database.collections.get('locations').query(Q.where('activityID', Q.eq(activityId))).fetch();
+        const points = locations.map(loc => [loc.latitude, loc.longitude]);
+        console.log('fetchLocations() -> \t Points:', points);
+        setMapPoints(points);
     }
 
     closeNewHabitModal = () => {
@@ -733,7 +737,7 @@ const MainScreen = ({ navigation }) => {
                 </View>
             </Modal>
             <View style={[styles.topBar, { flexDirection: 'column' }]}>
-                
+
                 <Text style={{ color: ColorScheme.greetingText }}>Hi Shariq</Text>
                 <Text style={{ color: 'red' }}>Score: 45</Text>
             </View>

@@ -7,5 +7,6 @@ export default class Locations extends Model {
     @field('latitude') latitude;
     @field('longitude') longitude;
     @date('timestamp') timestamp; 
-    @field('app_id') activityID; 
+    @field('app_id') appIDs; 
+    @field('activityid') activityID;
 }

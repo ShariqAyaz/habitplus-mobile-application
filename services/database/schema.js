@@ -93,6 +93,7 @@ export const HabSchema = appSchema({
         { name: 'longitude', type: 'number', isOptional: false },
         { name: 'timestamp', type: 'number', isOptional: false },
         { name: 'appidfk', type: 'string', isOptional: true, isIndexed: true, isForeignKey: true, foreignTable: 'apps', foreignColumn: 'appid' },
+        { name: 'activityid', type: 'string'},
       ]
     })
 
