@@ -171,7 +171,19 @@ const MainX = ({ navigation }) => {
             <Text style={[styles.buttonText, { color: 'black' }]}>MainScreen</Text>
           </TouchableOpacity>
         </View>
-
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('ReadingHabit')}
+          >
+            <Text style={[styles.buttonText, { color: 'black' }]}>Reading Application</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('ReadingHabitMCQs')}>
+            <Text style={[styles.buttonText, { color: 'black' }]}>ReadingHabitMCQs</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={[styles.button, { borderRadius: 4 }]}
@@ -181,29 +193,23 @@ const MainX = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { borderRadius: 4 }]}
-            onPress={() => navigation.navigate('MyScreen')}
-          >
+            onPress={() => navigation.navigate('MyScreen')}>
             <Text style={[styles.buttonText, { color: 'black' }]}>MyScreen</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.buttonRow}>
-        <BackupButton /> 
-          {appsData.map((app, index) => (
-            <View key={index} style={styles.appContainer}>
-              <Text style={styles.appTitle}>{app.title}</Text>
-              <Text>{app.description}</Text>
-              {app.apps_ui && app.apps_ui.map((ui, uiIndex) => (
-                <Text key={uiIndex}>Theme ID: {ui.theme_id}</Text>
-              ))}
-            </View>
-          ))}
           <TouchableOpacity
-            style={styles.button}
-            onPress={() => console.log('Test Button Pressed')}>
-            <Text style={styles.buttonText}>Test Button</Text>
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('Settings')}
+          >
+            <Text style={[styles.buttonText, { color: 'black' }]}>Settings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { borderRadius: 4 }]}
+            onPress={() => navigation.navigate('HabitPlans')}>
+            <Text style={[styles.buttonText, { color: 'black' }]}>HabitPlans</Text>
           </TouchableOpacity>
         </View>
-        
 
       </View>
     </View>
@@ -225,14 +231,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     paddingHorizontal: 20,
-},
-appContainer: {
+  },
+  appContainer: {
     marginBottom: 15,
-},
-appTitle: {
+  },
+  appTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-},
+  },
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

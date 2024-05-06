@@ -19,6 +19,10 @@ import infloading from './src/screens/infloading';
 import MapScreen from './src/screens/MapScreen';
 import DevConsole from './src/screens/DevConsole';
 import LoginTest from './src/screens/LoginTest';
+import ReadingHabit from './src/screens/ReadingHabit';
+import ReadingHabitMCQs from './src/screens/ReadingHabitMCQs';
+import HabitPlans from './src/screens/HabitPlans';
+import Menu from './src/screens/Menu';
 
 import PushNotification from 'react-native-push-notification';
 
@@ -55,14 +59,13 @@ if (bool===true) {
     
 }
 
-
   useEffect(() => {
 
     const checkLoginStatus = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
         if (token) {
-          setInitialRoute('MainX');
+          setInitialRoute('Menu');
           // setInitialRoute('infloading'); 
         } else {
           setInitialRoute('Welcome');
@@ -97,6 +100,10 @@ if (bool===true) {
         <Stack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} />
         <Stack.Screen name="DevConsole" component={DevConsole} options={{ headerShown: false }} />
         <Stack.Screen name="LoginTest" component={LoginTest} options={{ headerShown: false }} />
+        <Stack.Screen name="ReadingHabit" component={ReadingHabit} options={{ headerShown: false }} />
+        <Stack.Screen name="ReadingHabitMCQs" component={ReadingHabitMCQs} options={{ headerShown: false }} />
+        <Stack.Screen name="HabitPlans" component={HabitPlans} options={{ headerShown: false }} />
+        <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

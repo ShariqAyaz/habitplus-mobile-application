@@ -86,7 +86,7 @@ const LoginScreen = () => {
 
 
                 await AsyncStorage.setItem('userToken', 'accessToken');
-                navigation.navigate('MainX');
+                navigation.navigate('Menu');
 
                 //             } else {
                 //                 console.log("Access token is undefined");

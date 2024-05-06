@@ -6,6 +6,4 @@ import { name as appName } from './app.json';
 
 import { database } from './services/database/index';
 
-
-
 AppRegistry.registerComponent(appName, () => App);
