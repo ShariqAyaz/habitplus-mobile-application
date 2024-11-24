@@ -1,4 +1,10 @@
 # Habit Development and Tracking Application
+<img width="370" alt="image" src="https://github.com/user-attachments/assets/52dcdbdd-c2cb-4f98-8fbc-7c495de2214d">
+<img width="613" alt="image" src="https://github.com/user-attachments/assets/e0512580-a70b-482e-88d9-9722d06ba058">
+
+<img width="261" alt="image" src="https://github.com/user-attachments/assets/c610023c-08d5-4a50-a219-cd5dcaf6ca5b">
+
+[Final ReportV4.pdf](https://github.com/user-attachments/files/17893046/Final.ReportV4.pdf)
 
 ## Overview
 
